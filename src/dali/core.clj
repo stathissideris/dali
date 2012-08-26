@@ -110,19 +110,25 @@
 
 ;;;;;;;; Advanced shapes ;;;;;;;;
 
+(defn split-params-by-keyword [params]
+  (->> params
+       (partition-by keyword?)
+       (partition-all 2)
+       (map (fn [[k v]] [(first k) v]))))
+
 (defn path->java-path [{{spec ::path-spec} ::geometry}]
   (let [p (Path2D$Double.)
         get-last-point (fn [x] (if (number? (last x)) x (last x)))]
-    (loop [[type v & the-rest] spec
+    (loop [[[type v] & the-rest] (split-params-by-keyword spec)
            previous-point [0 0]]
       (if-not
           type p
           (do
             (condp = type
-              :move-to (let [[x y] v] (.moveTo p, x y))
-              :move-by (let [[x y] (translate previous-point v)] (.moveTo p, x y))
-              :line-to (let [[x y] v] (.lineTo p, x y))
-              :line-by (let [[x y] (translate previous-point v)] (.lineTo p, x y))
+              :move-to (let [[[x y] ] v] (.moveTo p, x y))
+              :move-by (let [[x y] (translate previous-point (first v))] (.moveTo p, x y))
+              :line-to (let [[[x y]] v] (.lineTo p, x y))
+              :line-by (let [[x y] (translate previous-point (first v))] (.lineTo p, x y))
               :quad-to (let [[[cx cy] [x2 y2]] v]
                          (.quadTo p, cx cy, x2 y2))
               :quad-by (let [[[cx cy] [x2 y2]]
@@ -141,13 +147,13 @@
   (let [internal-w (- w (* 2 r))
         internal-h (- h (* 2 r))]
    (path :move-to [(+ px r) py]
-         :quad-by [[0 (- r)] [r (- r)]]
+         :quad-by [0 (- r)] [r (- r)]
          :line-by [internal-w 0]
-         :quad-by [[r 0] [r r]]
+         :quad-by [r 0] [r r]
          :line-by [0 internal-h]
-         :quad-by [[0 r] [(- r) r]]
+         :quad-by [0 r] [(- r) r]
          :line-by [(- internal-w) 0]
-         :quad-by [[(- r) 0] [(- r) (- r)]]
+         :quad-by [(- r) 0] [(- r) (- r)]
          :close)))
 
 ;;;;;;;; Rotate ;;;;;;;;
@@ -201,6 +207,38 @@
       (translate (minus rotation-center))
       (rotate angle)
       (translate rotation-center)))
+
+;;;;;;;; Scale ;;;;;;;;
+
+(defmulti scale (fn [shape factors] (shape-type shape)))
+
+(defmethod scale ::point
+  [[x y] [xf yf]]
+  [(* xf x) (* yf y)])
+
+(defmethod scale ::line
+  [{{start ::start end ::end} ::geometry :as shape} factors]
+  (-> shape
+      (assoc-in [::geometry ::start] (scale start factors))
+      (assoc-in [::geometry ::end] (scale end factors))))
+
+(defmethod scale ::rectangle
+  [{{position ::position dimensions ::dimensions} ::geometry :as shape} factors]
+  (-> shape
+      (assoc-in [::geometry ::position] (scale position factors))
+      (assoc-in [::geometry ::dimensions] (scale dimensions factors))))
+
+(defmethod scale ::ellipse
+  [{{position ::position dimensions ::dimensions} ::geometry :as shape} factors]
+  (-> shape
+      (assoc-in [::geometry ::position] (scale position factors))
+      (assoc-in [::geometry ::dimensions] (scale dimensions factors))))
+
+(defmethod scale ::circle
+  [{{c ::center r ::radius} ::geometry :as shape} factors]
+  (-> shape
+      (assoc-in [::geometry ::center] (scale c factors))
+      (assoc-in [::geometry ::radius] (scale r factors))))
 
 ;;;;;;;; Center ;;;;;;;;
 
@@ -319,7 +357,7 @@
   (.fill context (path->java-path shape)))
 
 #_(dev/watch-image #(test-dali))
-(defonce img (ref (gfx/buffered-image [500 500])))
+(def img (ref (gfx/buffered-image [500 500])))
 
 (defn test-dali []
   (let [triangle (polygon [50 150] [75 90] [100 150])]
@@ -344,12 +382,12 @@
      (fill (rotate-around triangle 10 (center triangle)))
      (draw (rounded-rect [155 305] [140 90] 20))
      (draw (path :move-to [170 300]
-                 :quad-by [[0 -20] [20 -20]]
+                 :quad-by [0 -20] [20 -20]
                  :line-by [100 0]
-                 :quad-by [[20 0] [20 20]]
+                 :quad-by [20 0] [20 20]
                  :line-by [0 50]
-                 :quad-by [[0 20] [-20 20]]
+                 :quad-by [0 20] [-20 20]
                  :line-by [-100 0]
-                 :quad-by [[-20 0] [-20 -20]]
+                 :quad-by [-20 0] [-20 -20]
                  :close))))
   @img)
