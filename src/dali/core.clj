@@ -113,7 +113,6 @@
         get-last-point (fn [x] (if (number? (last x)) x (last x)))]
     (loop [[type v & the-rest] spec
            previous-point [0 0]]
-      #_(println "previous" previous-point)
       (if-not
           type p
           (do
