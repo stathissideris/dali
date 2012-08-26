@@ -108,6 +108,8 @@
   (assoc shape ::geometry
          (zipmap (keys geometry) (map #(translate % delta) (vals geometry)))))
 
+;;;;;;;; Advanced shapes ;;;;;;;;
+
 (defn path->java-path [{{spec ::path-spec} ::geometry}]
   (let [p (Path2D$Double.)
         get-last-point (fn [x] (if (number? (last x)) x (last x)))]
@@ -134,6 +136,19 @@
               :close (.closePath p))
             (recur the-rest (translate previous-point
                                        (get-last-point v))))))))
+
+(defn rounded-rect [[px py] [w h] r]
+  (let [internal-w (- w (* 2 r))
+        internal-h (- h (* 2 r))]
+   (path :move-to [(+ px r) py]
+         :quad-by [[0 (- r)] [r (- r)]]
+         :line-by [internal-w 0]
+         :quad-by [[r 0] [r r]]
+         :line-by [0 internal-h]
+         :quad-by [[0 r] [(- r) r]]
+         :line-by [(- internal-w) 0]
+         :quad-by [[(- r) 0] [(- r) (- r)]]
+         :close)))
 
 ;;;;;;;; Rotate ;;;;;;;;
 
@@ -320,21 +335,21 @@
      (draw (point 120 120))
      (draw (circle [0 0] 55))
      (draw (rotate-around (rectangle [160 100] [60 60])
-                          0
+                          30
                           (center (rectangle [160 100] [60 60]))))
      (fill (rectangle [160 160] [60 60]))
      (fill (circle [70 300] 60))
      (draw (polyline [50 50] [70 30] [90 50] [110 30]))
      (draw (curve [0 0] [100 0] [100 40] [0 40]))
      (fill (rotate-around triangle 10 (center triangle)))
+     (draw (rounded-rect [155 305] [140 90] 20))
      (draw (path :move-to [170 300]
+                 :quad-by [[0 -20] [20 -20]]
                  :line-by [100 0]
                  :quad-by [[20 0] [20 20]]
                  :line-by [0 50]
                  :quad-by [[0 20] [-20 20]]
                  :line-by [-100 0]
                  :quad-by [[-20 0] [-20 -20]]
-                 :line-by [0 -50]
-                 :quad-by [[0 -20] [20 -20]]
                  :close))))
   @img)
