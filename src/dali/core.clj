@@ -299,6 +299,10 @@
   (let [[xs ys c] (polygon->params shape)]
     (.fillPolygon context xs ys c)))
 
+(defmethod fill ::path
+  [context shape]
+  (.fill context (path->java-path shape)))
+
 #_(dev/watch-image #(test-dali))
 (defonce img (ref (gfx/buffered-image [500 500])))
 
@@ -323,14 +327,6 @@
      (draw (polyline [50 50] [70 30] [90 50] [110 30]))
      (draw (curve [0 0] [100 0] [100 40] [0 40]))
      (fill (rotate-around triangle 10 (center triangle)))
-     #_(draw (path :move-to [150 300]
-                 :line-to [250 300]
-                 :quad-to [[270 300] [270 320]]
-                 :line-by [10 0]
-                 :line-to [270 370]
-                 :quad-to [[270 390] [250 390]]
-                 :line-to [150 390]
-                 :close))
      (draw (path :move-to [170 300]
                  :line-by [100 0]
                  :quad-by [[20 0] [20 20]]
