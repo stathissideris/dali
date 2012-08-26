@@ -62,22 +62,6 @@
 ;;       :quad-to [[20 10] [0 0]]
 ;;       :close)
 
-(defn path->java-path [{{spec ::path-spec} ::geometry}]
-  (let [p (Path2D$Double.)]
-    (loop [[type v & the-rest] spec]
-      (if-not
-          type p
-          (do
-            (condp = type
-              :move-to (let [[x y] v] (.moveTo p, x y))
-              :line-to (let [[x y] v] (.lineTo p, x y))
-              :quad-to (let [[[cx cy] [x2 y2]] v]
-                         (.quadTo p, cx cy, x2 y2))
-              :curve-to (let [[[c1x c1y] [c2x c2y] [x2 y2]] v]
-                          (.curveTo p, c1x c1y, c2x c2y, x2 y2))
-              :close (.closePath p))
-            (recur the-rest))))))
-
 (defn shape-type [shape] (if (vector? shape) ::point (::type shape)))
 
 ;;;;;;;; Translate ;;;;;;;;
@@ -123,6 +107,34 @@
   [{geometry ::geometry :as shape} delta]
   (assoc shape ::geometry
          (zipmap (keys geometry) (map #(translate % delta) (vals geometry)))))
+
+(defn path->java-path [{{spec ::path-spec} ::geometry}]
+  (let [p (Path2D$Double.)
+        get-last-point (fn [x] (if (number? (last x)) x (last x)))]
+    (loop [[type v & the-rest] spec
+           previous-point [0 0]]
+      #_(println "previous" previous-point)
+      (if-not
+          type p
+          (do
+            (condp = type
+              :move-to (let [[x y] v] (.moveTo p, x y))
+              :move-by (let [[x y] (translate previous-point v)] (.moveTo p, x y))
+              :line-to (let [[x y] v] (.lineTo p, x y))
+              :line-by (let [[x y] (translate previous-point v)] (.lineTo p, x y))
+              :quad-to (let [[[cx cy] [x2 y2]] v]
+                         (.quadTo p, cx cy, x2 y2))
+              :quad-by (let [[[cx cy] [x2 y2]]
+                             (map (partial translate previous-point) v)]
+                         (.quadTo p, cx cy, x2 y2))
+              :curve-to (let [[[c1x c1y] [c2x c2y] [x2 y2]] v]
+                          (.curveTo p, c1x c1y, c2x c2y, x2 y2))
+              :curve-by (let [[[c1x c1y] [c2x c2y] [x2 y2]]
+                              (map (partial translate previous-point) v)]
+                          (.curveTo p, c1x c1y, c2x c2y, x2 y2))
+              :close (.closePath p))
+            (recur the-rest (translate previous-point
+                                       (get-last-point v))))))))
 
 ;;;;;;;; Rotate ;;;;;;;;
 
@@ -312,11 +324,22 @@
      (draw (polyline [50 50] [70 30] [90 50] [110 30]))
      (draw (curve [0 0] [100 0] [100 40] [0 40]))
      (fill (rotate-around triangle 10 (center triangle)))
-     (draw (path :move-to [150 300]
+     #_(draw (path :move-to [150 300]
                  :line-to [250 300]
                  :quad-to [[270 300] [270 320]]
+                 :line-by [10 0]
                  :line-to [270 370]
                  :quad-to [[270 390] [250 390]]
                  :line-to [150 390]
+                 :close))
+     (draw (path :move-to [170 300]
+                 :line-by [100 0]
+                 :quad-by [[20 0] [20 20]]
+                 :line-by [0 50]
+                 :quad-by [[0 20] [-20 20]]
+                 :line-by [-100 0]
+                 :quad-by [[-20 0] [-20 -20]]
+                 :line-by [0 -50]
+                 :quad-by [[0 -20] [20 -20]]
                  :close))))
   @img)
