@@ -55,6 +55,9 @@
   {::type ::path
    ::geometry {::path-spec path-spec}})
 
+(defn line-start [line] (get-in line [::geometry ::start]))
+(defn line-end [line] (get-in line [::geometry ::end]))
+
 ;;; example:
 ;; (path :move-to [10 10]
 ;;       :line-to [20 20]
@@ -356,30 +359,92 @@
   [context shape]
   (.fill context (path->java-path shape)))
 
+;;;;;;;; Geometry ;;;;;;;;
+
+(defn angle
+  ([{{start ::start end ::end} ::geometry}] (angle start end))
+  ([[x1 y1] [x2 y2]]
+     (polar-angle (abs (- x2 x1)) (abs (- y2 y1)))))
+
+(defn parallel
+  [shape delta direction]
+  (let [a (angle shape)
+        c (center shape)
+        delta (if (= direction :left) (- delta) delta)]
+    (-> shape
+        (rotate-around a c) ;;make it horizontal
+        (translate [delta 0])   ;;move it a bit
+        (rotate-around (- a) c)))) ;;back to the original angle (using the same center of rotation!)
+
+(defn interpolate
+  [[x1 y1] [x2 y2] delta]
+  [(+ x1 (* delta (- x2 x1)))
+   (+ y1 (* delta (- y2 y1)))])
+
+(defn distance
+  [[x1 y1] [x2 y2]]
+  (sqrt (+ (* (- x1 x2) (- x1 x2))
+           (* (- y1 y2) (- y1 y2)))))
+
+(defn interpolate-distance
+  "Interpolate between two points by moving a certain distance from
+  the starting point towards the ending point."
+  [start end dist]
+  (let [total-distance (distance start end)]
+    (interpolate start end (/ dist total-distance))))
+
+(defn arrow
+  ([start end] (arrow start end 15 30 40))
+  ([start end stem-thickness head-spread head-height]
+     (let [length (distance start end)
+           stem-length (- length head-height)
+           stem-line (line start (interpolate-distance start end stem-length))
+           stem-line-r (parallel stem-line (/ stem-thickness 2) :right)
+           stem-line-l (parallel stem-line (/ stem-thickness 2) :left)
+           head-line-r (parallel stem-line (/ head-spread 2) :right)
+           head-line-l (parallel stem-line (/ head-spread 2) :left)]
+       (path :move-to end
+             :line-to (line-end head-line-r)
+             :line-to (line-end stem-line-r)
+             :line-to (line-start stem-line-r)
+             :line-to (line-start stem-line-l)
+             :line-to (line-end stem-line-l)
+             :line-to (line-end head-line-l)
+             :close))))
+
 #_(dev/watch-image #(test-dali))
 (def img (ref (gfx/buffered-image [500 500])))
 
 (defn test-dali []
-  (let [triangle (polygon [50 150] [75 90] [100 150])]
+  (let [triangle (polygon [50 150] [75 90] [100 150])
+        my-line (line [110 100] [170 110])]
    (doto (gfx/graphics @img)
      (.setRenderingHint java.awt.RenderingHints/KEY_ANTIALIASING
                         java.awt.RenderingHints/VALUE_ANTIALIAS_ON)
      (.setPaint java.awt.Color/BLACK)
      (fill (rectangle [0 0] [(.getWidth @img) (.getHeight @img)]))
      (.setPaint java.awt.Color/WHITE)
-     (draw (line [0 100] [200 50]))
+     (draw (arrow [200 50] [300 100] 20 40 30))
+     
+     
+     (draw my-line)
+     (draw (parallel my-line 20 :right))
+
+     (draw (circle (interpolate [110 100] [160 70] 0.5) 5))
+     
      (draw (line [0 0] [50 50]))
      (draw (circle [0 0] 50))
      (draw (point 120 120))
      (draw (circle [0 0] 55))
-     (draw (rotate-around (rectangle [160 100] [60 60])
-                          30
+     #_(draw (rotate-around (rectangle [160 100] [60 60])
+                          60
                           (center (rectangle [160 100] [60 60]))))
-     (fill (rectangle [160 160] [60 60]))
-     (fill (circle [70 300] 60))
+     ;(fill (rectangle [160 160] [60 60]))
+     ;(fill (circle [70 300] 30))
+     ;(fill (rotate-around triangle 10 (center triangle)))
+
      (draw (polyline [50 50] [70 30] [90 50] [110 30]))
      (draw (curve [0 0] [100 0] [100 40] [0 40]))
-     (fill (rotate-around triangle 10 (center triangle)))
      (draw (rounded-rect [155 305] [140 90] 20))
      (draw (path :move-to [170 300]
                  :quad-by [0 -20] [20 -20]

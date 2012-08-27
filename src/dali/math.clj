@@ -19,6 +19,14 @@
   [x]
   (java.lang.Math/cos (degrees->radians x)))
 
+(defn polar-angle
+  [x y]
+  (radians->degrees (java.lang.Math/atan2 x y)))
+
+(defn sqrt
+  [x]
+  (java.lang.Math/sqrt x))
+
 (defn minus
   "Makes all the numbers of a seq negative and returns it as a vector"
   [x]
