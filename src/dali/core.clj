@@ -364,7 +364,7 @@
 (defn angle
   ([{{start ::start end ::end} ::geometry}] (angle start end))
   ([[x1 y1] [x2 y2]]
-     (polar-angle (abs (- x2 x1)) (abs (- y2 y1)))))
+     (polar-angle (- x2 x1) (- y1 y2)))) ;;y inverted because polar Y increases upwards and screen Y increases downwards
 
 (defn parallel
   [shape delta direction]
@@ -372,9 +372,9 @@
         c (center shape)
         delta (if (= direction :left) (- delta) delta)]
     (-> shape
-        (rotate-around a c) ;;make it horizontal
+        (rotate-around (- a) c) ;;make it vertical
         (translate [delta 0])   ;;move it a bit
-        (rotate-around (- a) c)))) ;;back to the original angle (using the same center of rotation!)
+        (rotate-around a c))))  ;;back to the original angle (using the same center of rotation!)
 
 (defn interpolate
   [[x1 y1] [x2 y2] delta]
@@ -417,7 +417,7 @@
 
 (defn test-dali []
   (let [triangle (polygon [50 150] [75 90] [100 150])
-        my-line (line [110 100] [170 110])]
+        my-line (line [110 100] [200 110])]
    (doto (gfx/graphics @img)
      (.setRenderingHint java.awt.RenderingHints/KEY_ANTIALIASING
                         java.awt.RenderingHints/VALUE_ANTIALIAS_ON)
@@ -430,7 +430,7 @@
      (draw my-line)
      (draw (parallel my-line 20 :right))
 
-     (draw (circle (interpolate [110 100] [160 70] 0.5) 5))
+     ;(draw (circle (interpolate [110 100] [160 70] 0.5) 5))
      
      (draw (line [0 0] [50 50]))
      (draw (circle [0 0] 50))
