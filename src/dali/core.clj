@@ -316,3 +316,4 @@
              :line-to (line-end stem-line-l)
              :line-to (line-end head-line-l)
              :close))))
+
