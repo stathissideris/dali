@@ -1,6 +1,7 @@
 (ns dali.core
   (:use [dali.math]
-        [dali.backend])
+        [dali.backend]
+        [dali.utils])
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double]))
 
 (defn point [x y] [x y])
@@ -52,6 +53,11 @@
       (assoc :type :polygon)
       (assoc :geometry
         {:points [[px py] [(+ px w) py] [(+ px w) (+ py h)] [px (+ py h)]]})))
+
+(defn polygon->lines
+  [{{points :points} :geometry}]
+  (map (fn [[p1 p2]] (line p1 p2))
+       (take (count points) (partition 2 1 (cycle points)))))
 
 (defn path [& path-spec]
   {:type :path
@@ -293,6 +299,56 @@
   [start end dist]
   (let [total-distance (distance start end)]
     (interpolate start end (/ dist total-distance))))
+
+(defn line-equation [{{[x1 y1] :start [x2 y2] :end} :geometry}]
+  (if (= x1 x2)
+    {:type :vertical
+     :slope :infinity
+     :offset x1}
+    (let [{:keys [x y]} (solve-2x2-system [x1 1 y1]
+                                          [x2 1 y2])]
+      {:type :normal
+       :slope x
+       :offset y})))
+
+(defn line-projection-intersection
+  "The point at which the extensions of the passed lines may
+  intersect. nil if no such point exists (parallel lines)."
+  [line1 line2]
+  (let [{type1 :type, slope1 :slope, offset1 :offset, :as eq1} (line-equation line1)
+        {type2 :type, slope2 :slope, offset2 :offset, :as eq2} (line-equation line2)]
+    (cond (and (= :vertical type1) (= :vertical type2))
+            nil
+          (or (= :vertical type1) (= :vertical type2))
+            (let [[vertical non-vertical]
+                  (match-non-match #(= :vertical (:type %)) eq1 eq2)
+                  x (:offset vertical)]
+              [x (linear-equation-at-x non-vertical x)])
+          :else
+            (if-let [solution (solve-2x2-system [slope1 -1 (- offset1)]
+                                                [slope2 -1 (- offset2)])]
+              [(:x solution) (:y solution)]))))
+
+(defn line-intersection
+  "The point at which the passed lines intersect. nil if they don't."
+  [{{[_ line1-y1] :start [_ line1-y2] :end} :geometry, :as line1}
+   {{[_ line2-y1] :start [_ line2-y2] :end} :geometry, :as line2}]
+  (let [[x y :as point] (line-projection-intersection line1 line2)]
+    (when (and (within y [line1-y1 line1-y2] 2)
+               (within y [line2-y1 line2-y2] 2))
+      point)))
+
+(defn line-polygon-intersection
+  "The points at which the line and the polygon intersect. Can be an
+  empty list."
+  [line polygon]
+  (remove nil? (map (partial line-intersection line) (polygon->lines polygon))))
+
+(defn line-rectangle-intersection
+  "The points at which the rectangle and the polygon intersect. Can be
+  an empty list."
+  [line rectangle]
+  (line-polygon-intersection line (rectangle->polygon rectangle)))
 
 ;;;;;;;; Advanced shapes ;;;;;;;;
 
