@@ -7,6 +7,17 @@
 
 (defn dimensions [w h] [w h])
 
+(defn set-style [shape s]
+  (assoc shape :style s))
+
+(defn set-id [shape id]
+  (assoc shape :id id))
+
+(defn add-category [shape category]
+  (if-not (:categories shape)
+    (assoc shape :categories #{category})
+    (assoc shape :categories (conj (:categories shape) category))))
+
 (defmacro defshape [shape & geometry-components]
   `(defn ~shape [~@geometry-components]
      {:type ~(keyword (str shape))
@@ -101,21 +112,6 @@
   [{geometry :geometry :as shape} delta]
   (assoc shape :geometry
          (zipmap (keys geometry) (map #(translate % delta) (vals geometry)))))
-
-;;;;;;;; Advanced shapes ;;;;;;;;
-
-(defn rounded-rect [[px py] [w h] r]
-  (let [internal-w (- w (* 2 r))
-        internal-h (- h (* 2 r))]
-   (path :move-to [(+ px r) py]
-         :quad-by [0 (- r)] [r (- r)]
-         :line-by [internal-w 0]
-         :quad-by [r 0] [r r]
-         :line-by [0 internal-h]
-         :quad-by [0 r] [(- r) r]
-         :line-by [(- internal-w) 0]
-         :quad-by [(- r) 0] [(- r) (- r)]
-         :close)))
 
 ;;;;;;;; Rotate ;;;;;;;;
 
@@ -297,6 +293,21 @@
   [start end dist]
   (let [total-distance (distance start end)]
     (interpolate start end (/ dist total-distance))))
+
+;;;;;;;; Advanced shapes ;;;;;;;;
+
+(defn rounded-rect [[px py] [w h] r]
+  (let [internal-w (- w (* 2 r))
+        internal-h (- h (* 2 r))]
+   (path :move-to [(+ px r) py]
+         :quad-by [0 (- r)] [r (- r)]
+         :line-by [internal-w 0]
+         :quad-by [r 0] [r r]
+         :line-by [0 internal-h]
+         :quad-by [0 r] [(- r) r]
+         :line-by [(- internal-w) 0]
+         :quad-by [(- r) 0] [(- r) (- r)]
+         :close)))
 
 (defn arrow
   ([start end] (arrow start end 15 30 40))
