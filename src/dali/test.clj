@@ -80,8 +80,6 @@
         (draw r)
         (draw l1)
         (draw l2))
-      (doseq [i intersections1]
-        (mark-point backend i))
-      (doseq [i intersections2]
+      (doseq [i (concat intersections1 intersections2)]
         (mark-point backend i))))
   @image)
