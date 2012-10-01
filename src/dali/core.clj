@@ -19,12 +19,28 @@
     (assoc shape :categories #{category})
     (assoc shape :categories (conj (:categories shape) category))))
 
+(defn parse-attr-map [m]
+  (into {}
+   (remove
+    (fn [[_ v]] (or (nil? v) (empty? v)))
+    {:id (:id m)
+     :category (if (sequential? (:category m))
+                 (into #{} (:category m)) #{(:category m)})
+     :style (-> m
+                (dissoc :id)
+                (dissoc :category))})))
+
 (defmacro defshape [shape & geometry-components]
-  `(defn ~shape [~@geometry-components]
-     {:type ~(keyword (str shape))
-      :geometry ~(zipmap (map (fn [x] (keyword (str x)))
-                               geometry-components)
-                          geometry-components)}))
+  `(defn ~shape
+     ([~@geometry-components]
+        {:type ~(keyword (str shape))
+         :geometry ~(zipmap (map (fn [x] (keyword (str x)))
+                                 geometry-components)
+                            geometry-components)})
+     ([~'attr-map ~@geometry-components]
+        (merge
+         (parse-attr-map ~'attr-map)
+         (~shape ~@geometry-components)))))
 
 (defshape line start end)
 (defshape rectangle position dimensions)
@@ -34,10 +50,15 @@
 (defshape curve start control1 control2 end)
 (defshape quad-curve start control end)
 
-(defn text [position text]
-  {:type :text,
-   :geometry {:position position},
-   :content text})
+(defn text
+  ([position txt]
+     {:type :text,
+      :geometry {:position position},
+      :content txt})
+  ([attr-map position txt]
+     (merge
+      (parse-attr-map attr-map)
+      (text position txt))))
 
 (defn polyline [& points]
   {:type :polyline,
@@ -46,6 +67,12 @@
 (defn polygon [& points]
   {:type :polygon,
    :geometry {:points points}})
+
+(defn path [& path-spec]
+  {:type :path
+   :geometry {:path-spec path-spec}})
+
+
 
 (defn rectangle->polygon
   [{{[px py] :position [w h] :dimensions} :geometry :as shape}]
@@ -58,10 +85,6 @@
   [{{points :points} :geometry}]
   (map (fn [[p1 p2]] (line p1 p2))
        (take (count points) (partition 2 1 (cycle points)))))
-
-(defn path [& path-spec]
-  {:type :path
-   :geometry {:path-spec path-spec}})
 
 (defn line-start [line] (get-in line [:geometry :start]))
 (defn line-end [line] (get-in line [:geometry :end]))
