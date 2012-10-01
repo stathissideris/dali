@@ -1,13 +1,9 @@
 # dali
 
-A Clojure library designed to ... well, that part is up to you.
-
-## Usage
-
-FIXME
+A Clojure library for 2D graphics.
 
 ## License
 
-Copyright © 2012 FIXME
+Copyright © 2012 Stathis Sideris
 
 Distributed under the Eclipse Public License, the same as Clojure.
