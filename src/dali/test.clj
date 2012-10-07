@@ -40,7 +40,7 @@
       (draw my-line)
       (draw (parallel my-line 20 :right))
       
-      (mark-point (interpolate [110 100] [170 110] 0.5))
+      ;(mark-point (interpolate [110 100] [170 110] 0.5))
       
       (draw (line [0 0] [50 50]))
       (draw (circle [0 0] 50))
@@ -57,10 +57,21 @@
 
       (draw (polyline [50 50] [70 30] [90 50] [110 30]))
       (draw (curve [100 200] [100 0] [100 40] [50 40]))
-      (draw (rounded-rect [155 305] [140 90] 20))
-      (draw (path :move-to [20 200] :line-to [50 200]))
-      (set-paint (color 0 100 0))
-      (draw (path :move-to [175 399]
+
+      (render
+       (group {:stroke {:color (color 255 255 255)
+                        :width 3}
+               :fill   {:color (color 0 100 0)}}
+        (rounded-rect
+         {:fill {:color (color 128 0 0)}}
+         [315 295] [40 90] 10)
+        (rounded-rect
+         {:stroke {:dash [10 15]}}
+         [155 305] [140 90] 20)))
+
+      ;(draw (path :move-to [20 200] :line-to [50 200]))
+      ;(set-paint (color 0 100 0))
+      (draw (path :move-to [175 420]
                   :quad-by [0 -20] [20 -20]
                   :line-by [100 0]
                   :quad-by [20 0] [20 20]

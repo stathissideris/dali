@@ -1,9 +1,10 @@
 (ns dali.backend.java-2d
   (:use [dali.core]
-        [dali.backend])
+        [dali.backend]
+        [dali.utils])
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double]
            [java.awt.image BufferedImage]
-           [java.awt Color]))
+           [java.awt Color BasicStroke]))
 
 (defn polygon->params
   "Converts the geometry of the polygon to parameters appropriate for
@@ -53,6 +54,69 @@
             (recur the-rest (translate previous-point
                                        (get-last-point v))))))))
 
+
+(def cap-map {:butt java.awt.BasicStroke/CAP_BUTT
+              :round java.awt.BasicStroke/CAP_ROUND
+              :square java.awt.BasicStroke/CAP_SQUARE})
+(def join-map {:miter java.awt.BasicStroke/JOIN_MITER
+               :round java.awt.BasicStroke/JOIN_ROUND
+               :bevel java.awt.BasicStroke/JOIN_BEVEL})
+
+(defn stroke->java-stroke [stroke] ;;TODO docstring
+  (let [stroke (dissoc stroke :color)]
+    (when-not (empty? stroke)
+      (let [{:keys [width cap join miter-limit dash dash-phase]
+             :or {width 1
+                  cap :round
+                  join :round
+                  miter-limit 10.0
+                  dash nil
+                  dash-phase 0}} stroke
+            cap (when cap (get cap-map cap))
+            join (when join (get join-map join))
+            dash (when dash (into-array Float/TYPE dash))]
+        (BasicStroke. width cap join miter-limit dash dash-phase)))))
+
+(defn set-stroke
+  "Sets the stroke from the optional style info attached to the
+  object."
+  [backend shape]
+  (if-let [color (get-in shape [:style :stroke :color])]
+    (set-paint backend color))
+  (if-let [java-stroke (stroke->java-stroke
+                        (get-in shape [:style :stroke]))]
+    (.setStroke (.graphics backend) java-stroke)))
+
+(defn set-fill
+  "Sets the fill from the optional style info attached to the
+  object."
+  [backend shape]
+  (if-let [color (get-in shape [:style :fill :color])]
+    (set-paint backend color))) ;;TODO support textures etc
+
+(defmacro isolate-style
+  "Isolates the side-effects of the body to the backend, and executes
+  the body in an implicit do."
+  [backend & body]
+  `(let [paint# (.getPaint (.graphics ~backend))
+         stroke# (.getStroke (.graphics ~backend))]
+     (do ~@body)
+     (.setPaint (.graphics ~backend) paint#)
+     (.setStroke (.graphics ~backend) stroke#)))
+
+(defn stroke-maybe [backend shape]
+  (when (has-stroke? shape)
+    (isolate-style backend
+      (set-stroke backend shape)
+      (draw backend shape))))
+
+(defn fill-and-stroke [backend shape]
+  (when (has-fill? shape)
+    (isolate-style backend
+      (set-fill backend shape)
+      (fill backend shape)))
+  (stroke-maybe backend shape))
+
 (deftype Java2DBackend [graphics]
   Backend
   (draw-point [this [x y]]
@@ -97,8 +161,37 @@
     (condp = (:type paint)
       :color (.setPaint (.graphics this) (color->java-color paint))))
   
-  (render-text [this shape])
-  (render-shape [this shape]))
+  (render-text [this shape]) ;;TODO
+  (render-point [this shape]
+    (stroke-maybe this shape))
+  (render-line [this shape]
+    (stroke-maybe this shape))
+  (render-rectangle [this shape]
+    (fill-and-stroke this shape))
+  (render-ellipse [this shape]
+    (fill-and-stroke this shape))
+  (render-arc [this shape]) ;;TODO
+  (render-circle [this shape]
+    (let [ell (circle->ellipse shape)]
+      (fill-and-stroke this shape)))
+  (render-curve [this shape]
+    (stroke-maybe this shape))
+  (render-quad-curve [this shape]
+    (stroke-maybe this shape))
+  (render-polyline [this shape]
+    (stroke-maybe this shape))
+  (render-polygon [this shape]
+    (fill-and-stroke this shape))
+  (render-path [this shape]
+    (fill-and-stroke this shape))
+  (render-group [this group]
+    (doseq [shape (:content group)]
+      (isolate-style this
+        (let [merged
+              (assoc shape
+                :style (deep-merge (:style group)
+                                   (:style shape)))] ;;shape takes precedence
+          (render this merged))))))
 
 (defn buffered-image-type [type]
   (if (keyword? type)

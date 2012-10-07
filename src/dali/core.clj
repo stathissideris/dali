@@ -1,6 +1,5 @@
 (ns dali.core
   (:use [dali.math]
-        [dali.backend]
         [dali.utils])
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double]))
 
@@ -19,16 +18,24 @@
     (assoc shape :categories #{category})
     (assoc shape :categories (conj (:categories shape) category))))
 
-(defn parse-attr-map [m]
+(defn ^{:private true} parse-attr-map
+  [m]
   (into {}
    (remove
-    (fn [[_ v]] (or (nil? v) (empty? v)))
+    (fn [[_ v]] (or (nil? v) (and (coll? v) (empty? v))))
     {:id (:id m)
-     :category (if (sequential? (:category m))
-                 (into #{} (:category m)) #{(:category m)})
+     :category (cond (nil? (:category m)) nil
+                     (coll? (:category m)) (into #{} (:category m))
+                     :else #{(:category m)})
      :style (-> m
                 (dissoc :id)
                 (dissoc :category))})))
+
+(defn has-stroke? [shape]
+  (get-in shape [:style :stroke]))
+
+(defn has-fill? [shape]
+  (get-in shape [:style :fill]))
 
 (defmacro defshape [shape & geometry-components]
   `(defn ~shape
@@ -60,18 +67,41 @@
       (parse-attr-map attr-map)
       (text position txt))))
 
+
+(defn ^{:private true} extract-attr-map
+  "If the first parameter is a map, return [rest attr-map], otherwise
+  [params nil]."
+  [params]
+  (if (map? (first params))
+    [(rest params) (first params)]
+    [params nil]))
+
 (defn polyline [& points]
-  {:type :polyline,
-   :geometry {:points points}})
+  (let [[points attr-map] (extract-attr-map points)]
+    (merge
+     (parse-attr-map attr-map)
+     {:type :polyline
+      :geometry {:points points}})))
 
 (defn polygon [& points]
-  {:type :polygon,
-   :geometry {:points points}})
+  (let [[points attr-map] (extract-attr-map points)]
+    (merge
+     (parse-attr-map attr-map)
+     {:type :polygon
+      :geometry {:points points}})))
 
 (defn path [& path-spec]
-  {:type :path
-   :geometry {:path-spec path-spec}})
+  (let [[path-spec attr-map] (extract-attr-map path-spec)]
+    (merge
+     (parse-attr-map attr-map)
+     {:type :path
+      :geometry {:path-spec path-spec}})))
 
+(defn group [attr-map & content]
+  (merge
+   (parse-attr-map attr-map)
+   {:type :group
+    :content content}))
 
 
 (defn rectangle->polygon
@@ -262,32 +292,10 @@
    [(/ (apply + (map first points)) c)
     (/ (apply + (map second points)) c)]))
 
-;;;;;;;; Draw ;;;;;;;;
-
-(defmulti draw (fn [context shape] (shape-type shape)))
-
 (defn circle->ellipse [shape]
   (let [{{c :center r :radius} :geometry} shape]
     (ellipse (translate c [(- r) (- r)])
              [(* 2 r) (* 2 r)])))
-
-(defmacro delegate-op-to-backend [op & shape-types]
-  `(do ~@(map
-          (fn lalakis [t]
-            `(defmethod ~op ~t
-               [~'backend ~'shape]
-               (~(symbol (str op "-" (name t))) ~'backend ~'shape)))
-          shape-types)))
-
-(delegate-op-to-backend
- draw :point :line :rectangle :ellipse :circle :curve :polyline :polygon :path)
-
-;;;;;;;; Fill ;;;;;;;;
-
-(defmulti fill (fn [context shape] (shape-type shape)))
-
-(delegate-op-to-backend
- fill :rectangle :ellipse :circle :polygon :path)
 
 ;;;;;;;; Geometry ;;;;;;;;
 
@@ -375,18 +383,21 @@
 
 ;;;;;;;; Advanced shapes ;;;;;;;;
 
-(defn rounded-rect [[px py] [w h] r]
-  (let [internal-w (- w (* 2 r))
-        internal-h (- h (* 2 r))]
-   (path :move-to [(+ px r) py]
-         :quad-by [0 (- r)] [r (- r)]
-         :line-by [internal-w 0]
-         :quad-by [r 0] [r r]
-         :line-by [0 internal-h]
-         :quad-by [0 r] [(- r) r]
-         :line-by [(- internal-w) 0]
-         :quad-by [(- r) 0] [(- r) (- r)]
-         :close)))
+(defn rounded-rect
+  ([[px py] [w h] r] (rounded-rect {} [px py] [w h] r))
+  ([attr-map [px py] [w h] r]
+     (let [internal-w (- w (* 2 r))
+           internal-h (- h (* 2 r))]
+       (path attr-map
+             :move-to [(+ px r) py]
+             :quad-by [0 (- r)] [r (- r)]
+             :line-by [internal-w 0]
+             :quad-by [r 0] [r r]
+             :line-by [0 internal-h]
+             :quad-by [0 r] [(- r) r]
+             :line-by [(- internal-w) 0]
+             :quad-by [(- r) 0] [(- r) (- r)]
+             :close))))
 
 (defn arrow
   ([start end] (arrow start end 15 30 40))
