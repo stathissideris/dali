@@ -28,3 +28,16 @@
                   (= ::none vb) [key va]
                   (= ::none va) [key vb]
                   :else [key vb]))) all-keys)))))
+
+(defn function? [x]
+  (or (fn? x)
+      (instance? clojure.lang.MultiFn x)))
+
+(defn num-or-fn? [x]
+  (or (number? x)
+      (function? x)))
+
+(defn coll-of-nums-or-fns? [size v]
+  (and (coll? v)
+       (= size (count v))
+       (every? num-or-fn? v)))

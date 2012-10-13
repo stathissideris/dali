@@ -1,9 +1,11 @@
 (ns dali.test
   (:use [dali.core]
         [dali.style]
+        [dali.math]
         [dali.backend]
         [dali.backend.java-2d])
-  (:require [clarity.dev :as dev]))
+  (:require [clarity.dev :as dev])
+  (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform]))
 
 #_(dev/watch-image #(test-dali))
 (def image (ref (buffered-image [500 500])))
@@ -11,7 +13,7 @@
 (defn mark-point [backend point]
   (draw backend (circle point 5)))
 
-(defn test-dali []
+(defn test-dali [& args]
   (let [triangle (polygon [50 150] [75 90] [100 150])
         my-line (line [110 100] [170 110])
 
@@ -24,10 +26,26 @@
     (.setRenderingHint (.graphics backend)
                        java.awt.RenderingHints/KEY_ANTIALIASING
                        java.awt.RenderingHints/VALUE_ANTIALIAS_ON)
+
     (doto backend
       (set-paint (color 0 0 0))
       (fill (rectangle [0 0] [(.getWidth @image) (.getHeight @image)]))
-      (set-paint (color 0 220 0))
+      (set-paint (color 0 220 0)))
+    
+    #_(let [shape (rectangle {:transform [:translate [10 50] :scale 0.5]} [330 170] [100 70])]
+      (let [gfx__5814__auto__ (.graphics backend)
+            old__5815__auto__ (.getTransform gfx__5814__auto__)]
+        (.setTransform
+         gfx__5814__auto__
+         (transform->java-transform (:transform shape)))
+        (draw backend shape)
+        (.setTransform gfx__5814__auto__ old__5815__auto__)))
+
+    #_(let [shape (rectangle {:transform [:rotate 45]} [330 170] [100 70])]
+        (with-transform backend (:transform shape)
+          (draw backend shape)))
+    
+    (doto backend
       (draw (arrow [200 50] [300 100] 20 40 30))
 
       (draw line1)
@@ -46,8 +64,14 @@
       (draw (circle [0 0] 50))
       (draw (point 120 120))
       (draw (circle [0 0] 55))
-      (draw (rectangle [200 200] [100 50]))
-
+      (render
+       (rectangle {:stroke {:width 3}
+                   :transform [:translate #(minus (center %))
+                               :skew [0.2 0.2]
+                               :rotate 30
+                               :translate center]}
+                  [330 170] [100 70]))
+      
       (draw (rotate-around (rectangle [160 100] [60 60])
                            60
                            (center (rectangle [160 100] [60 60]))))
@@ -63,7 +87,7 @@
                         :width 3}
                :fill   {:color (color 0 100 0)}}
         (rounded-rect
-         {:fill {:color (color 128 0 0)}}
+         {:fill {:color (fn [_] (let [r (int (rand 160))] (color r 0 0)))}}
          [315 295] [40 90] 10)
         (rounded-rect
          {:stroke {:dash [10 15]}}

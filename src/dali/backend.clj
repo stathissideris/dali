@@ -51,7 +51,7 @@
 (delegate-op-to-backend
  draw :point :line :rectangle :ellipse :circle :curve :polyline :polygon :path)
 
-(defmulti fill (fn [context shape] (shape-type shape))) ;;TODO move to backend
+(defmulti fill (fn [context shape] (shape-type shape)))
 (delegate-op-to-backend
  fill :rectangle :ellipse :circle :polygon :path)
 

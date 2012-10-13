@@ -1,8 +1,11 @@
 (ns dali.backend.java-2d
   (:use [dali.core]
         [dali.backend]
-        [dali.utils])
-  (:import [java.awt.geom CubicCurve2D$Double Path2D$Double]
+        [dali.utils]
+        [dali.math]
+        [dali.defaults]
+        [dali.style])
+  (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform]
            [java.awt.image BufferedImage]
            [java.awt Color BasicStroke]))
 
@@ -78,21 +81,55 @@
         (BasicStroke. width cap join miter-limit dash dash-phase)))))
 
 (defn set-stroke
-  "Sets the stroke from the optional style info attached to the
-  object."
-  [backend shape]
-  (if-let [color (get-in shape [:style :stroke :color])]
+  "Sets the stroke."
+  [backend stroke]
+  (if-let [color (:color stroke)]
     (set-paint backend color))
-  (if-let [java-stroke (stroke->java-stroke
-                        (get-in shape [:style :stroke]))]
+  (if-let [java-stroke (stroke->java-stroke stroke)]
     (.setStroke (.graphics backend) java-stroke)))
 
 (defn set-fill
   "Sets the fill from the optional style info attached to the
   object."
-  [backend shape]
-  (if-let [color (get-in shape [:style :fill :color])]
+  [backend fill]
+  (if-let [color (:color fill)]
     (set-paint backend color))) ;;TODO support textures etc
+
+(defn transform->java-transform [tr]
+  (let [set-transform (fn [tr a1 a2 a3 a4 a5 a6]
+                        (.setTransform tr a1 a2 a3 a4 a5 a6))
+        res (AffineTransform.)]
+    (doall
+     (map
+      (fn [[dir v]]
+        [(condp = dir
+           :scale (if (number? v)
+                    (doto res (.scale v v))                   
+                    (doto res (.scale (first v) (second v))))
+           :skew (doto res (.shear (first v) (second v)))
+           :translate (doto res (.translate (first v) (second v)))
+           :rotate (if (number? v)
+                     (doto res (.rotate (degrees->radians v)))
+                     (let [[a [x y :as p]] v]
+                       (doto res (.rotate (degrees->radians a) x y))))
+           :matrix (do (apply set-transform res v) res))
+         rest])
+      (reverse (partition 2 tr))))
+    res))
+
+(defmacro with-java-transform [backend tr & body]
+  `(let [gfx# (.graphics ~backend)
+         old# (.getTransform gfx#)]
+     (.setTransform gfx# ~tr)
+     ~@body
+     (.setTransform gfx# old#)))
+
+(defmacro with-transform [backend tr & body]
+  `(let [gfx# (.graphics ~backend)
+         old# (.getTransform gfx#)]
+     (.setTransform gfx# (transform->java-transform ~tr))
+     ~@body
+     (.setTransform gfx# old#)))
 
 (defmacro isolate-style
   "Isolates the side-effects of the body to the backend, and executes
@@ -105,17 +142,31 @@
      (.setStroke (.graphics ~backend) stroke#)))
 
 (defn stroke-maybe [backend shape]
-  (when (has-stroke? shape)
+  (let [st (if (has-stroke? shape) (:stroke shape) DEFAULT-STROKE)]
     (isolate-style backend
-      (set-stroke backend shape)
-      (draw backend shape))))
+     (set-stroke backend (eval-dynamic-style
+                          shape
+                          (get-in shape [:style :stroke])))
+     (if (has-transform? shape)       
+       (with-transform backend (eval-dynamic-style
+                                shape
+                                (:transform shape))
+         (draw backend shape))
+       (draw backend shape)))))
 
 (defn fill-and-stroke [backend shape]
   (when (has-fill? shape)
     (isolate-style backend
-      (set-fill backend shape)
-      (fill backend shape)))
-  (stroke-maybe backend shape))
+      (set-fill backend (eval-dynamic-style
+                         shape
+                         (get-in shape [:style :fill])))
+      (if (has-transform? shape)
+        (with-transform backend (eval-dynamic-style
+                                 shape
+                                 (:transform shape))          
+          (fill backend shape))
+        (fill backend shape))))
+  (stroke-maybe backend shape)) ;;TODO maybe inline this call
 
 (deftype Java2DBackend [graphics]
   Backend

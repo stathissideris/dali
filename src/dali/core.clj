@@ -1,7 +1,6 @@
 (ns dali.core
   (:use [dali.math]
-        [dali.utils])
-  (:import [java.awt.geom CubicCurve2D$Double Path2D$Double]))
+        [dali.utils]))
 
 (defn point [x y] [x y])
 
@@ -27,15 +26,20 @@
      :category (cond (nil? (:category m)) nil
                      (coll? (:category m)) (into #{} (:category m))
                      :else #{(:category m)})
+     :transform (:transform m)
      :style (-> m
                 (dissoc :id)
-                (dissoc :category))})))
+                (dissoc :category)
+                (dissoc :transform))})))
 
 (defn has-stroke? [shape]
-  (get-in shape [:style :stroke]))
+  (not (nil? (get-in shape [:style :stroke]))))
 
 (defn has-fill? [shape]
-  (get-in shape [:style :fill]))
+  (not (nil? (get-in shape [:style :fill]))))
+
+(defn has-transform? [shape]
+  (not (nil? (get shape :transform))))
 
 (defmacro defshape [shape & geometry-components]
   `(defn ~shape
@@ -90,6 +94,12 @@
      {:type :polygon
       :geometry {:points points}})))
 
+;;; example:
+;; (path :move-to [10 10]
+;;       :line-to [20 20]
+;;       :curve-to [[40 20] [40 100] [20 100]]
+;;       :quad-to [[20 10] [0 0]]
+;;       :close)
 (defn path [& path-spec]
   (let [[path-spec attr-map] (extract-attr-map path-spec)]
     (merge
@@ -118,13 +128,6 @@
 
 (defn line-start [line] (get-in line [:geometry :start]))
 (defn line-end [line] (get-in line [:geometry :end]))
-
-;;; example:
-;; (path :move-to [10 10]
-;;       :line-to [20 20]
-;;       :curve-to [[40 20] [40 100] [20 100]]
-;;       :quad-to [[20 10] [0 0]]
-;;       :close)
 
 (defn shape-type [shape] (if (vector? shape) :point (:type shape)))
 
@@ -296,6 +299,44 @@
   (let [{{c :center r :radius} :geometry} shape]
     (ellipse (translate c [(- r) (- r)])
              [(* 2 r) (* 2 r)])))
+
+;;;;;;;; Transforms ;;;;;;;;
+;;
+;; [:scale [3 2]
+;;  :scale 10
+;;  :skew [10 10]
+;;  :translate [10 40]
+;;  :rotate 45
+;;  :rotate [45 [10 10]]
+;;  :matrix [1 2 3 4 5 6]]
+;;
+
+(let [transform-directives #{:scale :skew :translate :rotate :matrix}]
+  (defn validate-transform-spec [spec]
+    (let [pairs (partition 2 spec)]
+     (and (every? transform-directives (map first pairs))
+          (every? (fn [[dir v]]
+                    (condp = dir
+                      :scale (or (num-or-fn? v) (coll-of-nums-or-fns? 2 v))
+                      :skew (coll-of-nums-or-fns? 2 v)
+                      :translate (coll-of-nums-or-fns? 2 v)
+                      :rotate (or (num-or-fn? v)
+                                  (and
+                                   (num-or-fn? (first v))
+                                   (function? (second v)))
+                                  (let [[a [x y]] v]
+                                    (coll-of-nums-or-fns? 3 [a x y])))
+                      :matrix (coll-of-nums-or-fns? 6 v))) pairs))))
+  
+  (defn transform-spec
+    "This function validates the transform spec and returns it. If the
+    transform is not valid, it throws an Exception. You can write a
+    transform as a vector literal in order to avoid the cost of
+    validation."
+    [& spec]
+    (if-not (validate-transform-spec spec)
+      (throw (Exception. (str "Transform spec " spec " is not valid.")))
+      spec)))
 
 ;;;;;;;; Geometry ;;;;;;;;
 
