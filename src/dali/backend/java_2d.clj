@@ -5,9 +5,13 @@
         [dali.math]
         [dali.defaults]
         [dali.style])
-  (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform]
+  (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform
+            Point2D$Float Point2D$Double]
            [java.awt.image BufferedImage]
-           [java.awt Color BasicStroke]))
+           [java.awt Color BasicStroke LinearGradientPaint RadialGradientPaint]))
+
+(defn point-float [x y] (Point2D$Float. x y))
+(defn point-double [x y] (Point2D$Double. x y))
 
 (defn polygon->params
   "Converts the geometry of the polygon to parameters appropriate for
@@ -92,8 +96,43 @@
   "Sets the fill from the optional style info attached to the
   object."
   [backend fill]
-  (if-let [color (:color fill)]
-    (set-paint backend color))) ;;TODO support textures etc
+  (set-paint backend fill)) ;;TODO support textures etc
+
+(let [cycle-method-map
+      {:no-cycle java.awt.MultipleGradientPaint$CycleMethod/NO_CYCLE
+       :repeat java.awt.MultipleGradientPaint$CycleMethod/REPEAT
+       :reflect java.awt.MultipleGradientPaint$CycleMethod/REFLECT}]
+
+  (defn linear-gradient->java-gradient [gr]
+    (let [stops (partition 2 (:stops gr))]
+      (LinearGradientPaint.
+       (apply point-float (:start gr))
+       (apply point-float (:end gr))
+       (into-array Float/TYPE (map first stops))
+       (into-array java.awt.Color (map (comp color->java-color second) stops))
+       (cycle-method-map (:cycle-method gr)))))
+
+  (defn radial-gradient->java-gradient [gr]
+    (let [stops (partition 2 (:stops gr))]
+      (if (:focus-point gr)
+        (RadialGradientPaint. ;;with off-center focus
+         (apply point-float (:center gr))
+         (float (:radius gr))
+         (apply point-float (:focus-point gr))
+         (into-array Float/TYPE (map first stops))
+         (into-array java.awt.Color (map (comp color->java-color second) stops))
+         (cycle-method-map (:cycle-method gr)))
+        (RadialGradientPaint. ;;no off-center focus
+         (apply point-float (:center gr))
+         (float (:radius gr))
+         (into-array Float/TYPE (map first stops))
+         (into-array java.awt.Color (map (comp color->java-color second) stops))
+         (cycle-method-map (:cycle-method gr)))))))
+
+(defn gradient->java-gradient [gr]
+  (condp = (:type gr)
+    :linear-gradient (linear-gradient->java-gradient gr)
+    :radial-gradient (radial-gradient->java-gradient gr)))
 
 (defn transform->java-transform [tr]
   (let [set-transform (fn [tr a1 a2 a3 a4 a5 a6]
@@ -210,7 +249,9 @@
 
   (set-paint [this paint]
     (condp = (:type paint)
-      :color (.setPaint (.graphics this) (color->java-color paint))))
+      :color (.setPaint (.graphics this) (color->java-color paint))
+      :linear-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))
+      :radial-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))))
   
   (render-text [this shape]) ;;TODO
   (render-point [this shape]

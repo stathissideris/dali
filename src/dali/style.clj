@@ -1,6 +1,16 @@
 (ns dali.style
   (:use [dali.utils]
+        [dali.math]
         [clojure.walk]))
+
+(derive ::color ::style)
+(derive ::linear-gradient ::style)
+(derive ::radial-gradient ::style)
+(derive ::image-texture ::style)
+(derive ::shape-texture ::style)
+
+(derive ::linear-gradient ::gradient)
+(derive ::radial-gradient ::gradient)
 
 (defn color
   ([r g b]
@@ -51,7 +61,7 @@
         (throw (Exception. (str "Stroke spec " spec " is not valid.")))
         spec-map))))
 
-;;;;;; stroke ;;;;;;;
+;;;;;; fill ;;;;;;;
 ;;
 ;; fill is a map containing the following keys:
 ;;
@@ -76,5 +86,55 @@
         (throw (Exception. (str "Fill spec " spec " is not valid.")))
         spec-map))))
 
+;;;;;; gradients ;;;;;;
+
+(defn linear-gradient
+  "Construct a linear gradient with multiple stops. The first two
+  parameters define the start and end points of the gradient. The rest
+  of the parameters define the stops of the gradient as pairs of
+  numbers (between 0 and 1) and colors. Optionally, as a last
+  parameter you can pass a keyword defining the cycle method of the
+  gradient (:no-cycle, :repeat or :reflect, with :no-cycle being the
+  default).
+
+  Example:
+
+  (linear-gradient [10 10]
+                   [100 10]
+                   0.1 (color :white)
+                   0.2 (color :green)
+                   0.5 (color :red)
+		           0.9 (color :black))"
+
+  [start end & stops]
+  {:pre [(>= (count stops) 4)]}
+  (let [cycle-method (if (keyword? (last stops)) (last stops) :no-cycle)
+        stops (if (keyword? (last stops)) (butlast stops) stops)]
+    (when (some #(not (within % [0 1])) (map first (partition 2 stops)))
+      (throw (Exception. (str "Not all stops within 0 and 1: " stops))))
+    {:type :linear-gradient
+     :start start
+     :end end
+     :stops stops
+     :cycle-method cycle-method}))
+
+(defn radial-gradient
+  [center radius & stops]
+  (let [f (first stops)
+        focus (if (or (coll? f) (function? f)) f nil)
+        stops (if focus (rest stops) stops)
+        cycle-method (if (keyword? (last stops)) (last stops) :no-cycle)
+        stops (if (keyword? (last stops)) (butlast stops) stops)]
+    (when (some #(not (within % [0 1])) (map first (partition 2 stops)))
+      (throw (Exception. (str "Not all stops within 0 and 1: " stops))))
+    {:type :radial-gradient
+     :center center
+     :radius radius
+     :focus-point focus
+     :stops stops
+     :cycle-method cycle-method}))
+
 (defn eval-dynamic-style [shape style]
-  (postwalk (fn [x] (if (function? x) (x shape) x)) style))
+  (postwalk (fn eval-dynamic-style-fn [x]
+              (if (function? x) (x shape) x)) style))
+

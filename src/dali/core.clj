@@ -2,6 +2,18 @@
   (:use [dali.math]
         [dali.utils]))
 
+(doall
+ (map
+  #(derive % ::shape)
+  [::point ::line ::rectangle ::ellipse ::arc ::circle ::curve
+   ::quad-curve ::text ::polyline ::polygon ::path ::group]))
+
+(doall
+ (map
+  #(derive % ::fillable)
+  [::rectangle ::ellipse ::circle
+   ::text ::polygon ::path ::group]))
+
 (defn point [x y] [x y])
 
 (defn dimensions [w h] [w h])

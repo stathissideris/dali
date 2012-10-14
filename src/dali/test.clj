@@ -32,19 +32,6 @@
       (fill (rectangle [0 0] [(.getWidth @image) (.getHeight @image)]))
       (set-paint (color 0 220 0)))
     
-    #_(let [shape (rectangle {:transform [:translate [10 50] :scale 0.5]} [330 170] [100 70])]
-      (let [gfx__5814__auto__ (.graphics backend)
-            old__5815__auto__ (.getTransform gfx__5814__auto__)]
-        (.setTransform
-         gfx__5814__auto__
-         (transform->java-transform (:transform shape)))
-        (draw backend shape)
-        (.setTransform gfx__5814__auto__ old__5815__auto__)))
-
-    #_(let [shape (rectangle {:transform [:rotate 45]} [330 170] [100 70])]
-        (with-transform backend (:transform shape)
-          (draw backend shape)))
-    
     (doto backend
       (draw (arrow [200 50] [300 100] 20 40 30))
 
@@ -65,9 +52,12 @@
       (draw (point 120 120))
       (draw (circle [0 0] 55))
       (render
-       (rectangle {:stroke {:width 3}
+       (rectangle {:stroke {:width 8
+                            :color (color 0 130 0)
+                            :join :round}
                    :transform [:translate #(minus (center %))
                                :skew [0.2 0.2]
+                               :scale 0.8
                                :rotate 30
                                :translate center]}
                   [330 170] [100 70]))
@@ -76,7 +66,13 @@
                            60
                            (center (rectangle [160 100] [60 60]))))
 
-      (fill (circle [70 300] 30))
+      (render
+       (circle
+        {:stroke {:color (color 0 0 0)}
+         :fill (radial-gradient [60 290] 35
+                                0.2 (color 100 230 100)
+                                1.0 (color 0 60 0))}
+        [70 300] 30))
       (fill (rotate-around triangle 15 (center triangle)))
 
       (draw (polyline [50 50] [70 30] [90 50] [110 30]))
@@ -85,13 +81,19 @@
       (render
        (group {:stroke {:color (color 255 255 255)
                         :width 3}
-               :fill   {:color (color 0 100 0)}}
+               ;:fill   (color 0 100 0)
+               }
         (rounded-rect
-         {:fill {:color (fn [_] (let [r (int (rand 160))] (color r 0 0)))}}
-         [315 295] [40 90] 10)
+         {:stroke {:dash [10 15]}
+          :fill (linear-gradient
+                 [155 305] [170 395]
+                 0.2 (color 100 230 100)
+                 0.5 (color 0 170 0)
+                 0.9 (color 0 60 0))}
+         [155 305] [140 90] 20)
         (rounded-rect
-         {:stroke {:dash [10 15]}}
-         [155 305] [140 90] 20)))
+         {:fill (fn [_] (let [r (int (rand 160))] (color r 0 0)))}
+         [315 295] [40 90] 10)))
 
       ;(draw (path :move-to [20 200] :line-to [50 200]))
       ;(set-paint (color 0 100 0))
