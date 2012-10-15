@@ -282,42 +282,6 @@
       (assoc-in [:geometry :center] (scale c factors))
       (assoc-in [:geometry :radius] (scale r factors))))
 
-;;;;;;;; Center ;;;;;;;;
-
-(defmulti center shape-type)
-
-(defmethod center :point
-  [shape] shape)
-
-(defmethod center :line
-  [{{[x1 y1] :start [x2 y2] :end} :geometry}]
-  [(+ (min x1 x2) (/ (abs (- x1 x2)) 2))
-   (+ (min y1 y2) (/ (abs (- y1 y2)) 2))])
-
-(defmethod center :rectangle
-  [{{[px py] :position [w h] :dimensions} :geometry}]
-  [(+ px (/ w 2)) (+ py (/ h 2))])
-
-(defmethod center :ellipse
-  [{{[px py] :position [w h] :dimensions} :geometry}]
-  [(+ px (/ w 2)) (+ py (/ h 2))])
-
-(defmethod center :circle
-  [shape]
-  (get-in :geometry :center))
-
-(defmethod center :polygon
-  [{{points :points} :geometry}]
-  (let [c (count points)]
-   [(/ (apply + (map first points)) c)
-    (/ (apply + (map second points)) c)]))
-
-(defmethod center :polyline
-  [{{points :points} :geometry}]
-  (let [c (count points)]
-   [(/ (apply + (map first points)) c)
-    (/ (apply + (map second points)) c)]))
-
 (defn circle->ellipse [shape]
   (let [{{c :center r :radius} :geometry} shape]
     (ellipse (translate c [(- r) (- r)])
@@ -349,9 +313,10 @@
 (defn poly-bounds [points]
   (let [min-x (apply min (map first points))
         min-y (apply min (map second points))]
-   [[min-x min-y]
-    [(- (apply max (map first points)) min-x)
-     (- (apply max (map second points)) min-y)]]))
+    (rectangle
+     [min-x min-y]
+     [(- (apply max (map first points)) min-x)
+      (- (apply max (map second points)) min-y)])))
 
 (defmethod bounds :polyline
   [{{points :points} :geometry}]
@@ -360,6 +325,27 @@
 (defmethod bounds :polygon
   [{{points :points} :geometry}]
   (poly-bounds points))
+
+(defn top-bound [shape]
+  (let [{{[x y] :position [w h] :dimensions} :geometry} (bounds shape)]
+    (line [x y] [(+ x w) y])))
+
+(defn bottom-bound [shape]
+  (let [{{[x y] :position [w h] :dimensions} :geometry} (bounds shape)]
+    (line [x (+ y w)] [(+ x w) (+ y h)])))
+
+(defn left-bound [shape]
+  (let [{{[x y] :position [w h] :dimensions} :geometry} (bounds shape)]
+    (line [x y] [x (+ y h)])))
+
+(defn right-bound [shape]
+  (let [{{[x y] :position [w h] :dimensions} :geometry} (bounds shape)]
+    (line [(+ x w) y] [(+ x w) (+ y h)])))
+
+(defn center [shape]
+  (let [{{[x y] :position [w h] :dimensions} :geometry} (bounds shape)]
+    [(+ x (/ w 2))
+     (+ y (/ h 2))]))
 
 ;;;;;;;; Transforms ;;;;;;;;
 ;;
@@ -491,7 +477,7 @@
      (let [internal-w (- w (* 2 r))
            internal-h (- h (* 2 r))]
        (path attr-map
-             :move-to [(+ px r) py]
+             :move-to [px (+ py r)]
              :quad-by [0 (- r)] [r (- r)]
              :line-by [internal-w 0]
              :quad-by [r 0] [r r]

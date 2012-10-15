@@ -90,7 +90,7 @@
       (render
        (group {:stroke {:color (color 255 255 255)
                         :width 3}
-               ;:fill   (color 0 100 0)
+               :fill   (color 120 120 200)
                }
         (rounded-rect
          {:stroke {:dash [10 15]}
@@ -99,10 +99,19 @@
                  0.2 (color 100 230 100)
                  0.5 (color 0 170 0)
                  0.9 (color 0 60 0))}
-         [155 305] [140 90] 20)
+         [175 290] [140 90] 20)
         (rounded-rect
          {:fill (fn [_] (let [r (int (rand 160))] (color r 0 0)))}
-         [315 295] [40 90] 10)))
+         [370 290] [40 90] 10)
+
+        (arrow {:stroke {:width 2}}
+               (translate
+                (center (right-bound (rectangle [175 290] [140 90])))
+                [10 0])
+               (translate
+                (center (left-bound (rectangle [370 290] [40 90])))
+                [-10 0])
+               12 28 20)))
 
       (render
        (path {:stroke {:color (color 220 220 220)
