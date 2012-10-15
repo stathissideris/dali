@@ -1,4 +1,5 @@
 (ns dali.backend.java-2d
+  (:require [clojure.java.io :as io])
   (:use [dali.core]
         [dali.backend]
         [dali.utils]
@@ -6,9 +7,10 @@
         [dali.defaults]
         [dali.style])
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform
-            Point2D$Float Point2D$Double]
+            Point2D$Float Point2D$Double Rectangle2D$Double]
            [java.awt.image BufferedImage]
-           [java.awt Color BasicStroke LinearGradientPaint RadialGradientPaint]))
+           [javax.imageio ImageIO]
+           [java.awt Color BasicStroke LinearGradientPaint RadialGradientPaint TexturePaint]))
 
 (defn point-float [x y] (Point2D$Float. x y))
 (defn point-double [x y] (Point2D$Double. x y))
@@ -134,6 +136,15 @@
     :linear-gradient (linear-gradient->java-gradient gr)
     :radial-gradient (radial-gradient->java-gradient gr)))
 
+(defn rectangle->java-rectangle
+  [{{[x y] :position [w h] :dimensions} :geometry}]
+  (Rectangle2D$Double. x y w h))
+
+(defn image-texture->java-paint [txt]
+  (TexturePaint.
+   (get-in txt [:image :data])
+   (rectangle->java-rectangle (:anchor txt))))
+
 (defn transform->java-transform [tr]
   (let [set-transform (fn [tr a1 a2 a3 a4 a5 a6]
                         (.setTransform tr a1 a2 a3 a4 a5 a6))
@@ -251,7 +262,8 @@
     (condp = (:type paint)
       :color (.setPaint (.graphics this) (color->java-color paint))
       :linear-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))
-      :radial-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))))
+      :radial-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))
+      :image-texture (.setPaint (.graphics this) (image-texture->java-paint paint))))
   
   (render-text [this shape]) ;;TODO
   (render-point [this shape]
@@ -276,6 +288,8 @@
     (fill-and-stroke this shape))
   (render-path [this shape]
     (fill-and-stroke this shape))
+  (render-image [this {data :data [x y] :position}]
+    (.drawImage (.graphics this) data x y nil))
   (render-group [this group]
     (doseq [shape (:content group)]
       (isolate-style this
@@ -300,6 +314,13 @@
   ([[width height]] (buffered-image [width height] :int-rgb)) ;;TODO make compatible
   ([[width height] type]
      (BufferedImage. width height (buffered-image-type type))))
+
+(defn load-image
+  ([filename] (load-image filename [0 0]))
+  ([filename pos]
+     (let [img (ImageIO/read (io/as-file filename))
+           dim nil]
+       (image filename img pos [(.getWidth img) (.getHeight img)]))))
 
 (defn image-backend
   ([img]

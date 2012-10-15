@@ -8,7 +8,7 @@
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform]))
 
 #_(dev/watch-image #(test-dali))
-(def image (ref (buffered-image [500 500])))
+(def img (ref (buffered-image [500 500])))
 
 (defn mark-point [backend point]
   (draw backend (circle point 5)))
@@ -17,11 +17,14 @@
   (let [triangle (polygon [50 150] [75 90] [100 150])
         my-line (line [110 100] [170 110])
 
-        line1 (line [10 70] [90 90])
+        line1 (line [10 70] [90 80])
         line2 (line [10 120] [90 60])
         line3 (line [20 120] [20 60])
-        
-        backend (image-backend @image)]
+
+        cloud-icon (load-image "data/cloud_icon.png" [40 410])
+        texture (load-image "data/texture.png")
+
+        backend (image-backend @img)]
     ;(.setPaint (.graphics backend) java.awt.Color/WHITE)
     (.setRenderingHint (.graphics backend)
                        java.awt.RenderingHints/KEY_ANTIALIASING
@@ -29,11 +32,15 @@
 
     (doto backend
       (set-paint (color 0 0 0))
-      (fill (rectangle [0 0] [(.getWidth @image) (.getHeight @image)]))
+      (fill (rectangle [0 0] [(.getWidth @img) (.getHeight @img)]))
       (set-paint (color 0 220 0)))
-    
+
     (doto backend
-      (draw (arrow [200 50] [300 100] 20 40 30))
+      (render (arrow
+               {:stroke {:width 2
+                         :color (color 255 255 255)}
+                :fill (color 150 20 20)}
+               [200 50] [300 100] 20 40 30))
 
       (draw line1)
       (draw line2)
@@ -41,12 +48,12 @@
       (mark-point (line-intersection line1 line2))
       (mark-point (line-intersection line1 line3))
       (mark-point (line-intersection line2 line3))
-      
+
       (draw my-line)
       (draw (parallel my-line 20 :right))
-      
+
       ;(mark-point (interpolate [110 100] [170 110] 0.5))
-      
+
       (draw (line [0 0] [50 50]))
       (draw (circle [0 0] 50))
       (draw (point 120 120))
@@ -54,18 +61,19 @@
       (render
        (rectangle {:stroke {:width 8
                             :color (color 0 130 0)
-                            :join :round}
+                            :join :miter}
                    :transform [:translate #(minus (center %))
                                :skew [0.2 0.2]
                                :scale 0.8
                                :rotate 30
                                :translate center]}
                   [330 170] [100 70]))
-      
+
       (draw (rotate-around (rectangle [160 100] [60 60])
                            60
                            (center (rectangle [160 100] [60 60]))))
 
+      (draw (circle [70 300] 50))
       (render
        (circle
         {:stroke {:color (color 0 0 0)}
@@ -73,11 +81,12 @@
                                 0.2 (color 100 230 100)
                                 1.0 (color 0 60 0))}
         [70 300] 30))
+
       (fill (rotate-around triangle 15 (center triangle)))
 
       (draw (polyline [50 50] [70 30] [90 50] [110 30]))
-      (draw (curve [100 200] [100 0] [100 40] [50 40]))
 
+      (draw (curve [100 200] [100 0] [100 40] [50 40]))
       (render
        (group {:stroke {:color (color 255 255 255)
                         :width 3}
@@ -95,18 +104,26 @@
          {:fill (fn [_] (let [r (int (rand 160))] (color r 0 0)))}
          [315 295] [40 90] 10)))
 
+      (render
+       (path {:stroke {:color (color 220 220 220)
+                       :width 2}
+              :fill (image-texture texture)}
+             :move-to [175 415]
+             :quad-by [0 -20] [20 -20]
+             :line-by [100 0]
+             :quad-by [20 0] [20 20]
+             :line-by [0 50]
+             :quad-by [0 20] [-20 20]
+             :line-by [-100 0]
+             :quad-by [-20 0] [-20 -20]
+             :close))
+
+      (render cloud-icon))
+
       ;(draw (path :move-to [20 200] :line-to [50 200]))
       ;(set-paint (color 0 100 0))
-      (draw (path :move-to [175 420]
-                  :quad-by [0 -20] [20 -20]
-                  :line-by [100 0]
-                  :quad-by [20 0] [20 20]
-                  :line-by [0 50]
-                  :quad-by [0 20] [-20 20]
-                  :line-by [-100 0]
-                  :quad-by [-20 0] [-20 -20]
-                  :close)))
-    
+
+
     (let [r (rectangle [200 200] [100 50])
           l1 (line [220 180] [280 270])
           l2 (line [180 210] [320 240])
@@ -119,4 +136,4 @@
         (draw l2))
       (doseq [i (concat intersections1 intersections2)]
         (mark-point backend i))))
-  @image)
+  @img)

@@ -119,6 +119,17 @@
      {:type :path
       :geometry {:path-spec path-spec}})))
 
+(defn image
+  ([url data position dimensions] (image {} url data position dimensions))
+  ([attr-map url data position dimensions]
+     (merge
+      (parse-attr-map attr-map)
+      {:type :image
+       :url url
+       :position position
+       :dimensions dimensions
+       :data data})))
+
 (defn group [attr-map & content]
   (merge
    (parse-attr-map attr-map)
@@ -312,6 +323,44 @@
     (ellipse (translate c [(- r) (- r)])
              [(* 2 r) (* 2 r)])))
 
+;;;;;;;; Bounds ;;;;;;;;
+
+(defmulti bounds shape-type)
+
+(defmethod bounds :point
+  [shape] (rectangle shape shape))
+
+(defmethod bounds :line
+  [{{:keys [start end]} :geometry}]
+  (rectangle start (translate end (minus start))))
+
+(defmethod bounds :rectangle
+  [shape] shape)
+
+(defmethod bounds :ellipse
+  [{{:keys [position dimensions]} :geometry}]
+  (rectangle position dimensions))
+
+(defmethod bounds :circle
+  [{{c :center r :radius} :geometry}]
+  (rectangle (translate c (minus [r r]))
+             [(* 2 r) (* 2 r)]))
+
+(defn poly-bounds [points]
+  (let [min-x (apply min (map first points))
+        min-y (apply min (map second points))]
+   [[min-x min-y]
+    [(- (apply max (map first points)) min-x)
+     (- (apply max (map second points)) min-y)]]))
+
+(defmethod bounds :polyline
+  [{{points :points} :geometry}]
+  (poly-bounds points))
+
+(defmethod bounds :polygon
+  [{{points :points} :geometry}]
+  (poly-bounds points))
+
 ;;;;;;;; Transforms ;;;;;;;;
 ;;
 ;; [:scale [3 2]
@@ -453,8 +502,11 @@
              :close))))
 
 (defn arrow
-  ([start end] (arrow start end 15 30 40))
+  ([start end] (arrow {} start end 15 30 40))
+  ([attr-map start end] (arrow attr-map start end 15 30 40))
   ([start end stem-thickness head-spread head-height]
+     (arrow {} start end stem-thickness head-spread head-height))
+  ([attr-map start end stem-thickness head-spread head-height]
      (let [length (distance start end)
            stem-length (- length head-height)
            stem-line (line start (interpolate-distance start end stem-length))
@@ -462,7 +514,8 @@
            stem-line-l (parallel stem-line (/ stem-thickness 2) :left)
            head-line-r (parallel stem-line (/ head-spread 2) :right)
            head-line-l (parallel stem-line (/ head-spread 2) :left)]
-       (path :move-to end
+       (path attr-map
+             :move-to end
              :line-to (line-end head-line-r)
              :line-to (line-end stem-line-r)
              :line-to (line-start stem-line-r)

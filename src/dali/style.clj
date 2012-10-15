@@ -1,13 +1,14 @@
 (ns dali.style
   (:use [dali.utils]
         [dali.math]
+        [dali.core]
         [clojure.walk]))
 
-(derive ::color ::style)
-(derive ::linear-gradient ::style)
-(derive ::radial-gradient ::style)
-(derive ::image-texture ::style)
-(derive ::shape-texture ::style)
+(derive ::color ::fill)
+(derive ::linear-gradient ::fill)
+(derive ::radial-gradient ::fill)
+(derive ::image-texture ::fill)
+(derive ::shape-texture ::fill)
 
 (derive ::linear-gradient ::gradient)
 (derive ::radial-gradient ::gradient)
@@ -138,3 +139,16 @@
   (postwalk (fn eval-dynamic-style-fn [x]
               (if (function? x) (x shape) x)) style))
 
+;;;;;; fills ;;;;;;
+
+(defn image-texture
+  ([img] (if (nil? (:dimensions img))
+           (image-texture img nil)
+           (image-texture
+            img
+            (rectangle [0 0] (:dimensions img)))))
+  ([img anchor]
+     {:type :image-texture
+      :image img
+      :dimensions (:dimensions img)
+      :anchor anchor}))

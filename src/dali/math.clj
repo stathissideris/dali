@@ -8,11 +8,11 @@
   more than b. The optional error parameter extends both sides of the
   range by error."
   ([x [a b]]
-     (or (and (> x a) (< x b))
-         (and (> x b) (< x a))))
+     (or (and (>= x a) (<= x b))
+         (and (>= x b) (<= x a))))
   ([x [a b] error]
-     (or (and (> x (- a error)) (< x (+ b error)))
-         (and (> x (- b error)) (< x (+ a error))))))
+     (or (and (>= x (- a error)) (<= x (+ b error)))
+         (and (>= x (- b error)) (<= x (+ a error))))))
 
 (defn radians->degrees [x]
   (java.lang.Math/toDegrees x))

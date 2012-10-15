@@ -35,6 +35,7 @@
   (render-polyline [this shape])
   (render-polygon [this shape])
   (render-path [this shape])
+  (render-image [this shape])
 
   (render-group [this shape]))
 
@@ -57,4 +58,4 @@
 
 (defmulti render (fn [context shape] (shape-type shape)))
 (delegate-op-to-backend
- render :point :line :rectangle :ellipse :circle :curve :polyline :polygon :path :group)
+ render :point :line :rectangle :ellipse :circle :curve :polyline :polygon :path :image :group)
