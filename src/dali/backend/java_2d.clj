@@ -288,7 +288,7 @@
     (fill-and-stroke this shape))
   (render-path [this shape]
     (fill-and-stroke this shape))
-  (render-image [this {data :data [x y] :position}]
+  (render-image [this {{data :data} :data-map [x y] :position}]
     (.drawImage (.graphics this) data x y nil))
   (render-group [this group]
     (doseq [shape (:content group)]
@@ -316,11 +316,12 @@
      (BufferedImage. width height (buffered-image-type type))))
 
 (defn load-image
-  ([filename] (load-image filename [0 0]))
-  ([filename pos]
-     (let [img (ImageIO/read (io/as-file filename))
-           dim nil]
-       (image filename img pos [(.getWidth img) (.getHeight img)]))))
+  ([info]
+     (let [data (ImageIO/read (io/as-file (:filename info))) ;;TODO URL?
+           dim [(.getWidth data) (.getHeight data)]]
+       (-> info
+           (assoc :data data)
+           (assoc :dimensions dim)))))
 
 (defn image-backend
   ([img]

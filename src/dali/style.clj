@@ -142,13 +142,14 @@
 ;;;;;; fills ;;;;;;
 
 (defn image-texture
-  ([img] (if (nil? (:dimensions img))
-           (image-texture img nil)
-           (image-texture
-            img
-            (rectangle [0 0] (:dimensions img)))))
-  ([img anchor]
+  ([img-info]
+     (if (nil? (:dimensions img-info))
+       (image-texture img-info nil)
+       (image-texture
+        img-info
+        (rectangle [0 0] (:dimensions img-info)))))
+  ([img-info anchor]
      {:type :image-texture
-      :image img
-      :dimensions (:dimensions img)
+      :image img-info
+      :dimensions (:dimensions img-info)
       :anchor anchor}))

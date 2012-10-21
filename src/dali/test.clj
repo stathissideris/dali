@@ -21,8 +21,8 @@
         line2 (line [10 120] [90 60])
         line3 (line [20 120] [20 60])
 
-        cloud-icon (load-image "data/cloud_icon.png" [40 410])
-        texture (load-image "data/texture.png")
+        cloud-icon (load-image (image-data :file "data/cloud_icon.png"))
+        texture (load-image (image-data :file "data/texture.png"))
 
         backend (image-backend @img)]
     ;(.setPaint (.graphics backend) java.awt.Color/WHITE)
@@ -127,7 +127,7 @@
              :quad-by [-20 0] [-20 -20]
              :close))
 
-      (render cloud-icon))
+      (render (image cloud-icon [40 410])))
 
       ;(draw (path :move-to [20 200] :line-to [50 200]))
       ;(set-paint (color 0 100 0))

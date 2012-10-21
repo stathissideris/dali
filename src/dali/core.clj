@@ -119,16 +119,27 @@
      {:type :path
       :geometry {:path-spec path-spec}})))
 
+(defn image-data
+  "Create a pointer to an image which can point to a local file and/or a URL. Invoke as:
+    (image-data :url \"http://test.com/image.png\"
+                :file \"/c:/images/image.png\")"
+  [& {:keys (file url)}]
+  {:type :image-data
+   :filename file
+   :url url
+   :dimensions nil
+   :data nil})
+
 (defn image
-  ([url data position dimensions] (image {} url data position dimensions))
-  ([attr-map url data position dimensions]
+  "The instance of an image in particular position. The data-map input
+  is the output of (image-data)."
+  ([data-map position] (image {} data-map position))
+  ([attr-map data-map position]
      (merge
       (parse-attr-map attr-map)
       {:type :image
-       :url url
-       :position position
-       :dimensions dimensions
-       :data data})))
+       :data-map data-map
+       :position position})))
 
 (defn group [attr-map & content]
   (merge
