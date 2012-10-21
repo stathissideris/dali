@@ -401,7 +401,7 @@
 (defn angle
   ([{{start :start end :end} :geometry}] (angle start end))
   ([[x1 y1] [x2 y2]]
-     (polar-angle (abs (- x2 x1)) (abs (- y2 y1)))))
+     (polar-angle (- x2 x1) (- y2 y1))))
 
 (defn parallel
   [shape delta direction]
@@ -410,7 +410,7 @@
         delta (if (= direction :left) (- delta) delta)]
     (-> shape
         (rotate-around a c) ;;make it horizontal
-        (translate [delta 0])   ;;move it a bit
+        (translate [delta 0]) ;;move it a bit
         (rotate-around (- a) c)))) ;;back to the original angle (using the same center of rotation!)
 
 (defn interpolate

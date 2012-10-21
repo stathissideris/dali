@@ -15,7 +15,7 @@
 
 (defn test-dali [& args]
   (let [triangle (polygon [50 150] [75 90] [100 150])
-        my-line (line [110 100] [170 110])
+        my-line (line [110 100] [170 80])
 
         line1 (line [10 70] [90 80])
         line2 (line [10 120] [90 60])
@@ -40,7 +40,7 @@
                {:stroke {:width 2
                          :color (color 255 255 255)}
                 :fill (color 150 20 20)}
-               [200 50] [300 100] 20 40 30))
+               [200 50] [300 80] 20 40 30))
 
       (draw line1)
       (draw line2)
