@@ -264,8 +264,9 @@
       :linear-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))
       :radial-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))
       :image-texture (.setPaint (.graphics this) (image-texture->java-paint paint))))
-  
-  (render-text [this shape]) ;;TODO
+
+  (render-text [this {{[x y] :position} :geometry, txt :content}]
+    (.drawString (.graphics this) txt x y)) ;;TODO
   (render-point [this shape]
     (stroke-maybe this shape))
   (render-line [this shape]

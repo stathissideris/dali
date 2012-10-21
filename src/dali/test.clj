@@ -36,6 +36,7 @@
       (set-paint (color 0 220 0)))
 
     (doto backend
+      (render-text (text [185 25] "Testing the dali library"))
       (render (arrow
                {:stroke {:width 2
                          :color (color 255 255 255)}
