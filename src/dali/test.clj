@@ -30,6 +30,14 @@
                        java.awt.RenderingHints/KEY_ANTIALIASING
                        java.awt.RenderingHints/VALUE_ANTIALIAS_ON)
 
+    #_(println
+       (.getStringBounds
+        dali.backend.java-2d/*DEFAULT-FONT*
+        "Stathis"
+        (.getFontRenderContext (.graphics backend))))
+
+    #_(println (text-bounds backend (text [100 100] "Stathis")))
+    
     (doto backend
       (set-paint (color 0 0 0))
       (fill (rectangle [0 0] [(.getWidth @img) (.getHeight @img)]))

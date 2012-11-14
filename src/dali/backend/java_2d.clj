@@ -194,6 +194,16 @@
          size (.getSize *DEFAULT-FONT*)}}]
   (Font. family java.awt.Font/PLAIN size))
 
+(defn text-bounds
+  [backend {content :content {position :position} :geometry :as text}]
+  (let [font (font->java-font (get-in text [:style :font]))
+        rect (.getStringBounds
+              font content
+              (.getFontRenderContext (.graphics backend)))
+        upper-left [(.getX rect) (.getY rect)]]
+    (rectangle (translate position upper-left)
+               [(.getWidth rect) (.getHeight rect)])))
+
 (defmacro isolate-style
   "Isolates the side-effects of the body to the backend, and executes
   the body in an implicit do."
