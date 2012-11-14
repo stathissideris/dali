@@ -85,7 +85,9 @@
 
       (fill (rotate-around triangle 15 (center triangle)))
 
-      (draw (polyline [50 50] [70 30] [90 50] [110 30]))
+      (draw (polyline [400 50] [420 30] [440 50] [460 30]))
+      (draw (parallel (polyline [400 50] [420 30] [440 50] [460 30]) 5 :right))
+      (draw (parallel (polyline [400 50] [420 30] [440 50] [460 30]) 10 :left))
 
       (draw (curve [100 200] [100 0] [100 40] [50 40]))
       (render
@@ -102,7 +104,8 @@
                  0.9 (color 0 60 0))}
          [175 290] [140 90] 20)
         (rounded-rect
-         {:fill (fn [_] (let [r (int (rand 160))] (color r 0 0)))}
+         {;:fill (fn [_] (let [r (int (rand 160))] (color r 0 0)))
+          }
          [370 290] [40 90] 10)
 
         (arrow {:stroke {:width 2}}

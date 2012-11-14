@@ -155,6 +155,11 @@
       (assoc :geometry
         {:points [[px py] [(+ px w) py] [(+ px w) (+ py h)] [px (+ py h)]]})))
 
+(defn polyline->lines
+  [{{points :points} :geometry}]
+  (map (fn [[p1 p2]] (line p1 p2))
+       (partition 2 1 points)))
+
 (defn polygon->lines
   [{{points :points} :geometry}]
   (map (fn [[p1 p2]] (line p1 p2))
@@ -403,33 +408,6 @@
   ([[x1 y1] [x2 y2]]
      (polar-angle (- x2 x1) (- y2 y1))))
 
-(defn parallel
-  [shape delta direction]
-  (let [a (angle shape)
-        c (center shape)
-        delta (if (= direction :left) (- delta) delta)]
-    (-> shape
-        (rotate-around a c) ;;make it horizontal
-        (translate [delta 0]) ;;move it a bit
-        (rotate-around (- a) c)))) ;;back to the original angle (using the same center of rotation!)
-
-(defn interpolate
-  [[x1 y1] [x2 y2] delta]
-  [(+ x1 (* delta (- x2 x1)))
-   (+ y1 (* delta (- y2 y1)))])
-
-(defn distance
-  [[x1 y1] [x2 y2]]
-  (sqrt (+ (* (- x1 x2) (- x1 x2))
-           (* (- y1 y2) (- y1 y2)))))
-
-(defn interpolate-distance
-  "Interpolate between two points by moving a certain distance from
-  the starting point towards the ending point."
-  [start end dist]
-  (let [total-distance (distance start end)]
-    (interpolate start end (/ dist total-distance))))
-
 (defn line-equation [{{[x1 y1] :start [x2 y2] :end} :geometry}]
   (if (= x1 x2)
     {:type :vertical
@@ -457,7 +435,7 @@
           :else
             (if-let [solution (solve-2x2-system [slope1 -1 (- offset1)]
                                                 [slope2 -1 (- offset2)])]
-              [(:x solution) (:y solution)]))))
+              [(:x solution) (:y solution)])))) ;;back to the original angle (using the same center of rotation!) 
 
 (defn line-intersection
   "The point at which the passed lines intersect. nil if they don't."
@@ -467,6 +445,49 @@
     (when (and (within y [line1-y1 line1-y2] 2)
                (within y [line2-y1 line2-y2] 2))
       point)))
+
+(defmulti parallel (fn [shape delta direction] (shape-type shape)))
+
+(defmethod parallel :line
+  [shape delta direction]
+  (let [a (angle shape)
+        c (center shape)
+        delta (if (= direction :left) (- delta) delta)]
+    (-> shape
+        (rotate-around a c)  ;;make it horizontal
+        (translate [delta 0]) ;;move it a bit
+        (rotate-around (- a) c))))
+
+(defmethod parallel :polyline
+  [shape delta direction]
+  (let [shifted-lines (map #(parallel % delta direction)
+                           (polyline->lines shape))]
+   (apply
+    polyline
+    (concat
+     [(get-in (first shifted-lines) [:geometry :start])]
+     (map (fn [[l1 l2]] (line-projection-intersection l1 l2))
+          (partition
+           2 1
+           shifted-lines))
+     [(get-in (last shifted-lines) [:geometry :end])]))))
+
+(defn interpolate
+  [[x1 y1] [x2 y2] delta]
+  [(+ x1 (* delta (- x2 x1)))
+   (+ y1 (* delta (- y2 y1)))])
+
+(defn distance
+  [[x1 y1] [x2 y2]]
+  (sqrt (+ (* (- x1 x2) (- x1 x2))
+           (* (- y1 y2) (- y1 y2)))))
+
+(defn interpolate-distance
+  "Interpolate between two points by moving a certain distance from
+  the starting point towards the ending point."
+  [start end dist]
+  (let [total-distance (distance start end)]
+    (interpolate start end (/ dist total-distance))))
 
 (defn line-polygon-intersection
   "The points at which the line and the polygon intersect. Can be an
