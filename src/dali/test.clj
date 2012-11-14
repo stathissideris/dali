@@ -89,6 +89,10 @@
       (draw (parallel (polyline [400 50] [420 30] [440 50] [460 30]) 5 :right))
       (draw (parallel (polyline [400 50] [420 30] [440 50] [460 30]) 10 :left))
 
+      (draw (polygon [430 100] [420 150] [460 150]))
+      (draw (parallel (polygon [430 100] [420 150] [460 150]) 5 :right))
+      (draw (parallel (polygon [430 100] [420 150] [460 150]) 10 :left))
+      
       (draw (curve [100 200] [100 0] [100 40] [50 40]))
       (render
        (group {:stroke {:color (color 255 255 255)

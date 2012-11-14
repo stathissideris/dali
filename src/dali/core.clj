@@ -44,6 +44,15 @@
                 (dissoc :category)
                 (dissoc :transform))})))
 
+(defn attr-map-copy
+  "Extracts the attr-map of the passed shape apart from
+  its :id. Useful for maintaining the original style, category and
+  transform in derived shapes."
+  [shape]
+  (merge {:category (:category shape)
+          :transform (:transform shape)}
+         (:style shape)))
+
 (defn has-stroke? [shape]
   (not (nil? (get-in shape [:style :stroke]))))
 
@@ -464,6 +473,7 @@
                            (polyline->lines shape))]
    (apply
     polyline
+    (attr-map-copy shape)
     (concat
      [(get-in (first shifted-lines) [:geometry :start])]
      (map (fn [[l1 l2]] (line-projection-intersection l1 l2))
@@ -471,6 +481,19 @@
            2 1
            shifted-lines))
      [(get-in (last shifted-lines) [:geometry :end])]))))
+
+(defmethod parallel :polygon
+  [{{points :points} :geometry :as shape} delta direction]
+  (let [shifted-lines (map #(parallel % delta direction)
+                           (polygon->lines shape))]
+   (apply
+    polygon
+    (attr-map-copy shape)
+    (map (fn [[l1 l2]] (line-projection-intersection l1 l2))
+         (take (count points)
+          (partition
+           2 1
+           (cycle shifted-lines)))))))
 
 (defn interpolate
   [[x1 y1] [x2 y2] delta]
