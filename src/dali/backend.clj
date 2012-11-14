@@ -58,4 +58,4 @@
 
 (defmulti render (fn [context shape] (shape-type shape)))
 (delegate-op-to-backend
- render :point :line :rectangle :ellipse :circle :curve :polyline :polygon :path :image :group)
+ render :point :line :rectangle :ellipse :circle :curve :polyline :polygon :path :image :group :text)

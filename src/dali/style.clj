@@ -153,3 +153,20 @@
       :image img-info
       :dimensions (:dimensions img-info)
       :anchor anchor}))
+
+
+(def FONT-STYLES #{:normal :italic :oblique})
+(def FONT-WEIGHTS #{:normal :bold :bolder :lighter :100 :200 :300
+                    :400 :500 :600 :700 :800 :900})
+
+(defn font
+  [& spec]
+  {:pre [(every? #{:family :size :style :weight} (take-nth 2 spec))]}
+  (let [m (apply hash-map spec)]
+    (if-let [style (:style m)]
+      (when-not (FONT-STYLES style)
+        (throw (Exception. (str "Font style " style " not recognised")))))
+    (if-let [weight (:weight m)]
+      (when-not (FONT-WEIGHTS weight)
+        (throw (Exception. (str "Font weight " weight " not recognised")))))
+    m))

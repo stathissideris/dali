@@ -10,7 +10,13 @@
             Point2D$Float Point2D$Double Rectangle2D$Double]
            [java.awt.image BufferedImage]
            [javax.imageio ImageIO]
-           [java.awt Color BasicStroke LinearGradientPaint RadialGradientPaint TexturePaint]))
+           [java.awt Color BasicStroke LinearGradientPaint RadialGradientPaint TexturePaint Font]))
+
+(defn get-laf-property
+  [key]
+  (javax.swing.UIManager/get key))
+
+(def *DEFAULT-FONT* (get-laf-property "TextField.font"))
 
 (defn point-float [x y] (Point2D$Float. x y))
 (defn point-double [x y] (Point2D$Double. x y))
@@ -181,6 +187,13 @@
      ~@body
      (.setTransform gfx# old#)))
 
+(defn font->java-font
+  [{family :family ;;TODO style and weight
+    size :size
+    :or {family (.getFamily *DEFAULT-FONT*)
+         size (.getSize *DEFAULT-FONT*)}}]
+  (Font. family java.awt.Font/PLAIN size))
+
 (defmacro isolate-style
   "Isolates the side-effects of the body to the backend, and executes
   the body in an implicit do."
@@ -265,8 +278,10 @@
       :radial-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))
       :image-texture (.setPaint (.graphics this) (image-texture->java-paint paint))))
 
-  (render-text [this {{[x y] :position} :geometry, txt :content}]
-    (.drawString (.graphics this) txt x y)) ;;TODO
+  (render-text [this {{[x y] :position} :geometry, txt :content, style :style}]
+    (when (:font style)
+     (.setFont (.graphics this) (font->java-font (:font style))))
+    (.drawString (.graphics this) (str txt) (float x) (float y))) ;;TODO
   (render-point [this shape]
     (stroke-maybe this shape))
   (render-line [this shape]
