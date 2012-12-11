@@ -150,7 +150,9 @@
              :quad-by [-20 0] [-20 -20]
              :close))
 
-      (render (image cloud-icon [40 410])))
+      (render (image {:transform [:translate (dynamic (minus (center this)))
+                                  :rotate -180
+                                  :translate (dynamic (center this))]} [40 410] cloud-icon)))
 
       ;(draw (path :move-to [20 200] :line-to [50 200]))
       ;(set-paint (color 0 100 0))

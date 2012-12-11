@@ -143,13 +143,14 @@
 (defn image
   "The instance of an image in particular position. The data-map input
   is the output of (image-data)."
-  ([data-map position] (image {} data-map position))
-  ([attr-map data-map position]
+  ([position data-map] (image {} data-map position))
+  ([attr-map position data-map]
      (merge
       (parse-attr-map attr-map)
       {:type :image
        :data-map data-map
-       :position position})))
+       :geometry {:position position
+                  :dimensions (:dimensions data-map)}})))
 
 (defn group [attr-map & content]
   (merge
@@ -358,6 +359,10 @@
 (defmethod bounds :polygon
   [{{points :points} :geometry}]
   (poly-bounds points))
+
+(defmethod bounds :image
+  [{{:keys [position dimensions]} :geometry}]
+  (rectangle position dimensions))
 
 (defn top-bound [shape]
   (let [{{[x y] :position [w h] :dimensions} :geometry} (bounds shape)]

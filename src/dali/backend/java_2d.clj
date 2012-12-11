@@ -329,8 +329,12 @@
     (fill-and-stroke this shape))
   (render-path [this shape]
     (fill-and-stroke this shape))
-  (render-image [this {{data :data} :data-map [x y] :position}]
-    (.drawImage (.graphics this) data x y nil))
+  (render-image [this {{data :data} :data-map {[x y] :position} :geometry :as shape}]
+    (if (has-transform? shape)
+      (with-transform this (eval-dynamic-style
+                            this shape (:transform shape))
+        (.drawImage (.graphics this) data x y nil))
+      (.drawImage (.graphics this) data x y nil)))
   (render-group [this group]
     (doseq [shape (:content group)]
       (isolate-style this
