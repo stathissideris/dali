@@ -385,6 +385,21 @@
     [(+ x (/ w 2))
      (+ y (/ h 2))]))
 
+(defn around-center [transforms]
+  (concat
+   [:translate (dynamic (minus (center this)))]
+   transforms
+   [:translate (dynamic (center this))]))
+
+(defn around-text-center [transforms]
+  (concat
+   [:translate (dynamic
+                (minus (center
+                        (text-bounds backend this))))]
+   transforms
+   [:translate (dynamic (center
+                         (text-bounds backend this)))]))
+
 ;;;;;;;; Transforms ;;;;;;;;
 ;;
 ;; [:scale [3 2]
