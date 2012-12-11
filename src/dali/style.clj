@@ -2,6 +2,7 @@
   (:use [dali.utils]
         [dali.math]
         [dali.core]
+        [dali.backend]
         [clojure.walk]))
 
 (derive ::color ::fill)

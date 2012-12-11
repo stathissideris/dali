@@ -300,12 +300,10 @@
       (if (has-fill? shape)
         (isolate-style this
           (set-paint this (eval-dynamic-style
-                              shape
-                              (get-in shape [:style :fill])))
+                           this shape (get-in shape [:style :fill])))
           (if (has-transform? shape)
             (with-transform this (eval-dynamic-style
-                                     shape
-                                     (:transform shape))          
+                                  this shape (:transform shape))          
               (render-fn))
             (render-fn)))
         (render-fn)))) ;;TODO
