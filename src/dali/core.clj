@@ -1,3 +1,4 @@
+
 (ns dali.core
   (:use [dali.math]
         [dali.utils]))
@@ -155,6 +156,13 @@
    (parse-attr-map attr-map)
    {:type :group
     :content content}))
+
+(defmacro dynamic [& body]
+  {:type :dynamic-value
+   :code `'~body})
+
+(defn dynamic-value? [x]
+  (if (and (map? x)) (= :dynamic-value (:type x))))
 
 
 (defn rectangle->polygon

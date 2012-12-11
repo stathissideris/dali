@@ -37,7 +37,8 @@
   (render-path [this shape])
   (render-image [this shape])
 
-  (render-group [this shape]))
+  (render-group [this shape])
+  (text-bounds [this shape]))
 
 
 (defmacro delegate-op-to-backend [op & shape-types]

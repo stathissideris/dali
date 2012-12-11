@@ -4,7 +4,7 @@
         [dali.math]
         [dali.backend]
         [dali.backend.java-2d])
-  (:require [clarity.dev :as dev])
+  (:require [dali.dev :as dev])
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform]))
 
 #_(dev/watch-image #(test-dali))
@@ -71,11 +71,11 @@
        (rectangle {:stroke {:width 8
                             :color (color 0 130 0)
                             :join :miter}
-                   :transform [:translate #(minus (center %))
+                   :transform [:translate (dynamic (minus (center this)))
                                :skew [0.2 0.2]
                                :scale 0.8
                                :rotate 30
-                               :translate center]}
+                               :translate (dynamic (center this))]}
                   [330 170] [100 70]))
 
       (draw (rotate-around (rectangle [160 100] [60 60])
