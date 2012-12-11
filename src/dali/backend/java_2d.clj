@@ -288,10 +288,23 @@
       :radial-gradient (.setPaint (.graphics this) (gradient->java-gradient paint))
       :image-texture (.setPaint (.graphics this) (image-texture->java-paint paint))))
 
-  (render-text [this {{[x y] :position} :geometry, txt :content, style :style}]
-    (when (:font style)
-     (.setFont (.graphics this) (font->java-font (:font style))))
-    (.drawString (.graphics this) (str txt) (float x) (float y))) ;;TODO
+  (render-text [this {{[x y] :position} :geometry, txt :content, style :style :as shape}]
+    (let [render-fn
+          #(.drawString (.graphics this) (str txt) (float x) (float y))]
+      (when (:font style)
+        (.setFont (.graphics this) (font->java-font (:font style))))
+      (if (has-fill? shape)
+        (isolate-style this
+          (set-paint this (eval-dynamic-style
+                              shape
+                              (get-in shape [:style :fill])))
+          (if (has-transform? shape)
+            (with-transform this (eval-dynamic-style
+                                     shape
+                                     (:transform shape))          
+              (render-fn))
+            (render-fn)))
+        (render-fn)))) ;;TODO
   (render-point [this shape]
     (stroke-maybe this shape))
   (render-line [this shape]

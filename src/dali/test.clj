@@ -4,7 +4,7 @@
         [dali.math]
         [dali.backend]
         [dali.backend.java-2d])
-  (:require [clarity.dev :as dev])
+  (:require [dali.dev :as dev])
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform]))
 
 #_(dev/watch-image #(test-dali))
@@ -44,7 +44,11 @@
       (set-paint (color 0 220 0)))
 
     (doto backend
-      (render-text (text [185 25] "Testing the dali library"))
+      (render-text (text {:fill (color 150 0 150)
+                          :transform [:translate #(minus (center %))
+                                      :rotate 30
+                                      :translate #(center %)]}
+                         [185 25] "Testing the dali library"))
       (render (arrow
                {:stroke {:width 2
                          :color (color 255 255 255)}
