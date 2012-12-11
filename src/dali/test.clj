@@ -45,9 +45,9 @@
 
     (doto backend
       (render-text (text {:fill (color 150 0 150)
-                          :transform [:translate #(minus (center %))
+                          :transform [:translate (dynamic (minus (center this)))
                                       :rotate 30
-                                      :translate #(center %)]}
+                                      :translate (dynamic (center this))]}
                          [185 25] "Testing the dali library"))
       (render (arrow
                {:stroke {:width 2
@@ -75,11 +75,11 @@
        (rectangle {:stroke {:width 8
                             :color (color 0 130 0)
                             :join :miter}
-                   :transform [:translate #(minus (center %))
+                   :transform [:translate (dynamic (minus (center this)))
                                :skew [0.2 0.2]
                                :scale 0.8
                                :rotate 30
-                               :translate center]}
+                               :translate (dynamic (center this))]}
                   [330 170] [100 70]))
 
       (draw (rotate-around (rectangle [160 100] [60 60])

@@ -194,7 +194,7 @@
          size (.getSize *DEFAULT-FONT*)}}]
   (Font. family java.awt.Font/PLAIN size))
 
-(defn text-bounds
+(defn text-bounds-java-2d
   [backend {content :content {position :position} :geometry :as text}]
   (let [font (font->java-font (get-in text [:style :font]))
         rect (.getStringBounds
@@ -218,10 +218,12 @@
   (let [st (if (has-stroke? shape) (:stroke shape) DEFAULT-STROKE)]
     (isolate-style backend
      (set-stroke backend (eval-dynamic-style
+                          backend
                           shape
                           (get-in shape [:style :stroke])))
      (if (has-transform? shape)       
        (with-transform backend (eval-dynamic-style
+                                backend
                                 shape
                                 (:transform shape))
          (draw backend shape))
@@ -231,10 +233,12 @@
   (when (has-fill? shape)
     (isolate-style backend
       (set-fill backend (eval-dynamic-style
+                         backend
                          shape
                          (get-in shape [:style :fill])))
       (if (has-transform? shape)
         (with-transform backend (eval-dynamic-style
+                                 backend
                                  shape
                                  (:transform shape))          
           (fill backend shape))
@@ -336,7 +340,9 @@
               (assoc shape
                 :style (deep-merge (:style group)
                                    (:style shape)))] ;;shape takes precedence
-          (render this merged))))))
+          (render this merged)))))
+  (text-bounds [this shape]
+    (text-bounds-java-2d this shape)))
 
 (defn buffered-image-type [type]
   (if (keyword? type)

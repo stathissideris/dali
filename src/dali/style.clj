@@ -135,9 +135,18 @@
      :stops stops
      :cycle-method cycle-method}))
 
-(defn eval-dynamic-style [shape style]
-  (postwalk (fn eval-dynamic-style-fn [x]
-              (if (function? x) (x shape) x)) style))
+(declare #^{:dynamic true} backend)
+(declare #^{:dynamic true} this)
+
+(defn eval-dynamic-style [the-backend shape style]
+  (binding [*ns* (the-ns 'dali.style)
+            backend the-backend
+            this shape]
+    (postwalk (fn eval-dynamic-style-fn [x]
+                (if (dynamic-value? x)
+                  (let [code (:code x)]                    
+                    (eval `(do ~@code)))
+                  x)) style)))
 
 ;;;;;; fills ;;;;;;
 
