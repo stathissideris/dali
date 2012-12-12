@@ -30,14 +30,6 @@
                        java.awt.RenderingHints/KEY_ANTIALIASING
                        java.awt.RenderingHints/VALUE_ANTIALIAS_ON)
 
-    #_(println
-       (.getStringBounds
-        dali.backend.java-2d/*DEFAULT-FONT*
-        "Stathis"
-        (.getFontRenderContext (.graphics backend))))
-
-    #_(println (text-bounds backend (text [100 100] "Stathis")))
-    
     (doto backend
       (set-paint (color 0 0 0))
       (fill (rectangle [0 0] [(.getWidth @img) (.getHeight @img)]))
@@ -46,14 +38,7 @@
     (doto backend
       (render-text (text {:fill (color 150 0 150)
                           :transform
-                          (around-text-center [:rotate 10])
-
-                          #_[:translate (dynamic
-                                                  (minus (center
-                                                          (text-bounds backend this))))
-                                      :rotate 10
-                                      :translate (dynamic (center
-                                                           (text-bounds backend this)))]}
+                          (around-text-center [:rotate 10])}
                          [185 25] "Testing the dali library"))
       (render (arrow
                {:stroke {:width 2
@@ -84,13 +69,7 @@
                    :transform
                    (around-center [:skew [0.2 0.2]
                                    :scale 0.8
-                                   :rotate 30])
-
-                   #_[:translate (dynamic (minus (center this)))
-                      :skew [0.2 0.2]
-                      :scale 0.8
-                      :rotate 30
-                      :translate (dynamic (center this))]}
+                                   :rotate 30])}
                   [330 170] [100 70]))
 
       (draw (rotate-around (rectangle [160 100] [60 60])
