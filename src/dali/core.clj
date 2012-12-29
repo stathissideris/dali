@@ -476,11 +476,13 @@
 
 (defn line-intersection
   "The point at which the passed lines intersect. nil if they don't."
-  [{{[_ line1-y1] :start [_ line1-y2] :end} :geometry, :as line1}
-   {{[_ line2-y1] :start [_ line2-y2] :end} :geometry, :as line2}]
+  [{{[line1-x1 line1-y1] :start [line1-x2 line1-y2] :end} :geometry, :as line1}
+   {{[line2-x1 line2-y1] :start [line2-x2 line2-y2] :end} :geometry, :as line2}]
   (let [[x y :as point] (line-projection-intersection line1 line2)]
     (when (and (within y [line1-y1 line1-y2] 2)
-               (within y [line2-y1 line2-y2] 2))
+               (within y [line2-y1 line2-y2] 2)
+               (within x [line1-x1 line1-x2] 2)
+               (within x [line2-x1 line2-x2] 2))
       point)))
 
 (defmulti parallel (fn [shape delta direction] (shape-type shape)))
