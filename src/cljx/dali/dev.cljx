@@ -1,8 +1,10 @@
 (ns dali.dev
+  #+clj
   (:import [javax.swing SwingUtilities UIManager JFrame ImageIcon]
            [java.awt Frame MouseInfo]
            [java.awt.image BufferedImage]))
 
+#+clj
 (defn do-swing*
   "Runs thunk in the Swing event thread according to schedule:
     - :later => schedule the execution and return immediately
@@ -15,18 +17,22 @@
                        (SwingUtilities/invokeAndWait thunk)))
   nil)
 
+#+clj
 (defmacro do-swing
   "Executes body in the Swing event thread asynchronously. Returns
   immediately after scheduling the execution."
   [& body]
   `(do-swing* :later (fn [] ~@body)))
 
+#+clj
 (defn get-laf-property
   [key]
   (javax.swing.UIManager/get key))
 
+#+clj
 (def error-icon (get-laf-property "OptionPane.errorIcon"))
 
+#+clj
 (defn- error-image [msg]
   (let [i (BufferedImage. 600 300 BufferedImage/TYPE_INT_RGB)
         g (.getGraphics i)
@@ -35,6 +41,7 @@
     (.drawString g msg (+ 10 icon-width) 20)
     i))
 
+#+clj
 (defn watch-image
   "Shows the passed java.awt.Image in a frame, and re-paints at 15
   FPS (or the specified FPS). You can also pass a reference to an
@@ -57,18 +64,18 @@
            cached-image (ref nil)
            panel (proxy [javax.swing.JPanel] []
                    (paintComponent [g]
-                                   (dosync (ref-set cached-image (get-image)))
-                                   (if @cached-image
-                                         (.drawImage g @cached-image 0 0 this)))
+                     (dosync (ref-set cached-image (get-image)))
+                     (if @cached-image
+                       (.drawImage g @cached-image 0 0 this)))
                    (getPreferredSize[] (if @cached-image
                                          (java.awt.Dimension.
                                           (.getWidth @cached-image)
                                           (.getHeight @cached-image))
                                          (java.awt.Dimension. 100 100))))
            updater (future
-                    (while true
-                      (Thread/sleep (/ 1000 fps))
-                      (do-swing (.repaint panel))))]
+                     (while true
+                       (Thread/sleep (/ 1000 fps))
+                       (do-swing (.repaint panel))))]
        (doto (JFrame.)
          (.add panel)
          (.pack)

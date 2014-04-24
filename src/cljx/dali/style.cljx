@@ -1,9 +1,8 @@
 (ns dali.style
-  (:use [dali.utils]
-        [dali.math]
-        [dali.core]
-        [dali.backend]
-        [clojure.walk]))
+  (:require [dali.utils :refer [num-or-fn? function? exception]]
+            [dali.math :refer [within]]
+            [dali.core :refer [rectangle]]
+            [clojure.walk :refer [postwalk]]))
 
 (derive ::color ::fill)
 (derive ::linear-gradient ::fill)
@@ -60,7 +59,7 @@
     [& spec]
     (let [spec-map (apply hash-map spec)]
       (if-not (validate-stroke-spec spec-map)
-        (throw (Exception. (str "Stroke spec " spec " is not valid.")))
+        (throw (exception (str "Stroke spec " spec " is not valid.")))
         spec-map))))
 
 ;;;;;; fill ;;;;;;;
@@ -85,7 +84,7 @@
     [& spec]
     (let [spec-map (apply hash-map spec)]
       (if-not (validate-fill-spec spec-map)
-        (throw (Exception. (str "Fill spec " spec " is not valid.")))
+        (throw (exception "Fill spec " spec " is not valid."))
         spec-map))))
 
 ;;;;;; gradients ;;;;;;
@@ -113,7 +112,7 @@
   (let [cycle-method (if (keyword? (last stops)) (last stops) :no-cycle)
         stops (if (keyword? (last stops)) (butlast stops) stops)]
     (when (some #(not (within % [0 1])) (map first (partition 2 stops)))
-      (throw (Exception. (str "Not all stops within 0 and 1: " stops))))
+      (throw (exception "Not all stops within 0 and 1: " stops)))
     {:type :linear-gradient
      :start start
      :end end
@@ -128,7 +127,7 @@
         cycle-method (if (keyword? (last stops)) (last stops) :no-cycle)
         stops (if (keyword? (last stops)) (butlast stops) stops)]
     (when (some #(not (within % [0 1])) (map first (partition 2 stops)))
-      (throw (Exception. (str "Not all stops within 0 and 1: " stops))))
+      (throw (exception "Not all stops within 0 and 1: " stops)))
     {:type :radial-gradient
      :center center
      :radius radius
@@ -139,6 +138,7 @@
 (declare #^{:dynamic true} backend)
 (declare #^{:dynamic true} this)
 
+#+clj ;;TODO: look into how this can be implemented in cljs
 (defn eval-dynamic-style [the-backend shape style]
   (binding [*ns* (the-ns 'dali.style)
             backend the-backend
@@ -175,8 +175,8 @@
   (let [m (apply hash-map spec)]
     (if-let [style (:style m)]
       (when-not (FONT-STYLES style)
-        (throw (Exception. (str "Font style " style " not recognised")))))
+        (throw (exception "Font style " style " not recognised"))))
     (if-let [weight (:weight m)]
       (when-not (FONT-WEIGHTS weight)
-        (throw (Exception. (str "Font weight " weight " not recognised")))))
+        (throw (exception "Font weight " weight " not recognised"))))
     m))

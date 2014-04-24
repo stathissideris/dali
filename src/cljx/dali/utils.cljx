@@ -41,3 +41,6 @@
   (and (coll? v)
        (= size (count v))
        (every? num-or-fn? v)))
+
+(defn exception [& msg]
+  (#+clj Exception. #+cljs js/Error. (apply str msg)))

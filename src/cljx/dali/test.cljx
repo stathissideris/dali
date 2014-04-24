@@ -1,18 +1,26 @@
 (ns dali.test
+  #+clj
   (:use [dali.core]
         [dali.style]
         [dali.math]
         [dali.backend]
         [dali.backend.java-2d])
+
+  #+clj
   (:require [dali.dev :as dev])
+
+  #+clj
   (:import [java.awt.geom CubicCurve2D$Double Path2D$Double AffineTransform]))
 
 #_(dev/watch-image #(test-dali))
+#+clj
 (def img (ref (buffered-image [500 500])))
 
+#+clj
 (defn mark-point [backend point]
   (draw backend (circle point 5)))
 
+#+clj
 (defn test-dali [& args]
   (let [triangle (polygon [50 150] [75 90] [100 150])
         my-line (line [110 100] [170 80])
