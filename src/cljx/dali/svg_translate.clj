@@ -31,32 +31,33 @@
 (defn- convert-path-command [[command v]]
   (let [bool (fn [x] (if x 1 0))
         c (or (map-path-command command) command)]
-    (condp = (-> c name string/lower-case keyword)
-      :m (let [[[x y]] v] (str (name c) " " x " " y))
-      :l (let [[[x y]] v] (str (name c) " " x " " y))
-      :h (let [[h] v] (str (name c) " " h))
-      :v (let [[dv] v] (str (name c) " " dv))
-      :c (let [[[x1 y1] [x2 y2] [x y]] v]
-           (cl-format true "~a ~d ~d, ~d ~d, ~d ~d"
-                      (name c) x1 y1, x2 y2, x y))
-      :s (let [[[x2 y2] [x y]] v]
-           (cl-format true "~a ~d ~d, ~d ~d"
-                      (name c) x2 y2, x y))
-      :q (let [[[x1 y1] [x y]] v]
-           (cl-format true "~a ~d ~d, ~d ~d"
-                      (name c) x1 y1, x y))
-      :t (let [[[x y]] v]
-           (cl-format true "~a ~d ~d"
-                      (name c) x y))
-      :a (let [[[rx ry] x-axis-rotation large-arc-flag sweep-flag [x y]] v]
-           (cl-format true "~a ~d ~d, ~d, ~d, ~d, ~d ~d"
-                      (name c)
-                      rx ry
-                      x-axis-rotation
-                      (bool large-arc-flag)
-                      (bool sweep-flag)
-                      x y))
-      :z "Z")))
+    (string/trim
+     (str
+      (name c)
+      " "
+      (condp = (-> c name string/lower-case keyword)
+        :m (let [[[x y]] v] (str x " " y))
+        :l (let [[[x y]] v] (str x " " y))
+        :h (first v)
+        :v (first v)
+        :c (let [[[x1 y1] [x2 y2] [x y]] v]
+             (cl-format true "~d ~d, ~d ~d, ~d ~d"
+                        x1 y1, x2 y2, x y))
+        :s (let [[[x2 y2] [x y]] v]
+             (cl-format true "~d ~d, ~d ~d"
+                        x2 y2, x y))
+        :q (let [[[x1 y1] [x y]] v]
+             (cl-format true "~d ~d, ~d ~d" x1 y1, x y))
+        :t (let [[[x y]] v]
+             (cl-format true "~d ~d" x y))
+        :a (let [[[rx ry] x-axis-rotation large-arc-flag sweep-flag [x y]] v]
+             (cl-format true "~d ~d, ~d, ~d, ~d, ~d ~d"
+                        rx ry
+                        x-axis-rotation
+                        (bool large-arc-flag)
+                        (bool sweep-flag)
+                        x y))
+        :z nil)))))
 
 (defn- convert-path-spec [spec]
   (let [params (split-params-by-keyword spec)]

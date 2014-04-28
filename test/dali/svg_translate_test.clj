@@ -34,4 +34,6 @@
   (is (= [:path {:d "M 10 20"}]
          (to-svg [:path :M [10 20]])))
   (is (= [:path {:d "M 10 20 l 40 30"}]
-         (to-svg [:path :M [10 20] :l [40 30]]))))
+         (to-svg [:path :M [10 20] :l [40 30]])))
+  (is (= [:path {:d "M 10 20 l 40 30 L 10 10 Z"}]
+         (to-svg [:path :M [10 20] :l [40 30] :L [10 10] :Z]))))
