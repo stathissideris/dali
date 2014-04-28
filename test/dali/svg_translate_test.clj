@@ -30,6 +30,10 @@
   (is (= [:polyline {:points "10,20 30,30 50,70 100,120"}]
          (to-svg [:polyline [10 20] [30 30] [50 70] [100 120]]))))
 
+(deftest polyline
+  (is (= [:polygon {:points "10,20 30,30 50,70 100,120"}]
+         (to-svg [:polygon [10 20] [30 30] [50 70] [100 120]]))))
+
 (deftest path
   (is (= [:path {:d "M 10 20"}]
          (to-svg [:path :M [10 20]])))

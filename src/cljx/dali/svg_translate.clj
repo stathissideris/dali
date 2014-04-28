@@ -41,11 +41,9 @@
         :h (first v)
         :v (first v)
         :c (let [[[x1 y1] [x2 y2] [x y]] v]
-             (cl-format true "~d ~d, ~d ~d, ~d ~d"
-                        x1 y1, x2 y2, x y))
+             (cl-format true "~d ~d, ~d ~d, ~d ~d" x1 y1, x2 y2, x y))
         :s (let [[[x2 y2] [x y]] v]
-             (cl-format true "~d ~d, ~d ~d"
-                        x2 y2, x y))
+             (cl-format true "~d ~d, ~d ~d" x2 y2, x y))
         :q (let [[[x1 y1] [x y]] v]
              (cl-format true "~d ~d, ~d ~d" x1 y1, x y))
         :t (let [[[x y]] v]
@@ -85,6 +83,9 @@
    :polyline
    (fn [points]
      [:polyline {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}])
+   :polygon
+   (fn [points]
+     [:polygon {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}])
    :path
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
