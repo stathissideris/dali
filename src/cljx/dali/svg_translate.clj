@@ -31,7 +31,7 @@
 (defn- convert-path-command [[command v]]
   (let [bool (fn [x] (if x 1 0))
         c (or (map-path-command command) command)]
-    (condp = (keyword (string/lower-case (name c)))
+    (condp = (-> c name string/lower-case keyword)
       :m (let [[[x y]] v] (str (name c) " " x " " y))
       :l (let [[[x y]] v] (str (name c) " " x " " y))
       :h (let [[h] v] (str (name c) " " h))
