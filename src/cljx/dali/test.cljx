@@ -22,12 +22,12 @@
 
 #+clj
 (defn test-dali [& args]
-  (let [triangle (polygon [50 150] [75 90] [100 150])
-        my-line (line [110 100] [170 80])
+  (let [triangle [:polygon [50 150] [75 90] [100 150]]
+        my-line [:line [110 100] [170 80]]
 
-        line1 (line [10 70] [90 80])
-        line2 (line [10 120] [90 60])
-        line3 (line [20 120] [20 60])
+        line1 [:line [10 70] [90 80]]
+        line2 [:line [10 120] [90 60]]
+        line3 [:line [20 120] [20 60]]
 
         cloud-icon (load-image (image-data :file "data/cloud_icon.png"))
         texture (load-image (image-data :file "data/texture.png"))
@@ -66,10 +66,10 @@
 
       ;(mark-point (interpolate [110 100] [170 110] 0.5))
 
-      (draw (line [0 0] [50 50]))
-      (draw (circle [0 0] 50))
-      (draw (point 120 120))
-      (draw (circle [0 0] 55))
+      (draw [:line [0 0] [50 50]])
+      (draw [:circle [0 0] 50])
+      (draw [:point [120 120]])
+      (draw [:circle [0 0] 55])
       (render
        (rectangle {:stroke {:width 8
                             :color (color 0 130 0)

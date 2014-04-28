@@ -174,7 +174,7 @@
 (defn line-start [line] (get-in line [:geometry :start]))
 (defn line-end [line] (get-in line [:geometry :end]))
 
-(defn shape-type [shape] (if (vector? shape) :point (:type shape)))
+(defn shape-type [shape] (first shape))
 
 ;;;;;;;; Translate ;;;;;;;;
 
