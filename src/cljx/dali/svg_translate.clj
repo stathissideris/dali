@@ -86,10 +86,10 @@
          [:rect {:x x, :y y, :width w, :height h, :rx (first rounded) :ry (second rounded)}]
          [:rect {:x x, :y y, :width w, :height h, :rx rounded :ry rounded}])))
    :polyline
-   (fn [points]
+   (fn [[points]]
      [:polyline {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}])
    :polygon
-   (fn [points]
+   (fn [[points]]
      [:polygon {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}])
    :path
    (fn [spec]
@@ -118,11 +118,13 @@
 (comment
   (spit-xml
    [:page
-    {:height 500 :width 500, :stroke "black", :stroke-width 2}
+    {:height 500 :width 500, :stroke "black", :stroke-width 2, :fill "none"}
     [:line 
      [10 20] [100 100]]
     [:line
-     [10 100] [100 20]]]
+     [10 100] [100 20]]
+    [:polyline
+     (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]]
    "s:/temp/svg.svg"))
 
 (comment
