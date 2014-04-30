@@ -1,6 +1,8 @@
 (ns dali.svg-translate
   (:require [clojure.string :as string]
             [clojure.pprint :refer [cl-format]]
+            [hiccup.core :as hiccup]
+            [hiccup.page]
             [dali.core :as core]))
 
 (def map-path-command
@@ -64,7 +66,10 @@
 
 (def
   convertors
-  {:line
+  {:page
+   (fn [content]
+     (concat [:svg {:xmlns "http://www.w3.org/2000/svg"}] content))
+   :line
    (fn [[[x1 y1] [x2 y2]]]
      [:line {:x1 x1, :y1 y1, :x2 x2, :y2 y2}])
    :circle
@@ -90,12 +95,40 @@
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
 
-(defn to-svg [shape]
-  (let [[type sec & r] shape
+(defn to-svg [element]
+  (let [[type sec & r] element
         style-map (when (map? sec) sec)
-        params (if style-map r (rest shape))
+        params (if style-map r (rest element))
         convert-fn (convertors type)
         [tag attr & [content]] (convert-fn params)]
     (if content
       [tag (merge style-map attr) content]
       [tag (merge style-map attr)])))
+
+(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
+
+(defn spit-xml [document filename]
+  (spit
+   filename
+   (str
+    (hiccup.page/xml-declaration "UTF-8")
+    svg-doctype
+    (hiccup/html (to-svg document)))))
+
+(comment
+  (spit-xml
+   [:page
+    {:height 500 :width 500}
+    [:line {:y2 200, :x2 100, :y1 20, :x1 10, :stroke "black", :stroke-width 2}]]
+   "s:/temp/svg.svg"))
+
+(comment
+  (import [org.apache.batik.transcoder.image PNGTranscoder]
+          [org.apache.batik.transcoder
+           TranscoderInput
+           TranscoderOutput])
+  (with-open [out-stream (FileOutputStream. "out.jpg")
+              out (TranscoderOutput. out-stream)
+              in (TranscoderInput. ...)]
+   (doto (PNGTranscoder.)
+     (.transcode in out))))

@@ -34,11 +34,16 @@
   :hooks [cljx.hooks]
 
   :profiles {:dev {:plugins [[org.clojure/clojurescript "0.0-2202"]
-                             [com.keminglabs/cljx "0.3.2"]
+                             [com.keminglabs/cljx "0.3.2" :exclusions [[org.clojure/clojure]]]
                              [lein-cljsbuild "1.0.3"]]
                    :aliases {"cleantest" ["do" "clean," "cljx" "once," "test,"
                                           "cljsbuild" "test"]
                              "deploy" ["do" "clean," "cljx" "once," "deploy" "clojars"]}}}
   
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2202"]])
+                 [hiccup "1.0.5"]
+                 [org.clojure/clojurescript "0.0-2202"]
+                 [batik/batik-rasterizer "1.6-1"
+                  :exclusions [[xerces/xercesImpl]
+                               [batik/batik-script]
+                               [fop]]]])
