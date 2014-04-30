@@ -100,9 +100,9 @@
         style-map (when (map? sec) sec)
         params (if style-map r (rest element))
         convert-fn (convertors type)
-        [tag attr & [content]] (convert-fn params)]
+        [tag attr & content] (convert-fn params)]
     (if content
-      [tag (merge style-map attr) (to-svg content)]
+      [tag (merge style-map attr) (map to-svg content)]
       [tag (merge style-map attr)])))
 
 (def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
@@ -118,9 +118,11 @@
 (comment
   (spit-xml
    [:page
-    {:height 500 :width 500}
-    [:line {:stroke "black", :stroke-width 2}
-     [10 20] [100 100]]]
+    {:height 500 :width 500, :stroke "black", :stroke-width 2}
+    [:line 
+     [10 20] [100 100]]
+    [:line
+     [10 100] [100 20]]]
    "s:/temp/svg.svg"))
 
 (comment
