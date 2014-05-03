@@ -5,6 +5,9 @@
             [hiccup.page]
             [dali.core :as core]))
 
+(def attr-key-lookup
+  (read-string (slurp "resources/attr-key-lookup.edn")))
+
 (def map-path-command
   {:move-to :M ;;:M [x y]
    :move-by :m
@@ -95,6 +98,13 @@
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
 
+(defn process-attr-map [m]
+  (reduce-kv
+   (fn [m k v]
+     (let [k (keyword k)]
+      (assoc m (or (attr-key-lookup k) k) v)))
+   {} m))
+
 (defn to-svg [element]
   (let [[type sec & r] element
         style-map (when (map? sec) sec)
@@ -102,10 +112,11 @@
         convert-fn (or (convertors type)
                        (fn [content] ;;generic containment tag
                          (concat [type {}] content)))]
-    (let [[tag attr & content] (convert-fn params)]
+    (let [[tag attr & content] (convert-fn params)
+          merged-map (process-attr-map (merge style-map attr))]
        (if content
-         [tag (merge style-map attr) (map to-svg content)]
-         [tag (merge style-map attr)]))))
+         [tag merged-map (map to-svg content)]
+         [tag merged-map]))))
 
 (def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 
@@ -120,7 +131,7 @@
 (comment
   (spit-xml
    [:page
-    {:height 500 :width 500, :stroke :black, :stroke-width 3.5, :fill :none}
+    {:height 500 :width 500, :stroke :black, :stroke-width 2 :fill :none}
     [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
     [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
     [:line [10 20] [100 100]]
@@ -134,6 +145,20 @@
       #(vector :circle [% 220] 15)
       (range 30 80 15)))]
    "s:/temp/svg.svg"))
+
+(comment
+  (spit-xml
+   [:page
+    [:defs
+     [:marker {:id :triangle :view-box "0 0 10 10"
+               :ref-x 1 :ref-y 5
+               :marker-width 6 :marker-height 6
+               :orient :auto}
+      [:path :M [0 0] :L [10 5] :L [0 10] :Z]]]
+    [:polyline
+     {:fill :none :stroke-width 2 :stroke :black :marker-end "url(#triangle)"}
+     [[10 90] [50 80] [90 20]]]]
+   "s:/temp/svg2.svg"))
 
 (comment
   (import [org.apache.batik.transcoder.image PNGTranscoder]
