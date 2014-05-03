@@ -20,11 +20,11 @@
 
 (deftest rectangle
   (is (= [:rect {:x 10, :y 20, :width 50, :height 60}]
-         (to-svg [:rectangle [10 20] [50 60]])))
+         (to-svg [:rect [10 20] [50 60]])))
   (is (= [:rect {:x 10, :y 20, :width 50, :height 60, :rx 5, :ry 5}]
-         (to-svg [:rectangle [10 20] [50 60] 5])))
+         (to-svg [:rect [10 20] [50 60] 5])))
   (is (= [:rect {:x 10, :y 20, :width 50, :height 60, :rx 5, :ry 10}]
-         (to-svg [:rectangle [10 20] [50 60] [5 10]]))))
+         (to-svg [:rect [10 20] [50 60] [5 10]]))))
 
 (deftest polyline
   (is (= [:polyline {:points "10,20 30,30 50,70 100,120"}]
