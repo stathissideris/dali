@@ -27,7 +27,7 @@
    :arc-by :a
    :close :Z})
 
-(defn split-params-by-keyword [params]
+(defn- split-params-by-keyword [params]
   (->> params
        (partition-by keyword?)
        (partition-all 2)
@@ -98,7 +98,10 @@
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
 
-(defn process-attr-map [m]
+(defn- process-attr-map
+  "Rename some dashed attibutes into camelcase to follow the SVG
+  convention. Does a lookup in the attr-key-lookup map."
+  [m]
   (reduce-kv
    (fn [m k v]
      (let [k (keyword k)]

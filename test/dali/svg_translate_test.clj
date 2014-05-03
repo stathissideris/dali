@@ -44,4 +44,14 @@
   (is (= [:path {:d "M 45 10 l 10 10 l -10 10 l -10 -10 z"}]
          (to-svg [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z])))
   (is (= [:path {:d "M 110 80 C 140 10, 165 10, 195 80 S 250 150, 280 80"}]
-         (to-svg [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]))))
+         (to-svg [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]])))
+
+  ;;long names
+  (is (= [:path {:d "M 10 20"}]
+         (to-svg [:path :move-to [10 20]])))
+  (is (= [:path {:d "M 10 20 l 40 30"}]
+         (to-svg [:path :move-to [10 20] :line-by [40 30]])))
+  (is (= [:path {:d "M 10 20 l 40 30 L 10 10 Z"}]
+         (to-svg [:path :move-to [10 20] :line-by [40 30] :line-to [10 10] :close])))
+  (is (= [:path {:d "M 110 80 C 140 10, 165 10, 195 80 S 250 150, 280 80"}]
+         (to-svg [:path :move-to [110 80] :cubic-to [140 10] [165 10] [195 80] :symmetrical-to [250 150] [280 80]]))))
