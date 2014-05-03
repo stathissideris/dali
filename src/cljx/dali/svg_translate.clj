@@ -43,15 +43,15 @@
         :h (first v)
         :v (first v)
         :c (let [[[x1 y1] [x2 y2] [x y]] v]
-             (cl-format true "~d ~d, ~d ~d, ~d ~d" x1 y1, x2 y2, x y))
+             (cl-format nil "~d ~d, ~d ~d, ~d ~d" x1 y1, x2 y2, x y))
         :s (let [[[x2 y2] [x y]] v]
-             (cl-format true "~d ~d, ~d ~d" x2 y2, x y))
+             (cl-format nil "~d ~d, ~d ~d" x2 y2, x y))
         :q (let [[[x1 y1] [x y]] v]
-             (cl-format true "~d ~d, ~d ~d" x1 y1, x y))
+             (cl-format nil "~d ~d, ~d ~d" x1 y1, x y))
         :t (let [[[x y]] v]
-             (cl-format true "~d ~d" x y))
+             (cl-format nil "~d ~d" x y))
         :a (let [[[rx ry] x-axis-rotation large-arc-flag sweep-flag [x y]] v]
-             (cl-format true "~d ~d, ~d, ~d, ~d, ~d ~d"
+             (cl-format nil "~d ~d, ~d, ~d, ~d, ~d ~d"
                         rx ry
                         x-axis-rotation
                         (bool large-arc-flag)
@@ -119,10 +119,10 @@
   (spit-xml
    [:page
     {:height 500 :width 500, :stroke "black", :stroke-width 2, :fill "none"}
-    [:line 
-     [10 20] [100 100]]
-    [:line
-     [10 100] [100 20]]
+    [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
+    [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
+    [:line [10 20] [100 100]]
+    [:line [10 100] [100 20]]
     [:polyline
      (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]]
    "s:/temp/svg.svg"))
