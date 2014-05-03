@@ -116,10 +116,15 @@
                        (fn [content] ;;generic containment tag
                          (concat [type {}] content)))]
     (let [[tag attr & content] (convert-fn params)
-          merged-map (process-attr-map (merge style-map attr))]
-       (if content
-         [tag merged-map (map to-svg content)]
-         [tag merged-map]))))
+          merged-map (process-attr-map (merge style-map attr))
+          ;;the following implements a behaviour that also exists in
+          ;;hiccup: if the first element of the content is a seq, it
+          ;;is unwrapped in order to make the use of map, filter etc
+          ;;more convenient. See test "group" for an example.
+          content (if (and content (seq? (first content))) (first content) content)]
+      (if content
+        (into [] (concat [tag merged-map] (map to-svg content)))
+        [tag merged-map]))))
 
 (def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 
@@ -129,39 +134,42 @@
    (str
     (hiccup.page/xml-declaration "UTF-8")
     svg-doctype
-    (hiccup/html (to-svg document)))))
+    (hiccup/html document))))
 
 (comment
   (spit-xml
-   [:page
-    {:height 500 :width 500, :stroke :black, :stroke-width 2 :fill :none}
-    [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
-    [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
-    [:line [10 20] [100 100]]
-    [:line [10 100] [100 20]]
-    [:polyline
-     (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]
-    [:rect [10 130] [100 60] 15]
-    (concat
-     [:g {:stroke :green :fill :white :stroke-with 7}]
-     (map
-      #(vector :circle [% 220] 15)
-      (range 30 80 15)))]
-   "s:/temp/svg.svg"))
+   (to-svg
+    [:page
+     {:height 500 :width 500, :stroke :black, :stroke-width 2 :fill :none}
+     [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
+     [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
+     [:line [10 20] [100 100]]
+     [:line [10 100] [100 20]]
+     [:polyline
+      (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]
+     [:rect [10 130] [100 60] 15]
+     [:g {:stroke :green :fill :white :stroke-with 7}
+      (map
+       #(vector :circle [% 220] 15)
+       (range 30 80 15))]])
+   "s:/temp/svg.svg")
+  )
 
 (comment
   (spit-xml
-   [:page
-    [:defs
-     [:marker {:id :triangle :view-box "0 0 10 10"
-               :ref-x 1 :ref-y 5
-               :marker-width 6 :marker-height 6
-               :orient :auto}
-      [:path :M [0 0] :L [10 5] :L [0 10] :Z]]]
-    [:polyline
-     {:fill :none :stroke-width 2 :stroke :black :marker-end "url(#triangle)"}
-     [[10 90] [50 80] [90 20]]]]
-   "s:/temp/svg2.svg"))
+   (to-svg
+    [:page
+     [:defs
+      [:marker {:id :triangle :view-box "0 0 10 10"
+                :ref-x 1 :ref-y 5
+                :marker-width 6 :marker-height 6
+                :orient :auto}
+       [:path :M [0 0] :L [10 5] :L [0 10] :Z]]]
+     [:polyline
+      {:fill :none :stroke-width 2 :stroke :black :marker-end "url(#triangle)"}
+      [[10 90] [50 80] [90 20]]]])
+   "s:/temp/svg2.svg")
+  )
 
 (comment
   (import [org.apache.batik.transcoder.image PNGTranscoder]

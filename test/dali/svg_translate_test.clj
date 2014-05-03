@@ -55,3 +55,18 @@
          (to-svg [:path :move-to [10 20] :line-by [40 30] :line-to [10 10] :close])))
   (is (= [:path {:d "M 110 80 C 140 10, 165 10, 195 80 S 250 150, 280 80"}]
          (to-svg [:path :move-to [110 80] :cubic-to [140 10] [165 10] [195 80] :symmetrical-to [250 150] [280 80]]))))
+
+(deftest group
+  (is (= [:g {}
+          [:circle {:cx 60, :cy 60, :r 50}]
+          [:circle {:cx 60, :cy 60, :r 50}]]
+         (to-svg [:g
+                  [:circle [60 60] 50]
+                  [:circle [60 60] 50]])))
+  (is (= [:g {}
+          [:circle {:cx 60, :cy 60, :r 50}]
+          [:circle {:cx 60, :cy 60, :r 50}]]
+         (to-svg [:g
+                  (repeat
+                   2
+                   [:circle [60 60] 50])]))))
