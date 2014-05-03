@@ -67,6 +67,14 @@
     (string/join
      " " (map convert-path-command params))))
 
+;;the following implements a behaviour that also exists in hiccup: if
+;;the first element of the content is a seq, it is unwrapped in order
+;;to make the use of map, filter etc more convenient. See tests for
+;;group and polygon for an examples.
+(defn- unwrap-seq [coll]
+  (when coll
+    (if (seq? (first coll)) (first coll) coll)))
+
 (def
   convertors
   {:page
@@ -89,11 +97,13 @@
          [:rect {:x x, :y y, :width w, :height h, :rx (first rounded) :ry (second rounded)}]
          [:rect {:x x, :y y, :width w, :height h, :rx rounded :ry rounded}])))
    :polyline
-   (fn [[points]]
-     [:polyline {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}])
+   (fn [points]
+     (let [points (unwrap-seq points)]
+       [:polyline {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}]))
    :polygon
-   (fn [[points]]
-     [:polygon {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}])
+   (fn [points]
+     (let [points (unwrap-seq points)]
+       [:polygon {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}]))
    :path
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
@@ -117,11 +127,7 @@
                          (concat [type {}] content)))]
     (let [[tag attr & content] (convert-fn params)
           merged-map (process-attr-map (merge style-map attr))
-          ;;the following implements a behaviour that also exists in
-          ;;hiccup: if the first element of the content is a seq, it
-          ;;is unwrapped in order to make the use of map, filter etc
-          ;;more convenient. See test "group" for an example.
-          content (if (and content (seq? (first content))) (first content) content)]
+          content (unwrap-seq content)]
       (if content
         (into [] (concat [tag merged-map] (map to-svg content)))
         [tag merged-map]))))
