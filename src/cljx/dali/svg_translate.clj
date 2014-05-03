@@ -78,7 +78,7 @@
    :ellipse
    (fn [[[cx cy] rx ry]]
      [:ellipse {:cx cx, :cy cy, :rx rx, :ry ry}])
-   :rectangle
+   :rect
    (fn [[[x y] [w h] rounded]]
      (if-not rounded
        [:rect {:x x, :y y, :width w, :height h}]
@@ -99,11 +99,13 @@
   (let [[type sec & r] element
         style-map (when (map? sec) sec)
         params (if style-map r (rest element))
-        convert-fn (convertors type)
-        [tag attr & content] (convert-fn params)]
-    (if content
-      [tag (merge style-map attr) (map to-svg content)]
-      [tag (merge style-map attr)])))
+        convert-fn (convertors type)]
+    (when-not convert-fn
+      (throw (ex-info (str "Unknown tag " type) {:unknown-tag type})))
+    (let [[tag attr & content] (convert-fn params)]
+       (if content
+         [tag (merge style-map attr) (map to-svg content)]
+         [tag (merge style-map attr)]))))
 
 (def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 
@@ -118,11 +120,12 @@
 (comment
   (spit-xml
    [:page
-    {:height 500 :width 500, :stroke "black", :stroke-width 2, :fill "none"}
+    {:height 500 :width 500, :stroke "black", :stroke-width 3.5, :fill "none"}
     [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
     [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
     [:line [10 20] [100 100]]
     [:line [10 100] [100 20]]
+    [:rect [10 130] [100 60] 15]
     [:polyline
      (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]]
    "s:/temp/svg.svg"))
