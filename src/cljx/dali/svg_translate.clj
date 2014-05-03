@@ -108,6 +108,13 @@
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
 
+(defn- process-attr-value [x]
+  (cond
+   (and (sequential? x) (every? number? x))
+     (string/join " " x)
+   :else
+     x))
+
 (defn- process-attr-map
   "Rename some dashed attibutes into camelcase to follow the SVG
   convention. Does a lookup in the attr-key-lookup map."
@@ -115,7 +122,9 @@
   (reduce-kv
    (fn [m k v]
      (let [k (keyword k)]
-      (assoc m (or (attr-key-lookup k) k) v)))
+      (assoc m
+        (or (attr-key-lookup k) k)
+        (process-attr-value v))))
    {} m))
 
 (defn to-hiccup [element]
@@ -166,14 +175,14 @@
    (to-hiccup
     [:page
      [:defs
-      [:marker {:id :triangle :view-box "0 0 10 10"
+      [:marker {:id :triangle :view-box [0 0 10 10]
                 :ref-x 1 :ref-y 5
                 :marker-width 6 :marker-height 6
                 :orient :auto}
        [:path :M [0 0] :L [10 5] :L [0 10] :Z]]]
      [:polyline
       {:fill :none :stroke-width 2 :stroke :black :marker-end "url(#triangle)"}
-      [[10 90] [50 80] [90 20]]]])
+      [10 90] [50 80] [90 20]]])
    "s:/temp/svg2.svg")
   )
 

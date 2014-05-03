@@ -29,6 +29,8 @@
 (deftest polyline
   (is (= [:polyline {:points "10,20 30,30 50,70 100,120"}]
          (to-hiccup [:polyline [10 20] [30 30] [50 70] [100 120]])))
+  (is (= [:polyline {:fill :none :points "10,20 30,30 50,70 100,120"}]
+         (to-hiccup [:polyline {:fill :none}  [10 20] [30 30] [50 70] [100 120]])))
   (is (= [:polyline {:points "10,110 20,120 30,110 40,120 50,110 60,120 70,110 80,120 90,110 100,120 110,110 120,120 130,110 140,120"}]
          (to-hiccup [:polyline
                   (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]))))
