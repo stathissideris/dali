@@ -69,6 +69,9 @@
   {:page
    (fn [content]
      (concat [:svg {:xmlns "http://www.w3.org/2000/svg"}] content))
+   :g
+   (fn [content]
+     (concat [:g {}] content))
    :line
    (fn [[[x1 y1] [x2 y2]]]
      [:line {:x1 x1, :y1 y1, :x2 x2, :y2 y2}])
@@ -120,14 +123,19 @@
 (comment
   (spit-xml
    [:page
-    {:height 500 :width 500, :stroke "black", :stroke-width 3.5, :fill "none"}
+    {:height 500 :width 500, :stroke :black, :stroke-width 3.5, :fill :none}
     [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
     [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
     [:line [10 20] [100 100]]
     [:line [10 100] [100 20]]
-    [:rect [10 130] [100 60] 15]
     [:polyline
-     (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]]
+     (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]
+    [:rect [10 130] [100 60] 15]
+    (concat
+     [:g {:stroke :green :fill :white :stroke-with 7}]
+     (map
+      #(vector :circle [% 220] 15)
+      (range 30 80 15)))]
    "s:/temp/svg.svg"))
 
 (comment
