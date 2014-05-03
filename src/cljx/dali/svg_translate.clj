@@ -118,7 +118,7 @@
       (assoc m (or (attr-key-lookup k) k) v)))
    {} m))
 
-(defn to-svg [element]
+(defn to-hiccup [element]
   (let [[type sec & r] element
         style-map (when (map? sec) sec)
         params (if style-map r (rest element))
@@ -129,12 +129,12 @@
           merged-map (process-attr-map (merge style-map attr))
           content (unwrap-seq content)]
       (if content
-        (into [] (concat [tag merged-map] (map to-svg content)))
+        (into [] (concat [tag merged-map] (map to-hiccup content)))
         [tag merged-map]))))
 
 (def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 
-(defn spit-xml [document filename]
+(defn spit-svg [document filename]
   (spit
    filename
    (str
@@ -143,8 +143,8 @@
     (hiccup/html document))))
 
 (comment
-  (spit-xml
-   (to-svg
+  (spit-svg
+   (to-hiccup
     [:page
      {:height 500 :width 500, :stroke :black, :stroke-width 2 :fill :none}
      [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
@@ -162,8 +162,8 @@
   )
 
 (comment
-  (spit-xml
-   (to-svg
+  (spit-svg
+   (to-hiccup
     [:page
      [:defs
       [:marker {:id :triangle :view-box "0 0 10 10"
@@ -177,13 +177,3 @@
    "s:/temp/svg2.svg")
   )
 
-(comment
-  (import [org.apache.batik.transcoder.image PNGTranscoder]
-          [org.apache.batik.transcoder
-           TranscoderInput
-           TranscoderOutput])
-  (with-open [out-stream (FileOutputStream. "out.jpg")
-              out (TranscoderOutput. out-stream)
-              in (TranscoderInput. ...)]
-   (doto (PNGTranscoder.)
-     (.transcode in out))))
