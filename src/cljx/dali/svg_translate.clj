@@ -69,9 +69,6 @@
   {:page
    (fn [content]
      (concat [:svg {:xmlns "http://www.w3.org/2000/svg"}] content))
-   :g
-   (fn [content]
-     (concat [:g {}] content))
    :line
    (fn [[[x1 y1] [x2 y2]]]
      [:line {:x1 x1, :y1 y1, :x2 x2, :y2 y2}])
@@ -102,9 +99,9 @@
   (let [[type sec & r] element
         style-map (when (map? sec) sec)
         params (if style-map r (rest element))
-        convert-fn (convertors type)]
-    (when-not convert-fn
-      (throw (ex-info (str "Unknown tag " type) {:unknown-tag type})))
+        convert-fn (or (convertors type)
+                       (fn [content] ;;generic containment tag
+                         (concat [type {}] content)))]
     (let [[tag attr & content] (convert-fn params)]
        (if content
          [tag (merge style-map attr) (map to-svg content)]
