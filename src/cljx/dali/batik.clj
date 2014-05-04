@@ -7,6 +7,25 @@
            [org.apache.batik.bridge UserAgentAdapter BridgeContext GVTBuilder]
            [org.apache.batik.bridge.svg12 SVG12BridgeContext]))
 
+(defprotocol BatikContext
+  (gvt-node [this dom-node])
+  (gvt-node-by-id [this id]))
+
+(defrecord BatikContextRecord [bridge gvt dom]
+  BatikContext
+  (gvt-node [this dom-node]
+    (.getGraphicsNode bridge dom-node))
+  (gvt-node-by-id [this id]
+    (gvt-node this (.getElementById dom id))))
+
+(defn batik-context [dom & {:keys [dynamic?]}]
+  (let [bridge (SVG12BridgeContext. (UserAgentAdapter.))]
+    (.setDynamic bridge (or dynamic? true))
+    (map->BatikContextRecord
+     {:dom dom
+      :bridge bridge
+      :gvt (.build (GVTBuilder.) bridge dom)})))
+
 (defn- parse-svg [uri]
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
     (.createDocument factory uri)))
@@ -18,15 +37,6 @@
           out (TranscoderOutput. out-stream)]
       (doto (PNGTranscoder.)
         (.transcode in out)))))
-
-(defn gvt-tree [document & {:keys [dynamic?]}]
-  (let [context (SVG12BridgeContext. (UserAgentAdapter.))]
-    (.setDynamic context (or dynamic? true))
-    {:context context
-     :root (.build (GVTBuilder.) context document)}))
-
-(defn to-gvt-node [ctx dom-node]
-  (.getGraphicsNode ctx dom-node))
 
 (defn to-rect [rect]
   [:rect
@@ -61,11 +71,8 @@
    :visual (maybe (visual-bounds node))})
 
 (comment
-  (let [dom (parse-svg "file:///s:/temp/svg.svg")
-        {:keys [root context]} (gvt-tree dom)
-        thick (.getElementById dom "thick")]
-    (to-gvt-node context thick)))
+  (let [ctx (batik-context (parse-svg "file:///s:/temp/svg.svg"))]
+    (gvt-node-by-id ctx "thick")))
 
 (comment
-  (svg-to-png "file:///s:/temp/svg.svg" "s:/temp/out.png")
-  )
+  (svg-to-png "file:///s:/temp/svg.svg" "s:/temp/out.png"))
