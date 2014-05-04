@@ -127,8 +127,14 @@
      {} m)))
 
 (defn- process-attr-map
-  "Rename some dashed attibutes into camelcase to follow the SVG
-  convention. Does a lookup in the attr-key-lookup map."
+  "Unwraps nested attribute maps (mainly for :stroke and :fill).
+
+  Renames some dashed attibutes into camelcase to follow the SVG
+  convention. Does the lookup in the attr-key-lookup map.
+
+  Converts attribute values that are sequences of numbers into
+  space-delimited string, except when it comes to :stroke-dasharray
+  which becomes a comma-delimited string."
   [m]
   (->> m
        (reduce-kv
@@ -167,8 +173,6 @@
     svg-doctype
     (hiccup/html document))))
 
-;;stroke-dasharray="5,10,5" 
-
 (comment
   (spit-svg
    (to-hiccup
@@ -181,7 +185,7 @@
      [:polyline
       (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]
      [:rect [10 130] [100 60] 15]
-     [:g {:stroke :green :fill :white :stroke-with 7}
+     [:g {:stroke {:paint :green :width 4} :fill :white}
       (map
        #(vector :circle [% 160] 15)
        (range 35 85 15))]
