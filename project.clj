@@ -44,7 +44,9 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [hiccup "1.0.5"]
                  [org.clojure/clojurescript "0.0-2202"]
-                 [batik/batik-rasterizer "1.6-1"
+                 [xerces/xerces "2.4.0"]
+                 [org.apache.xmlgraphics/batik-transcoder "1.7"
                   :exclusions [[xerces/xercesImpl]
                                [batik/batik-script]
-                               [fop]]]])
+                               #_[fop]]]
+                 [org.apache.xmlgraphics/batik-codec "1.7"]])
