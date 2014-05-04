@@ -108,24 +108,40 @@
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
 
-(defn- process-attr-value [x]
+(defn- process-attr-value [k v]
   (cond
-   (and (sequential? x) (every? number? x))
-     (string/join " " x)
+   (and (= k :stroke-dasharray) (sequential? v) (every? number? v))
+     (string/join "," v)
+   (and (sequential? v) (every? number? v))
+     (string/join " " v)
    :else
-     x))
+     v))
+
+(defn- process-nested-attr-map [parent-key m]
+  (let [make-key (fn [k]
+                   (if (= k :paint) ;;to produce :stroke or :paint keys
+                    parent-key 
+                    (keyword (str (name parent-key) "-" (name k)))))]
+    (reduce-kv
+     (fn [m k v] (assoc m (make-key k) v))
+     {} m)))
 
 (defn- process-attr-map
   "Rename some dashed attibutes into camelcase to follow the SVG
   convention. Does a lookup in the attr-key-lookup map."
   [m]
-  (reduce-kv
-   (fn [m k v]
-     (let [k (keyword k)]
-      (assoc m
-        (or (attr-key-lookup k) k)
-        (process-attr-value v))))
-   {} m))
+  (->> m
+       (reduce-kv
+        (fn [m k v]
+          (if (map? v)
+            (merge m (process-nested-attr-map k v))
+            (assoc m k v))) {})
+       (reduce-kv
+        (fn [m k v]
+          (let [k (keyword k)]
+            (assoc m
+              (or (attr-key-lookup k) k)
+              (process-attr-value k v)))) {})))
 
 (defn to-hiccup [element]
   (let [[type sec & r] element
@@ -151,11 +167,13 @@
     svg-doctype
     (hiccup/html document))))
 
+;;stroke-dasharray="5,10,5" 
+
 (comment
   (spit-svg
    (to-hiccup
     [:page
-     {:height 500 :width 500, :stroke :black, :stroke-width 2 :fill :none}
+     {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
      [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
      [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
      [:line [10 20] [100 100]]
@@ -165,8 +183,9 @@
      [:rect [10 130] [100 60] 15]
      [:g {:stroke :green :fill :white :stroke-with 7}
       (map
-       #(vector :circle [% 220] 15)
-       (range 30 80 15))]])
+       #(vector :circle [% 160] 15)
+       (range 35 85 15))]
+     [:rect {:stroke-dasharray [5 10 5]} [10 200] [100 60] 15]])
    "s:/temp/svg.svg")
   )
 

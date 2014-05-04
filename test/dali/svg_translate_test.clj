@@ -78,3 +78,25 @@
                   (repeat
                    2
                    [:circle [60 60] 50])]))))
+
+(def process-nested-attr-map @#'dali.svg-translate/process-nested-attr-map)
+(deftest process-nested-attr-map-test
+  (is (=
+       {:stroke-dasharray [2 3], :stroke-miterlimit 2}
+       (process-nested-attr-map
+        :stroke
+        {:miterlimit 2 :dasharray [2 3]}))))
+
+(def process-attr-map @#'dali.svg-translate/process-attr-map)
+(deftest process-attr-map-test
+  (is (=
+       {:fill :none
+        :viewBox "1 2 3 4"
+        :stroke :black
+        :stroke-dasharray "2,3"
+        :stroke-miterlimit 2}
+       (process-attr-map
+        {:fill :none
+         :view-box [1 2 3 4]
+         :stroke
+         {:paint :black :miterlimit 2 :dasharray [2 3]}}))))
