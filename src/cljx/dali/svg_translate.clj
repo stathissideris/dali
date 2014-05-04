@@ -79,7 +79,7 @@
   convertors
   {:page
    (fn [content]
-     (concat [:svg {:xmlns "http://www.w3.org/2000/svg"}] content))
+     (concat [:svg {:xmlns "http://www.w3.org/2000/svg" :version "1.2"}] content))
    :line
    (fn [[[x1 y1] [x2 y2]]]
      [:line {:x1 x1, :y1 y1, :x2 x2, :y2 y2}])
@@ -159,11 +159,15 @@
     (let [[tag attr & content] (convert-fn params)
           merged-map (process-attr-map (merge style-map attr))
           content (unwrap-seq content)]
-      (if content
-        (into [] (concat [tag merged-map] (map to-hiccup content)))
-        [tag merged-map]))))
+      (cond
+       (and content (string? (first content)))
+       [tag merged-map (first content)]
+       content
+       (into [] (concat [tag merged-map] (map to-hiccup content)))
+       :else
+       [tag merged-map]))))
 
-(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
+(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 
 (defn spit-svg [document filename]
   (spit
@@ -178,7 +182,12 @@
    (to-hiccup
     [:page
      {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
-     [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
+
+     [:rect {:stroke :blue} [110.0 10.0] [170.0 140.0]] ;;geometry bounds
+     [:rect {:stroke :red} [100.80886 17.5] [188.38226 125.0]] ;;sensitive bounds
+     [:path {:id "thick" :stroke-width 20} :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]
+     [:path {:stroke :white} :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]] ;;sensitive bounds
+
      [:path :M [45 10] :l [10 10] :l [-10 10] :l [-10 -10] :z]
      [:line [10 20] [100 100]]
      [:line [10 100] [100 20]]
@@ -189,8 +198,34 @@
       (map
        #(vector :circle [% 160] 15)
        (range 35 85 15))]
-     [:rect {:stroke-dasharray [5 10 5]} [10 200] [100 60] 15]])
+     [:rect {:stroke-dasharray [5 10 5]} [10 200] [100 60] 15]
+
+     #_[:flowRoot
+      [:flowRegion
+       [:rect [10 280] [150 200]]]
+      [:flowPara
+       "Jackson was born in Washington, D.C., and grew up as an only child in Chattanooga, Tennessee.[2] His father lived away from the family, in Kansas City, Missouri, and later died from alcoholism. Jackson had only met his father twice during his life.[3][4] Jackson was raised by his mother, Elizabeth Jackson (née Montgomery), who was a factory worker and later a supplies buyer for a mental institution, and by his maternal grandparents and extended family.[3][5] According to DNA tests, Jackson partially descends from the Benga people of Gabon.[6]
+Jackson attended several segregated schools[7] and graduated from Riverside High School in Chattanooga. Between the third and twelfth grades, he played the French horn and trumpet in the school orchestra.[8] During childhood, he had a stuttering problem, which he conquered by developing an affinity for the use of the curse word, motherfucker, in his vocabulary.[9]
+Initially intent on pursuing a degree in marine biology, he attended Morehouse College in Atlanta, Georgia. After joining a local acting group to earn extra points in a class, Jackson found an interest in acting and switched his major.[10] Before graduating in 1972, he co-founded the Just Us Theatre.[3][11]"]]
+
+     [:text {:x 10 :y 280 :stroke :none :fill :black}
+       "The only difference between me and a madman is that I'm not mad."]
+     
+     [:switch
+      [:foreignObject {:x 10 :y 280 :width 50 :height 200}
+       [:p {:xmlns "http://www.w3.org/1999/xhtml"} "This is a test with HTML p."]]
+      [:text {:x 10 :y 280 :stroke :none :fill :black}
+       "The only difference between me and a madman is that I'm not mad."]]])
    "s:/temp/svg.svg")
+  )
+
+(comment
+  (spit-svg
+   (to-hiccup
+    [:page
+     {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
+     [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]])
+   "s:/temp/svg2.svg")
   )
 
 (comment
@@ -206,6 +241,6 @@
      [:polyline
       {:fill :none :stroke-width 2 :stroke :black :marker-end "url(#triangle)"}
       [10 90] [50 80] [90 20]]])
-   "s:/temp/svg2.svg")
+   "s:/temp/svg3.svg")
   )
 
