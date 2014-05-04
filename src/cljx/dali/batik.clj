@@ -1,4 +1,4 @@
-(ns cljx.dali.batik
+(ns dali.batik
   (:require [clojure.java.io :as io])
   (:import [org.apache.batik.transcoder.image PNGTranscoder]
            [org.apache.batik.transcoder
@@ -6,6 +6,12 @@
            [org.apache.batik.dom.svg SAXSVGDocumentFactory]
            [org.apache.batik.bridge UserAgentAdapter BridgeContext GVTBuilder]
            [org.apache.batik.bridge.svg12 SVG12BridgeContext]))
+
+;;Batik - calculating bounds of cubic spline
+;;http://stackoverflow.com/questions/10610355/batik-calculating-bounds-of-cubic-spline?rq=1
+
+;;Wrong values of bounding box for text element using Batik
+;;http://stackoverflow.com/questions/12166280/wrong-values-of-bounding-box-for-text-element-using-batik
 
 (defprotocol BatikContext
   (gvt-node [this dom-node])
@@ -51,12 +57,6 @@
 (defn sensitive-bounds [node]
   (to-rect (.getSensitiveBounds node)))
 
-(defn transformed-bounds [node]
-  (to-rect (.getTransformedBounds node)))
-
-(defn visual-bounds [node]
-  (to-rect (.getTransformedSensitiveBounds node)))
-
 (defmacro maybe [call]
   `(try ~call (catch Exception ~'e nil)))
 
@@ -65,10 +65,10 @@
    :geometry (maybe (to-rect (.getGeometryBounds node)))
    :primitive (maybe (to-rect (.getPrimitiveBounds node)))
    :sensitive (maybe (to-rect (.getSensitiveBounds node)))
-   :transformed (maybe (transformed-bounds node))
+   :transformed (maybe (to-rect (.getTransformedBounds node)))
    :transformed-geometry (maybe (to-rect (.getTransformedGeometryBounds node)))
    :transformed-primitive (maybe (to-rect (.getTransformedPrimitiveBounds node)))
-   :visual (maybe (visual-bounds node))})
+   :transformed-sensitive (maybe (to-rect (.getTransformedSensitiveBounds node)))})
 
 (comment
   (let [ctx (batik-context (parse-svg "file:///s:/temp/svg.svg"))]
