@@ -155,7 +155,7 @@
               (or (attr-key-lookup k) k)
               (process-attr-value k v)))) {})))
 
-(defn dali-to-hiccup [element]
+(defn dali->hiccup [element]
   (let [[type sec & r] element
         style-map (when (map? sec) sec)
         params (if style-map r (rest element))
@@ -169,7 +169,7 @@
        (and content (string? (first content)))
        [tag merged-map (first content)]
        content
-       (into [] (concat [tag merged-map] (map dali-to-hiccup content)))
+       (into [] (concat [tag merged-map] (map dali->hiccup content)))
        :else
        [tag merged-map]))))
 
@@ -188,7 +188,7 @@
 
 (comment
   (spit-svg
-   (dali-to-hiccup
+   (dali->hiccup
     [:page
      {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
 
@@ -217,7 +217,7 @@
 
 (comment
   (spit-svg
-   (dali-to-hiccup
+   (dali->hiccup
     [:page
      {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
      [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]])
@@ -226,7 +226,7 @@
 
 (comment
   (spit-svg
-   (dali-to-hiccup
+   (dali->hiccup
     [:page
      [:defs
       [:marker {:id :triangle :view-box [0 0 10 10]
@@ -242,7 +242,7 @@
 
 (comment
   (spit-svg
-   (dali-to-hiccup
+   (dali->hiccup
     [:page {:width 500 :height 500}
      [:defs
       [:g {:id :logo :stroke {:paint :green :width 4} :fill :white}
@@ -254,5 +254,17 @@
      [:use {:xlink:href "#cc" :x 20 :y 30}]
      [:use :logo [20 100]]
      [:use :logo [20 150]]])
-   "s:/temp/svg3.svg")
+   "s:/temp/svg4.svg")
+  )
+
+(comment
+  (require '[dali.io :as io])
+  (spit-svg
+   (dali->hiccup
+    [:page {:width 500 :height 500}
+     [:defs
+      (-> "resources/symbol.svg" io/load-enlive-svg io/extract-svg-content :content first io/enlive->hiccup)]
+     [:use :symbol [50 50]]
+     [:use :symbol [150 70]]])
+   "s:/temp/svg5.svg")
   )
