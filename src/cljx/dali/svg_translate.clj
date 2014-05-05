@@ -79,7 +79,13 @@
   convertors
   {:page
    (fn [content]
-     (concat [:svg {:xmlns "http://www.w3.org/2000/svg" :version "1.2"}] content))
+     (concat [:svg {:xmlns "http://www.w3.org/2000/svg" :version "1.2"
+                    :xmlns:xlink "http://www.w3.org/1999/xlink"}] content))
+   :use
+   (fn [[ref [x y]]]
+     (if (and ref x y)
+       [:use {:xlink:href (str "#" (name ref)) :x x :y y}]
+       [:use {}]))
    :line
    (fn [[[x1 y1] [x2 y2]]]
      [:line {:x1 x1, :y1 y1, :x2 x2, :y2 y2}])
@@ -173,7 +179,7 @@
    svg-doctype
    (hiccup/html hiccup)))
 
-(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
+(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd\">\n")
 
 (defn spit-svg [hiccup-string filename]
   (spit
@@ -234,3 +240,19 @@
    "s:/temp/svg3.svg")
   )
 
+(comment
+  (spit-svg
+   (to-hiccup
+    [:page {:width 500 :height 500}
+     [:defs
+      [:g {:id :logo :stroke {:paint :green :width 4} :fill :white}
+       (map
+        #(vector :circle [% 0] 15)
+        (range 0 55 15))]
+      [:circle {:id :cc} [0 0] 15]]
+     [:use :cc [50 50]]
+     [:use {:xlink:href "#cc" :x 20 :y 30}]
+     [:use :logo [20 100]]
+     [:use :logo [20 150]]])
+   "s:/temp/svg3.svg")
+  )
