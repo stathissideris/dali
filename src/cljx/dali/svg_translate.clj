@@ -163,7 +163,7 @@
                        (fn [content] ;;generic containment tag
                          (concat [type {}] content)))]
     (let [[tag attr & content] (convert-fn params)
-          merged-map (process-attr-map (merge style-map attr))
+          merged-map (process-attr-map (merge attr style-map))
           content (unwrap-seq content)]
       (cond
        (and content (string? (first content)))
@@ -173,13 +173,13 @@
        :else
        [tag merged-map]))))
 
+(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd\">\n")
+
 (defn hiccup-to-svg-document-string [hiccup]
   (str
    (hiccup.page/xml-declaration "UTF-8")
    svg-doctype
    (hiccup/html hiccup)))
-
-(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd\">\n")
 
 (defn spit-svg [hiccup-string filename]
   (spit
