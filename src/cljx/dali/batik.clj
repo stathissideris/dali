@@ -1,6 +1,8 @@
 (ns dali.batik
   (:require [clojure.java.io :as io])
-  (:import [org.apache.batik.transcoder.image PNGTranscoder]
+  (:import [java.nio.charset StandardCharsets]
+           [java.io ByteArrayInputStream]
+           [org.apache.batik.transcoder.image PNGTranscoder]
            [org.apache.batik.transcoder
             TranscoderInput TranscoderOutput]
            [org.apache.batik.dom.svg SAXSVGDocumentFactory]
@@ -32,17 +34,24 @@
       :bridge bridge
       :gvt (.build (GVTBuilder.) bridge dom)})))
 
-(defn- parse-svg [uri]
+(defn- parse-svg-uri [uri]
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
     (.createDocument factory uri)))
 
-(defn svg-to-png [svg png]
+(defn- parse-svg-string [s]
+  (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
+    (with-open [in (ByteArrayInputStream. (.getBytes s StandardCharsets/UTF_8))]
+      (.createDocument factory "file:///fake.svg" in))))
+
+(defn render-document-to-png [svg-document png]
   (with-open [out-stream (io/output-stream (io/file png))]
-    (let [document (parse-svg svg)
-          in (TranscoderInput. document)
+    (let [in (TranscoderInput. svg-document)
           out (TranscoderOutput. out-stream)]
       (doto (PNGTranscoder.)
         (.transcode in out)))))
+
+(defn render-uri-to-png [uri png-filename]
+  (render-document-to-png (parse-svg-uri uri) png-filename))
 
 (defn to-rect [rect]
   [:rect
@@ -71,8 +80,20 @@
    :transformed-sensitive (maybe (to-rect (.getTransformedSensitiveBounds node)))})
 
 (comment
-  (let [ctx (batik-context (parse-svg "file:///s:/temp/svg.svg"))]
+  (let [ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg"))]
     (gvt-node-by-id ctx "thick")))
 
 (comment
-  (svg-to-png "file:///s:/temp/svg.svg" "s:/temp/out.png"))
+  (render-uri-to-png "file:///s:/temp/svg.svg" "s:/temp/out.png"))
+
+(comment
+  (do
+    (require '[dali.svg-translate :as translate])
+    (-> [:page {:width 250 :height 250}
+         [:circle {:stroke {:paint :black :width 3}
+                   :fill :green} [125 125] 75]]
+        translate/to-hiccup
+        translate/hiccup-to-svg-document-string
+        parse-svg-string
+        (render-document-to-png "s:/temp/out2.png"))
+    ))

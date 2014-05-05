@@ -167,15 +167,18 @@
        :else
        [tag merged-map]))))
 
+(defn hiccup-to-svg-document-string [hiccup]
+  (str
+   (hiccup.page/xml-declaration "UTF-8")
+   svg-doctype
+   (hiccup/html hiccup)))
+
 (def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n")
 
-(defn spit-svg [document filename]
+(defn spit-svg [hiccup-string filename]
   (spit
    filename
-   (str
-    (hiccup.page/xml-declaration "UTF-8")
-    svg-doctype
-    (hiccup/html document))))
+   (hiccup-to-svg-document-string hiccup-string)))
 
 (comment
   (spit-svg
