@@ -1,0 +1,13 @@
+<svg width="800px" height="500px" viewBox="0 0 800 50"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <defs>
+	<circle id="ball" cx="0" cy="0" r="40" />
+	<g id="balls">
+	  <use x="0" y="0" xlink:href="#ball" />
+	  <use x="80" y="0" xlink:href="#ball" />
+	</g>
+  </defs>
+
+  <use x="60" y="60" xlink:href="#balls" />
+</svg>
