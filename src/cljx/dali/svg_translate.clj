@@ -155,7 +155,7 @@
               (or (attr-key-lookup k) k)
               (process-attr-value k v)))) {})))
 
-(defn to-hiccup [element]
+(defn dali-to-hiccup [element]
   (let [[type sec & r] element
         style-map (when (map? sec) sec)
         params (if style-map r (rest element))
@@ -169,7 +169,7 @@
        (and content (string? (first content)))
        [tag merged-map (first content)]
        content
-       (into [] (concat [tag merged-map] (map to-hiccup content)))
+       (into [] (concat [tag merged-map] (map dali-to-hiccup content)))
        :else
        [tag merged-map]))))
 
@@ -188,7 +188,7 @@
 
 (comment
   (spit-svg
-   (to-hiccup
+   (dali-to-hiccup
     [:page
      {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
 
@@ -217,7 +217,7 @@
 
 (comment
   (spit-svg
-   (to-hiccup
+   (dali-to-hiccup
     [:page
      {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
      [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]])
@@ -226,7 +226,7 @@
 
 (comment
   (spit-svg
-   (to-hiccup
+   (dali-to-hiccup
     [:page
      [:defs
       [:marker {:id :triangle :view-box [0 0 10 10]
@@ -242,7 +242,7 @@
 
 (comment
   (spit-svg
-   (to-hiccup
+   (dali-to-hiccup
     [:page {:width 500 :height 500}
      [:defs
       [:g {:id :logo :stroke {:paint :green :width 4} :fill :white}
