@@ -293,13 +293,13 @@
    (dali->hiccup
     [:page {:width 1000 :height 1000}
      [:defs
-      (stripe-pattern :stripes, :angle 60 :width 4 :width2 12 :fill :lightgray)
-      (stripe-pattern :stripes2, :angle -60 :width 4 :width2 12 :fill :lightgray :fill2 :none)]
+      (stripe-pattern :stripes, :angle 0 :width 2 :width2 12 :fill :lightgray)
+      (stripe-pattern :stripes2, :angle 90 :width 2 :width2 12 :fill :lightgray :fill2 :none)]
      [:circle {:stroke :none :fill :white} [200 300] 150]
      [:circle {:stroke :none :fill :white} [200 300] 150]
      [:circle {:stroke :none :fill "url(#stripes)"} [200 300] 150]
      [:circle {:stroke :none :fill "url(#stripes2)"} [370 300] 150]
-     [:circle {:stroke {:paint :gray :width 4} :fill :none} [200 300] 150]
-     [:circle {:stroke {:paint :gray :width 4} :fill :none} [370 300] 150]])
+     [:circle {:stroke {:paint :gray :width 6} :fill :none} [200 300] 150]
+     [:circle {:stroke {:paint :gray :width 6} :fill :none} [370 300] 150]])
    "s:/temp/venn2.svg")
   )
