@@ -79,9 +79,11 @@
    :transformed-primitive (maybe (to-rect (.getTransformedPrimitiveBounds node)))
    :transformed-sensitive (maybe (to-rect (.getTransformedSensitiveBounds node)))})
 
+;;see http://docs.oracle.com/javase/7/docs/api/java/awt/geom/PathIterator.html
 (comment
-  (let [ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg"))]
-    (gvt-node-by-id ctx "thick")))
+  (let [ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg"))
+        node (gvt-node-by-id ctx "thick")]
+    (-> node .getOutline (.getPathIterator nil))))
 
 (comment
   (render-uri-to-png "file:///s:/temp/svg.svg" "s:/temp/out.png"))
