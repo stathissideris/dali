@@ -1,9 +1,10 @@
 (ns dali.svg-translate
-  (:require [clojure.string :as string]
+  (:require [clojure.java.io :as io]
             [clojure.pprint :refer [cl-format]]
+            [clojure.string :as string]
+            [dali.core :as core]
             [hiccup.core :as hiccup]
-            [hiccup.page]
-            [dali.core :as core]))
+            [hiccup.page]))
 
 (def attr-key-lookup
   (read-string (slurp "resources/attr-key-lookup.edn")))
@@ -271,21 +272,27 @@
 
 (comment
   (require '[dali.library :as lib])
-  (spit-svg
-   (dali->hiccup
-    (let [r 130
-          y 200
-          x1 200
-          x2 370]
-     [:page {:width 570 :height 370}
+  (require '[dali.batik :as btk])
+  (->
+   (let [r 130
+         y 200
+         x1 200
+         x2 370
+         outline 3]
+     [:page {:width 570 :height 400}
       [:defs
-       (lib/stripe-pattern :stripes, :angle 0 :width 2 :width2 12 :fill :lightgray)
-       (lib/stripe-pattern :stripes2, :angle 90 :width 2 :width2 12 :fill :lightgray :fill2 :none)]
+       (lib/stripe-pattern :stripes, :angle 0 :width 2 :width2 12 :fill :lightgray :fill2 :blue)
+       (lib/stripe-pattern :stripes2, :angle 90 :width 2 :width2 12 :fill :lightgray :fill2 :red)]
       [:circle {:stroke :none :fill :white} [x1 y] r]
       [:circle {:stroke :none :fill :white} [x2 y] r]
-      [:circle {:stroke :none :fill "url(#stripes)"} [x1 y] r]
-      [:circle {:stroke :none :fill "url(#stripes2)"} [x2 y] r]
-      [:circle {:stroke {:paint :gray :width 2} :fill :none} [x1 y] r]
-      [:circle {:stroke {:paint :gray :width 2} :fill :none} [x2 y] r]]))
-   "s:/temp/venn2.svg")
+      [:circle {:stroke :none :fill "url(#stripes)" :opacity 0.2} [x1 y] r]
+      [:circle {:stroke :none :fill "url(#stripes2)" :opacity 0.2} [x2 y] r]
+      [:circle {:stroke {:paint :gray :width 3} :fill :none} [x1 y] r]
+      [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])
+   dali->hiccup
+   ;;(spit-svg "s:/temp/venn2.svg")
+   hiccup-to-svg-document-string
+   btk/parse-svg-string
+   (btk/render-document-to-png "s:/temp/venn2.png")
+   )
   )

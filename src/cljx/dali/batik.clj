@@ -38,7 +38,7 @@
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
     (.createDocument factory uri)))
 
-(defn- parse-svg-string [s]
+(defn parse-svg-string [s]
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
     (with-open [in (ByteArrayInputStream. (.getBytes s StandardCharsets/UTF_8))]
       (.createDocument factory "file:///fake.svg" in))))
