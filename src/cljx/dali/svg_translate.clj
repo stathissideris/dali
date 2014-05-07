@@ -270,36 +270,22 @@
   )
 
 (comment
-  (defn stripe-pattern [id & {:keys (angle width fill width2 fill2)}]
-    (let [width (or width 10)
-          width2 (or width2 width)
-          fill (or fill :black)
-          fill2 (or fill2 :white)
-          pattern
-          [:pattern
-           (merge
-            {:id id
-             :width 10 :height (+ width width2)
-             :patternUnits :userSpaceOnUse}
-            (when angle
-              {:patternTransform (str "rotate(" angle ")")}))
-           [:rect {:fill fill :stroke :none} [0 0] [10 width]]]]
-      (if-not fill2
-        pattern
-        (conj pattern
-              [:rect {:fill fill2 :stroke :none} [0 width] [10 width2]]))))
-  
+  (require '[dali.library :as lib])
   (spit-svg
    (dali->hiccup
-    [:page {:width 1000 :height 1000}
-     [:defs
-      (stripe-pattern :stripes, :angle 0 :width 2 :width2 12 :fill :lightgray)
-      (stripe-pattern :stripes2, :angle 90 :width 2 :width2 12 :fill :lightgray :fill2 :none)]
-     [:circle {:stroke :none :fill :white} [200 300] 150]
-     [:circle {:stroke :none :fill :white} [200 300] 150]
-     [:circle {:stroke :none :fill "url(#stripes)"} [200 300] 150]
-     [:circle {:stroke :none :fill "url(#stripes2)"} [370 300] 150]
-     [:circle {:stroke {:paint :gray :width 6} :fill :none} [200 300] 150]
-     [:circle {:stroke {:paint :gray :width 6} :fill :none} [370 300] 150]])
+    (let [r 130
+          y 200
+          x1 200
+          x2 370]
+     [:page {:width 570 :height 370}
+      [:defs
+       (lib/stripe-pattern :stripes, :angle 0 :width 2 :width2 12 :fill :lightgray)
+       (lib/stripe-pattern :stripes2, :angle 90 :width 2 :width2 12 :fill :lightgray :fill2 :none)]
+      [:circle {:stroke :none :fill :white} [x1 y] r]
+      [:circle {:stroke :none :fill :white} [x2 y] r]
+      [:circle {:stroke :none :fill "url(#stripes)"} [x1 y] r]
+      [:circle {:stroke :none :fill "url(#stripes2)"} [x2 y] r]
+      [:circle {:stroke {:paint :gray :width 2} :fill :none} [x1 y] r]
+      [:circle {:stroke {:paint :gray :width 2} :fill :none} [x2 y] r]]))
    "s:/temp/venn2.svg")
   )
