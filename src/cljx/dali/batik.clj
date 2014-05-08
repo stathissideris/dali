@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io])
   (:import [java.nio.charset StandardCharsets]
            [java.io ByteArrayInputStream]
+           [java.awt.geom PathIterator]
            [org.apache.batik.transcoder.image PNGTranscoder]
            [org.apache.batik.transcoder
             TranscoderInput TranscoderOutput]
@@ -84,6 +85,26 @@
   (let [ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg"))
         node (gvt-node-by-id ctx "thick")]
     (-> node .getOutline (.getPathIterator nil))))
+
+(def path-segment-types
+  {PathIterator/SEG_MOVETO :move-to
+   PathIterator/SEG_LINETO :line-to
+   PathIterator/SEG_QUADTO :quad-to
+   PathIterator/SEG_CUBICTO :cubic-to
+   PathIterator/SEG_CLOSE :close})
+
+(defn- path-seq-step [path-iterator arr]
+  (let [type (path-segment-types (.currentSegment path-iterator arr))]
+    (.next path-iterator)
+    (cons
+     [type (into [] arr)]
+     (when-not (.isDone path-iterator)
+       (lazy-seq (path-seq-step path-iterator arr))))))
+
+(defn path-seq [path]
+  (let [it (.getPathIterator path nil)
+        arr (double-array 6)]
+    (path-seq-step it arr)))
 
 (comment
   (render-uri-to-png "file:///s:/temp/svg.svg" "s:/temp/out.png"))

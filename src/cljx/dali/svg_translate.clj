@@ -203,7 +203,7 @@
      [:line [10 100] [100 20]]
      [:polyline
       (map #(vector %1 %2) (range 10 150 10) (cycle [110 120]))]
-     [:rect [10 130] [100 60] 15]
+     [:rect {:id :rounded} [10 130] [100 60] 15]
      [:g {:stroke {:paint :green :width 4} :fill :white}
       (map
        #(vector :circle [% 160] 15)
@@ -213,7 +213,7 @@
      [:rect {:stroke :green} [10.28125 271.26172] [357.16016 11.265625]] ;;bounds of the text
      [:text {:id :the-text :x 10 :y 280 :stroke :none :fill :black}
        "The only difference between me and a madman is that I'm not mad."]])
-   "s:/temp/svg.svg")
+   "/tmp/svg.svg")
   )
 
 (comment
