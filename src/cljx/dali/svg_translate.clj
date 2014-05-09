@@ -7,7 +7,7 @@
             [hiccup.page]))
 
 (def attr-key-lookup
-  (read-string (slurp "resources/attr-key-lookup.edn")))
+  (-> "attr-key-lookup.edn" io/resource io/file slurp read-string))
 
 (def map-path-command
   {:move-to :M ;;:M [x y]
