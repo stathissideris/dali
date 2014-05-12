@@ -1,4 +1,4 @@
-(defproject dali "0.3.0"
+(defproject dali "0.4.0"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -38,7 +38,7 @@
                              [lein-cljsbuild "1.0.3"]]
                    :aliases {"cleantest" ["do" "clean," "cljx" "once," "test,"
                                           "cljsbuild" "test"]
-                             "deploy" ["do" "clean," "cljx" "once," "deploy" "clojars"]}
+                             "clojars-deploy" ["do" "clean," "cljx" "once," "deploy" "clojars"]}
                    :dependencies [[enlive "1.1.5"]]}}
   
   :dependencies [[org.clojure/clojure "1.6.0"]
