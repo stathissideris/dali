@@ -80,18 +80,12 @@
    :transformed-primitive (maybe (to-rect (.getTransformedPrimitiveBounds node)))
    :transformed-sensitive (maybe (to-rect (.getTransformedSensitiveBounds node)))})
 
-;;see http://docs.oracle.com/javase/7/docs/api/java/awt/geom/PathIterator.html
-(comment
-  (let [ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg"))
-        node (gvt-node-by-id ctx "thick")]
-    (-> node .getOutline (.getPathIterator nil))))
-
 (def path-segment-types
-  {PathIterator/SEG_MOVETO :move-to
-   PathIterator/SEG_LINETO :line-to
-   PathIterator/SEG_QUADTO :quad-to
-   PathIterator/SEG_CUBICTO :cubic-to
-   PathIterator/SEG_CLOSE :close})
+  {PathIterator/SEG_MOVETO :M
+   PathIterator/SEG_LINETO :L
+   PathIterator/SEG_QUADTO :Q
+   PathIterator/SEG_CUBICTO :C
+   PathIterator/SEG_CLOSE :Z})
 
 (defn- path-seq-step [path-iterator arr]
   (let [type (path-segment-types (.currentSegment path-iterator arr))]
@@ -105,6 +99,24 @@
   (let [it (.getPathIterator path nil)
         arr (double-array 6)]
     (path-seq-step it arr)))
+
+(defn outline [gvt-node] ;;TODO add type annotation
+  (let [segments (-> gvt-node .getOutline path-seq)]
+    (vec
+     (concat
+      [:path]
+      (map (fn [[type params]]
+             (condp = type
+               :M
+               :L
+               :Q
+               :C
+               :Z)) segments)))))
+
+(comment
+  (let [ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg"))
+        node (gvt-node-by-id ctx "thick")]
+    (-> node .getOutline (.getPathIterator nil))))
 
 (comment
   (render-uri-to-png "file:///s:/temp/svg.svg" "s:/temp/out.png"))

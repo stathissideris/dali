@@ -1,6 +1,6 @@
 (defproject dali "0.4.0"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "A Clojure library for 2D graphics."
+  :url "https://github.com/stathissideris/dali"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
