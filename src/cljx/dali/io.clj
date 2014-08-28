@@ -111,4 +111,6 @@
    (fn [spec]
      [:path {:d (convert-path-spec spec)}])})
 
+(defn hiccup->dali [document])
+
 #_(-> "resources/symbol.svg" load-enlive-svg extract-svg-content :content enlive->hiccup pprint)

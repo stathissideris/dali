@@ -1,5 +1,7 @@
 (ns dali.batik
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [dali.syntax :as s]
+            [dali.dom :as dom])
   (:import [java.nio.charset StandardCharsets]
            [java.io ByteArrayInputStream]
            [java.awt.geom PathIterator]
@@ -7,7 +9,7 @@
            [org.apache.batik.transcoder
             TranscoderInput TranscoderOutput]
            [org.apache.batik.dom.svg SAXSVGDocumentFactory]
-           [org.apache.batik.bridge UserAgentAdapter BridgeContext GVTBuilder]
+           [org.apache.batik.bridge UserAgentAdapter BridgeContext GVTBuilder DocumentLoader]
            [org.apache.batik.bridge.svg12 SVG12BridgeContext]))
 
 ;;Batik - calculating bounds of cubic spline
@@ -18,14 +20,30 @@
 
 (defprotocol BatikContext
   (gvt-node [this dom-node])
-  (gvt-node-by-id [this id]))
+  (gvt-node-by-id [this id])
+  (rehearse-bounds [this element]))
+
+(defn- to-rect [rect]
+  [:rect
+   [(.getX rect)
+    (.getY rect)]
+   [(.getWidth rect)
+    (.getHeight rect)]])
 
 (defrecord BatikContextRecord [bridge gvt dom]
   BatikContext
   (gvt-node [this dom-node]
     (.getGraphicsNode bridge dom-node))
   (gvt-node-by-id [this id]
-    (gvt-node this (.getElementById dom id))))
+    (gvt-node this (.getElementById dom id)))
+  (rehearse-bounds [this element]
+    (let [element (->> element
+                       s/dali->hiccup
+                       (dom/hiccup->element dom))]
+      (dom/add-to-svg dom element)
+      (let [bbox (to-rect (-> element .getBBox))]
+        (dom/remove-from-svg dom element)
+        bbox))))
 
 (defn batik-context [dom & {:keys [dynamic?]}]
   (let [bridge (SVG12BridgeContext. (UserAgentAdapter.))]
@@ -53,13 +71,6 @@
 
 (defn render-uri-to-png [uri png-filename]
   (render-document-to-png (parse-svg-uri uri) png-filename))
-
-(defn to-rect [rect]
-  [:rect
-   [(.x rect)
-    (.y rect)]
-   [(.width rect)
-    (.height rect)]])
 
 (defn bounds [node]
   (to-rect (.getBounds node)))
@@ -95,7 +106,7 @@
      (when-not (.isDone path-iterator)
        (lazy-seq (path-seq-step path-iterator arr))))))
 
-(defn path-seq [path]
+(defn- path-seq [path]
   (let [it (.getPathIterator path nil)
         arr (double-array 6)]
     (path-seq-step it arr)))
@@ -107,8 +118,8 @@
       [:path]
       (map (fn [[type params]]
              (condp = type
-               :M
-               :L
+               :M (vec (take 2 params))
+               :L 
                :Q
                :C
                :Z)) segments)))))
@@ -123,12 +134,16 @@
 
 (comment
   (do
-    (require '[dali.svg-translate :as translate])
+    (require '[dali.syntax :as syntax])
     (-> [:page {:width 250 :height 250}
          [:circle {:stroke {:paint :black :width 3}
                    :fill :green} [125 125] 75]]
-        translate/to-hiccup
-        translate/hiccup-to-svg-document-string
+        syntax/dali->hiccup
+        syntax/hiccup->svg-document-string
         parse-svg-string
-        (render-document-to-png "s:/temp/out2.png"))
-    ))
+        (render-document-to-png "s:/temp/out2.png"))))
+
+(comment
+  (do
+    (def ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg") :dynamic? true))
+    (rehearse-bounds ctx [:circle [10 20] 5])))
