@@ -53,7 +53,7 @@
       :bridge bridge
       :gvt (.build (GVTBuilder.) bridge dom)})))
 
-(defn- parse-svg-uri [uri]
+(defn parse-svg-uri [uri]
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
     (.createDocument factory uri)))
 

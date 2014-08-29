@@ -50,4 +50,5 @@
                   :exclusions [[xerces/xercesImpl]
                                [batik/batik-script]
                                #_[fop]]]
-                 [org.apache.xmlgraphics/batik-codec "1.7"]])
+                 [org.apache.xmlgraphics/batik-codec "1.7"]
+                 [retrograde "0.10"]])

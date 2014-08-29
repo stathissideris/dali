@@ -167,6 +167,13 @@
 (defn assoc-attr [element k v]
   (transform-attrs element #(assoc % k v)))
 
+(defn add-transform [element transform]
+  (update-in (add-attrs element)
+             [1 :transform]
+             (fn [x]
+               (let [x (or x [])]
+                 (conj x transform)))))
+
 (defn- process-attr-map
   "Unwraps nested attribute maps (mainly for :stroke and :fill).
 
