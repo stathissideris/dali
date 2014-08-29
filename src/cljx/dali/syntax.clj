@@ -197,6 +197,14 @@
               (or (attr-key-lookup k) k)
               (process-attr-value k v)))) {})))
 
+(defn normalize-element
+  "Makes all the elements look like [tag {...} content], even if the
+  attrs were skipped or the content was nil."
+  [[tag sec & r]]
+  (let [attrs (if (map? sec) sec {})
+        content (if (seq? (first r)) (first r) r)]
+    [tag attrs content]))
+
 (defn dali->hiccup [element]
   (let [[type sec & r] element
         style-map (when (map? sec) sec)

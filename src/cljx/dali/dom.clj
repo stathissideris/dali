@@ -1,4 +1,5 @@
-(ns dali.dom)
+(ns dali.dom
+  (:require [dali.syntax :as s]))
 
 (def SVG-NS "http://www.w3.org/2000/svg")
 
@@ -9,13 +10,16 @@
   (.setAttributeNS element nil (name k) (str v)))
 
 (defn hiccup->element [dom hiccup]
-  (let [e (element dom (name (first hiccup)))
-        attrs (second hiccup)]
+  (let [[tag attrs content] (s/normalize-element hiccup)
+        e (element dom (name tag))]
     (if-not attrs
       e
       (do
         (doseq [[k v] attrs]
           (set-attr! e k v))
+        (when content
+          (doseq [child content]
+            (.appendChild e (hiccup->element dom child))))
         e))))
 
 (defn first-by-tag [dom tag]
