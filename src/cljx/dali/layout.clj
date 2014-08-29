@@ -8,6 +8,21 @@
 (defn- replace-blanks [element replacement]
   (walk/postwalk (fn [f] (if (= f :_) replacement f)) element))
 
+(defn- set-top-left
+  "Adds a translation transform to an element so that its top-left
+  corner is at the passed position."
+  [element top-left bounds]
+  (let [type (first element)
+        [_ current-pos [w h]] bounds
+        transform
+        (condp = type
+          :circle (-> current-pos
+                      (geom/translate-point top-left)
+                      (geom/translate-point [(/ w 2) (/ h 2)]))
+          :text top-left ;;TODO
+          (geom/translate-point current-pos top-left))]
+    (s/add-transform element [:translate transform])))
+
 (defn stack [ctx {:keys [position direction gap] :as params} & elements]
   (let [gap (or gap 2)
         elements (map #(replace-blanks % [0 0]) elements)]
