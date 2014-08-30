@@ -201,7 +201,6 @@
   "Makes all the elements look like [tag {...} content], even if the
   attrs were skipped or the content was nil."
   [[tag sec & r]]
-  (println [tag sec r])
   (let [attrs (if (map? sec) sec {})
         content (if (seq? (first r)) (first r) r)]
     [tag attrs content]))

@@ -77,33 +77,38 @@
         element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
        elements))))
 
-(defn distribute [ctx {:keys [position direction gap] :as params} & elements]
-  (let [gap (or gap 0)
-        position (or position [0 0])
-        direction (or direction :right)
-        anchor :center ;;not an option for now
-        elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
-        
-        vertical? (or (= direction :down) (= direction :up))
-        [x y] position
-        elements (map #(replace-blanks % [0 0]) elements)
-        bounds (map #(batik/rehearse-bounds ctx %) elements)
-        step (+ gap (if vertical?
-                      (apply max (map (fn [[_ _ [_ h]]] h) bounds))
-                      (apply max (map (fn [[_ _ [w _]]] w) bounds))))
-        place-point (if vertical?
-                      (fn place-point [x y pos] [x pos])
-                      (fn place-point [x y pos] [pos y]))
+(defn distribute [ctx {:keys [position direction anchor gap] :as params} & elements]
+  (let [direction (or direction :right)
+        anchor (or anchor :center)
+        vertical? (or (= direction :down) (= direction :up))]
+    (if vertical?
+      (when (not (#{:center :left :right} anchor))
+        (throw (Exception. (str "distribute layout supports only :center :left :right anchors for direction " direction "\n elements: " elements))))
+      (when (not (#{:center :top :bottom} anchor))
+        (throw (Exception. (str "distribute layout supports only :center :top :bottom anchors for direction " direction "\n elements: " elements)))))
+    (let [gap (or gap 0)
+          position (or position [0 0])
+          elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
+          
+          [x y] position
+          elements (map #(replace-blanks % [0 0]) elements)
+          bounds (map #(batik/rehearse-bounds ctx %) elements)
+          step (+ gap (if vertical?
+                        (apply max (map (fn [[_ _ [_ h]]] h) bounds))
+                        (apply max (map (fn [[_ _ [w _]]] w) bounds))))
+          place-point (if vertical?
+                        (fn place-point [x y pos] [x pos])
+                        (fn place-point [x y pos] [pos y]))
 
-        first-offset (+ gap (/ step 2))
-        positions (condp = direction
-                    :down  (range (+ y first-offset) Integer/MAX_VALUE step)
-                    :up    (range (- y first-offset) Integer/MIN_VALUE (- step))
-                    :right (range (+ x first-offset) Integer/MAX_VALUE step)
-                    :left  (range (- x first-offset) Integer/MIN_VALUE (- step)))]
-    (into [:g]
-      (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
-           elements positions bounds))))
+          first-offset (+ gap (/ step 2))
+          positions (condp = direction
+                      :down  (range (+ y first-offset) Integer/MAX_VALUE step)
+                      :up    (range (- y first-offset) Integer/MIN_VALUE (- step))
+                      :right (range (+ x first-offset) Integer/MAX_VALUE step)
+                      :left  (range (- x first-offset) Integer/MIN_VALUE (- step)))]
+      (into [:g]
+            (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
+                 elements positions bounds)))))
 
 (defn resolve-layout
   ([doc]
@@ -209,6 +214,7 @@
         {:position [300 500], :direction :right, :anchor :bottom-left, :gap 0.5}
         (map (fn [h] [:rect {:stroke :none, :fill :gray} :_ [10 h]])
              (take 10 (repeatedly #(rand 50))))]
+       (marker [300 500])
 
        [:stack
         {:position [300 525], :direction :right, :gap 3}
@@ -230,15 +236,20 @@
              bb (batik/rehearse-bounds ctx tt)]
          (place-by-anchor tt :top-left [300 550] bb))     
 
-       [:stack
-        {:position [300 650], :direction :right, :anchor :bottom-left, :gap 1}
-        (map (fn [h]
-               (stack
-                ctx
+       [:distribute
+        {:position [220 650], :direction :right, :anchor :bottom, :gap 4}
+        (map (fn [h label]
+               [:stack
                 {:direction :up, :gap 5}
-                [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Verdana" :font-size 6} (format "%.1f" h)]
-                [:rect {:stroke :none, :fill :gray} :_ [20 h]]))
-             (take 5 (repeatedly #(rand 50))))]
+                [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Verdana" :font-size 6} label #_(format "%.1f" h)]
+                [:rect {:stroke :none, :fill :gray} :_ [5 h]]])
+             (take 5 (repeatedly #(rand 50)))
+             ["This is a long label"
+              "Not long"
+              "Ag"
+              "Bg"
+              "Another long one"])]
+       (marker [220 650])
 
        [:line {:stroke :gray} [425 30] [425 70]]
        [:distribute
