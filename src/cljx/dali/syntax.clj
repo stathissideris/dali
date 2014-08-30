@@ -291,6 +291,26 @@
   )
 
 (comment
+  (require '[dali.stock :as stock])
+  (spit-svg
+   (dali->hiccup
+    [:page
+     [:defs
+      (stock/sharp-arrow-end :sharp)
+      (stock/triangle-arrow-end :triangle)]
+     [:polyline
+      {:fill :none :stroke-width 1 :stroke :black :marker-end "url(#sharp)"}
+      [10 90] [50 80] [90 30]]
+     [:polyline
+      {:fill :none :stroke-width 1 :stroke :black :marker-end "url(#triangle)"}
+      [30 90] [70 80] [110 30]]
+     ;[:circle {:stroke :red :fill :none} [90 30] 2]
+     ;[:circle {:stroke :red :fill :none} [110 30] 2]
+     ])
+   "s:/temp/svg_marker.svg")
+  )
+
+(comment
   (spit-svg
    (dali->hiccup
     [:page {:width 500 :height 500}
