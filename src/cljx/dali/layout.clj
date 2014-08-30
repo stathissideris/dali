@@ -77,11 +77,11 @@
         element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
        elements))))
 
-(defn distribute [ctx {:keys [position direction anchor gap] :as params} & elements]
+(defn distribute [ctx {:keys [position direction gap] :as params} & elements]
   (let [gap (or gap 0)
         position (or position [0 0])
         direction (or direction :right)
-        anchor (or anchor :center)
+        anchor :center ;;not an option for now
         elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
         
         vertical? (or (= direction :down) (= direction :up))
@@ -95,47 +95,15 @@
                       (fn place-point [x y pos] [x pos])
                       (fn place-point [x y pos] [pos y]))
 
+        first-offset (+ gap (/ step 2))
         positions (condp = direction
-                    :down  (range (+ y gap) Integer/MAX_VALUE step)
-                    :up    (range (+ y gap) Integer/MIN_VALUE (- step))
-                    :right (range (+ x gap) Integer/MAX_VALUE step)
-                    :left  (range (+ x gap) Integer/MIN_VALUE (- step)))]
+                    :down  (range (+ y first-offset) Integer/MAX_VALUE step)
+                    :up    (range (- y first-offset) Integer/MIN_VALUE (- step))
+                    :right (range (+ x first-offset) Integer/MAX_VALUE step)
+                    :left  (range (- x first-offset) Integer/MIN_VALUE (- step)))]
     (into [:g]
       (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
            elements positions bounds))))
-
-(comment
-  (distribute
-   ctx
-   {:position [10 10] :direction :qright}
-   [:circle :_ 10]
-   [:circle :_ 20]
-   [:circle :_ 50]))
-
-(comment
-  (distribute
-   ctx
-   {:position [10 10] :direction :right}
-   (take
-    20
-    (cycle
-     [[:circle :_ 10]
-      [:rect :_ [10 10]]]))))
-
-(comment
-  (distribute
-   ctx
-   {:position [10 10] :direction :left}
-   (interleave
-    [:circle :_ 10]
-    (repeat [:rect :_ [10 10]]))))
-
-(comment
-  (distribute
-   ctx
-   {:position [10 10] :anchor :bottom-center}
-   (map (fn [x] [:rect :_ [10 x]])
-        [50 60 34 22 55 10 12 19])))
 
 (comment
   (def ctx (batik/batik-context (batik/parse-svg-uri "file:///s:/temp/svg.svg") :dynamic? true))
@@ -169,107 +137,144 @@
       [:rect :_ [10 5]]
       [:rect :_ [10 5]])])
   
-  (s/spit-svg
-   (s/dali->hiccup
-    [:page
-     {:height 750 :width 600, :stroke {:paint :black :width 1} :fill :none}
+  (time
+   (s/spit-svg
+    (s/dali->hiccup
+     [:page
+      {:height 750 :width 600, :stroke {:paint :black :width 1} :fill :none}
 
-     ;;test that top-left works
-     [:rect [300 50] [100 100]]
-     (place-top-left
-      [:circle [-100 40] 50]
-      [300 50]
-      (batik/rehearse-bounds ctx [:circle [-100 40] 50]))
+      ;;test that top-left works
+      [:rect [300 50] [100 100]]
+      (place-top-left
+       [:circle [-100 40] 50]
+       [300 50]
+       (batik/rehearse-bounds ctx [:circle [-100 40] 50]))
 
-     ;;test that top-left works
-     (marker [250 200])
-     (place-top-left
-      [:rect [-100 -100] [25 25]]
-      [250 200]
-      (batik/rehearse-bounds ctx [:rect [-100 -100] [50 50]]))
+      ;;test that top-left works
+      (marker [250 200])
+      (place-top-left
+       [:rect [-100 -100] [25 25]]
+       [250 200]
+       (batik/rehearse-bounds ctx [:rect [-100 -100] [50 50]]))
 
-     ;;test all cases of place-by-anchor
-     (anchor-box ctx [300 200] :top-left)
-     (anchor-box ctx [350 200] :top)
-     (anchor-box ctx [400 200] :top-right)
-     (anchor-box ctx [300 250] :left)
-     (anchor-box ctx [350 250] :center)
-     (anchor-box ctx [400 250] :right)
-     (anchor-box ctx [300 300] :bottom-left)
-     (anchor-box ctx [350 300] :bottom)
-     (anchor-box ctx [400 300] :bottom-right)
+      ;;test all cases of place-by-anchor
+      (anchor-box ctx [300 200] :top-left)
+      (anchor-box ctx [350 200] :top)
+      (anchor-box ctx [400 200] :top-right)
+      (anchor-box ctx [300 250] :left)
+      (anchor-box ctx [350 250] :center)
+      (anchor-box ctx [400 250] :right)
+      (anchor-box ctx [300 300] :bottom-left)
+      (anchor-box ctx [350 300] :bottom)
+      (anchor-box ctx [400 300] :bottom-right)
 
-     (anchor-circle ctx [300 325] :top-left)
-     (anchor-circle ctx [350 325] :top)
-     (anchor-circle ctx [400 325] :top-right)
-     (anchor-circle ctx [300 375] :left)
-     (anchor-circle ctx [350 375] :center)
-     (anchor-circle ctx [400 375] :right)
-     (anchor-circle ctx [300 425] :bottom-left)
-     (anchor-circle ctx [350 425] :bottom)
-     (anchor-circle ctx [400 425] :bottom-right)
+      (anchor-circle ctx [300 325] :top-left)
+      (anchor-circle ctx [350 325] :top)
+      (anchor-circle ctx [400 325] :top-right)
+      (anchor-circle ctx [300 375] :left)
+      (anchor-circle ctx [350 375] :center)
+      (anchor-circle ctx [400 375] :right)
+      (anchor-circle ctx [300 425] :bottom-left)
+      (anchor-circle ctx [350 425] :bottom)
+      (anchor-circle ctx [400 425] :bottom-right)
 
-     (make-stack ctx [50 50] :top-left :down)
-     (make-stack ctx [120 50] :top :down)
-     (make-stack ctx [190 50] :top-right :down)
+      (make-stack ctx [50 50] :top-left :down)
+      (make-stack ctx [120 50] :top :down)
+      (make-stack ctx [190 50] :top-right :down)
 
-     (make-stack ctx [50 500] :bottom-left :up)
-     (make-stack ctx [120 500] :bottom :up)
-     (make-stack ctx [190 500] :bottom-right :up)
+      (make-stack ctx [50 500] :bottom-left :up)
+      (make-stack ctx [120 500] :bottom :up)
+      (make-stack ctx [190 500] :bottom-right :up)
 
-     (make-stack ctx [50 575] :left :right)
+      (make-stack ctx [50 575] :left :right)
 
-     (make-stack ctx [165 650] :right :left)
+      (make-stack ctx [165 650] :right :left)
 
-     (stack
-      ctx
-      {:position [300 500], :direction :right, :anchor :bottom-left, :gap 0.5}
-      (map (fn [h] [:rect {:stroke :none, :fill :gray} :_ [10 h]])
-           (take 10 (repeatedly #(rand 50)))))
+      (stack
+       ctx
+       {:position [300 500], :direction :right, :anchor :bottom-left, :gap 0.5}
+       (map (fn [h] [:rect {:stroke :none, :fill :gray} :_ [10 h]])
+            (take 10 (repeatedly #(rand 50)))))
 
-     (stack
-      ctx
-      {:position [300 525], :direction :right, :gap 3}
-      (take
-       10
-       (repeat
-        (stack ctx {:gap 3}
-               [:rect :_ [5 5]]
-               [:circle :_ 5]
-               [:circle :_ 1.5]))))
+      (stack
+       ctx
+       {:position [300 525], :direction :right, :gap 3}
+       (take
+        10
+        (repeat
+         (stack ctx {:gap 3}
+                [:rect :_ [5 5]]
+                [:circle :_ 5]
+                [:circle :_ 1.5]))))
 
-     (stack
-      ctx
-      {:position [300 500], :direction :right, :anchor :bottom-left, :gap 0.5}
-      (map (fn [h] [:rect {:stroke :none, :fill :gray} :_ [10 h]])
-           (take 10 (repeatedly #(rand 50)))))
+      (stack
+       ctx
+       {:position [300 500], :direction :right, :anchor :bottom-left, :gap 0.5}
+       (map (fn [h] [:rect {:stroke :none, :fill :gray} :_ [10 h]])
+            (take 10 (repeatedly #(rand 50)))))
 
-     (marker [300 550])
-     (let [tt [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Georgia" :font-size 40} "This is it"]
-           bb (batik/rehearse-bounds ctx tt)]
-       (place-by-anchor tt :top-left [300 550] bb))     
+      (marker [300 550])
+      (let [tt [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Georgia" :font-size 40} "This is it"]
+            bb (batik/rehearse-bounds ctx tt)]
+        (place-by-anchor tt :top-left [300 550] bb))     
 
-     (stack
-      ctx
-      {:position [300 650], :direction :right, :anchor :bottom-left, :gap 1}
-      (map (fn [h]
-             (stack
-              ctx
-              {:direction :up, :gap 5}
-              [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Verdana" :font-size 6} (format "%.1f" h)]
-              [:rect {:stroke :none, :fill :gray} :_ [20 h]]))
-           (take 5 (repeatedly #(rand 50)))))
+      (stack
+       ctx
+       {:position [300 650], :direction :right, :anchor :bottom-left, :gap 1}
+       (map (fn [h]
+              (stack
+               ctx
+               {:direction :up, :gap 5}
+               [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Verdana" :font-size 6} (format "%.1f" h)]
+               [:rect {:stroke :none, :fill :gray} :_ [20 h]]))
+            (take 5 (repeatedly #(rand 50)))))
 
-     (distribute
-      ctx
-      {:position [425 50]}
-      [:rect :_ [10 10]]
-      [:circle :_ 8]
-      [:circle :_ 4]
-      [:circle :_ 6]
-      [:circle :_ 8]
-      [:circle :_ 10]
-      [:circle :_ 10])])
-   
-   "s:/temp/svg_stack1.svg")
+      [:line {:stroke :gray} [425 30] [425 70]]
+      (distribute
+       ctx
+       {:position [425 50], :gap 2}
+       [:rect :_ [10 10]]
+       [:circle :_ 8]
+       [:circle :_ 4]
+       [:circle :_ 6]
+       [:circle :_ 8]
+       [:circle :_ 10]
+       [:circle :_ 10])
+      
+      [:line {:stroke :gray} [425 75] [475 75]]
+      (distribute
+       ctx
+       {:position [450 75] :direction :down}
+       [:circle :_ 10]
+       [:rect :_ [10 10]]
+       [:circle :_ 4]
+       [:circle :_ 6]
+       [:circle :_ 8]
+       [:circle :_ 10]
+       [:circle :_ 10])
+
+      [:line {:stroke :gray} [475 225] [525 225]]
+      (distribute
+       ctx
+       {:position [500 225] :direction :up}
+       [:circle :_ 10]
+       [:rect :_ [10 10]]
+       [:circle :_ 4]
+       [:circle :_ 6]
+       [:circle :_ 8]
+       [:circle :_ 10]
+       [:circle :_ 10])
+
+      [:line {:stroke :gray} [575 225] [575 275]]
+      (distribute
+       ctx
+       {:position [575 250], :direction :left}
+       [:circle :_ 10]
+       [:circle :_ 4]
+       [:circle :_ 6]
+       [:circle :_ 8]
+       [:circle :_ 10]
+       [:circle :_ 10])])
+    
+    "s:/temp/svg_stack1.svg"))
   )

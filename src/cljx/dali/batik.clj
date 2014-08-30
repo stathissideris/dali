@@ -30,6 +30,17 @@
    [(.getWidth rect)
     (.getHeight rect)]])
 
+(def ^:private rehearse-bounds-impl
+  (memoize
+   (fn [this dom element]
+     (let [element (->> element
+                        s/dali->hiccup
+                        (dom/hiccup->element dom))]
+       (dom/add-to-svg dom element)
+       (let [bbox (to-rect (-> element .getBBox))]
+         (dom/remove-from-svg dom element)
+         bbox)))))
+
 (defrecord BatikContextRecord [bridge gvt dom]
   BatikContext
   (gvt-node [this dom-node]
@@ -37,13 +48,7 @@
   (gvt-node-by-id [this id]
     (gvt-node this (.getElementById dom id)))
   (rehearse-bounds [this element]
-    (let [element (->> element
-                       s/dali->hiccup
-                       (dom/hiccup->element dom))]
-      (dom/add-to-svg dom element)
-      (let [bbox (to-rect (-> element .getBBox))]
-        (dom/remove-from-svg dom element)
-        bbox))))
+    (rehearse-bounds-impl this dom element)))
 
 (defn batik-context [dom & {:keys [dynamic?]}]
   (let [bridge (SVG12BridgeContext. (UserAgentAdapter.))]
