@@ -7,6 +7,12 @@
 
 (def anchors #{:top-left :top :top-right :left :right :bottom-left :bottom :bottom-right :center})
 
+(def direction->default-anchor
+  {:down :top
+   :up :bottom
+   :right :left
+   :left :right})
+
 (defn bounds->anchor-point
   [anchor [_ [x y] [w h]]]
   (condp = anchor
@@ -44,12 +50,9 @@
   (let [gap (or gap 0)
         position (or position [0 0])
         direction (or direction :down)
-        anchor (or anchor ({:down :top
-                            :up :bottom
-                            :right :left
-                            :left :right}
-                           direction))
-        elements (if (seq? (first elements)) (first elements) elements)
+        anchor (or anchor (direction->default-anchor direction))
+        elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
+        
         vertical? (or (= direction :down) (= direction :up))
         [x y] position
         elements (map #(replace-blanks % [0 0]) elements)
@@ -65,14 +68,41 @@
                       (fn place-point [x y pos] [pos y]))
         initial-pos (if vertical? y x)]
     (into [:g]
-     (retro/transform
-      [this-gap 0 gap
-       bounds nil (batik/rehearse-bounds ctx element)
-       size 0 (get-size bounds)
-       pos 0 (get-pos bounds)
-       this-pos initial-pos (advance-pos this-pos' size' this-gap')
-       element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
-      elements))))
+      (retro/transform
+       [this-gap 0 gap
+        bounds nil (batik/rehearse-bounds ctx element)
+        size 0 (get-size bounds)
+        pos 0 (get-pos bounds)
+        this-pos initial-pos (advance-pos this-pos' size' this-gap')
+        element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
+       elements))))
+
+(defn distribute [ctx {:keys [position direction anchor gap] :as params} & elements]
+  (let [gap (or gap 0)
+        position (or position [0 0])
+        direction (or direction :right)
+        anchor (or anchor :center)
+        elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
+        
+        vertical? (or (= direction :down) (= direction :up))
+        [x y] position
+        elements (map #(replace-blanks % [0 0]) elements)
+        bounds (map #(batik/rehearse-bounds ctx %) elements)
+        step (+ gap (if vertical?
+                      (apply max (map (fn [[_ _ [_ h]]] h) bounds))
+                      (apply max (map (fn [[_ _ [w _]]] w) bounds))))
+        place-point (if vertical?
+                      (fn place-point [x y pos] [x pos])
+                      (fn place-point [x y pos] [pos y]))
+
+        positions (condp = direction
+                    :down  (range (+ y gap) Integer/MAX_VALUE step)
+                    :up    (range (+ y gap) Integer/MIN_VALUE (- step))
+                    :right (range (+ x gap) Integer/MAX_VALUE step)
+                    :left  (range (+ x gap) Integer/MIN_VALUE (- step)))]
+    (into [:g]
+      (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
+           elements positions bounds))))
 
 (comment
   (distribute
@@ -142,7 +172,7 @@
   (s/spit-svg
    (s/dali->hiccup
     [:page
-     {:height 750 :width 500, :stroke {:paint :black :width 1} :fill :none}
+     {:height 750 :width 600, :stroke {:paint :black :width 1} :fill :none}
 
      ;;test that top-left works
      [:rect [300 50] [100 100]]
@@ -228,7 +258,18 @@
               {:direction :up, :gap 5}
               [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Verdana" :font-size 6} (format "%.1f" h)]
               [:rect {:stroke :none, :fill :gray} :_ [20 h]]))
-           (take 5 (repeatedly #(rand 50)))))])
+           (take 5 (repeatedly #(rand 50)))))
+
+     (distribute
+      ctx
+      {:position [425 50]}
+      [:rect :_ [10 10]]
+      [:circle :_ 8]
+      [:circle :_ 4]
+      [:circle :_ 6]
+      [:circle :_ 8]
+      [:circle :_ 10]
+      [:circle :_ 10])])
    
    "s:/temp/svg_stack1.svg")
   )
