@@ -18,8 +18,10 @@
         (doseq [[k v] attrs]
           (set-attr! e k v))
         (when content
-          (doseq [child content]
-            (.appendChild e (hiccup->element dom child))))
+          (if (string? (first content))
+            (.appendChild e (.createTextNode dom (first content)))
+            (doseq [child content]
+              (.appendChild e (hiccup->element dom child)))))
         e))))
 
 (defn first-by-tag [dom tag]

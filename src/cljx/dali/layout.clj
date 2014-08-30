@@ -28,13 +28,8 @@
   corner is at the passed position."
   [element top-left bounds]
   (let [type (first element)
-        [_ current-pos [w h]] bounds
-        transform
-        (condp = type
-          :circle (v- top-left current-pos)
-          :text top-left ;;TODO
-          (v- top-left current-pos))]
-    (s/add-transform element [:translate transform])))
+        [_ current-pos [w h]] bounds]
+    (s/add-transform element [:translate (v- top-left current-pos)])))
 
 (defn place-by-anchor
   [element anchor position bounds]
@@ -47,6 +42,7 @@
 
 (defn stack [ctx {:keys [position direction anchor gap] :as params} & elements]
   (let [gap (or gap 0)
+        position (or position [0 0])
         direction (or direction :down)
         anchor (or anchor ({:down :top
                             :up :bottom
@@ -199,6 +195,40 @@
       ctx
       {:position [300 500], :direction :right, :anchor :bottom-left, :gap 0.5}
       (map (fn [h] [:rect {:stroke :none, :fill :gray} :_ [10 h]])
-           (take 10 (repeatedly #(rand 50)))))])
+           (take 10 (repeatedly #(rand 50)))))
+
+     (stack
+      ctx
+      {:position [300 525], :direction :right, :gap 3}
+      (take
+       10
+       (repeat
+        (stack ctx {:gap 3}
+               [:rect :_ [5 5]]
+               [:circle :_ 5]
+               [:circle :_ 1.5]))))
+
+     (stack
+      ctx
+      {:position [300 500], :direction :right, :anchor :bottom-left, :gap 0.5}
+      (map (fn [h] [:rect {:stroke :none, :fill :gray} :_ [10 h]])
+           (take 10 (repeatedly #(rand 50)))))
+
+     (marker [300 550])
+     (let [tt [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Georgia" :font-size 40} "This is it"]
+           bb (batik/rehearse-bounds ctx tt)]
+       (place-by-anchor tt :top-left [300 550] bb))     
+
+     (stack
+      ctx
+      {:position [300 650], :direction :right, :anchor :bottom-left, :gap 1}
+      (map (fn [h]
+             (stack
+              ctx
+              {:direction :up, :gap 5}
+              [:text {:x 30 :y 30 :stroke :none :fill :black :font-family "Verdana" :font-size 6} (format "%.1f" h)]
+              [:rect {:stroke :none, :fill :gray} :_ [20 h]]))
+           (take 5 (repeatedly #(rand 50)))))])
+   
    "s:/temp/svg_stack1.svg")
   )
