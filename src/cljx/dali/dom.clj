@@ -21,7 +21,7 @@
           (if (string? (first content))
             (.appendChild e (.createTextNode dom (first content)))
             (doseq [child content]
-              (.appendChild e (hiccup->element dom child)))))
+              (.appendChild e (hiccup->element dom child))))) ;;TODO mind the stack
         e))))
 
 (defn first-by-tag [dom tag]

@@ -1,5 +1,6 @@
 (ns dali.batik
   (:require [clojure.java.io :as io]
+            [clojure.walk :as walk]
             [dali.syntax :as s]
             [dali.dom :as dom])
   (:import [java.nio.charset StandardCharsets]
@@ -8,9 +9,8 @@
            [org.apache.batik.transcoder.image PNGTranscoder]
            [org.apache.batik.transcoder
             TranscoderInput TranscoderOutput]
-           [org.apache.batik.dom.svg SAXSVGDocumentFactory]
-           [org.apache.batik.bridge UserAgentAdapter BridgeContext GVTBuilder DocumentLoader]
-           [org.apache.batik.bridge.svg12 SVG12BridgeContext]))
+           [org.apache.batik.dom.svg SAXSVGDocumentFactory SVGDOMImplementation]
+           [org.apache.batik.bridge UserAgentAdapter BridgeContext GVTBuilder DocumentLoader]))
 
 ;;Batik - calculating bounds of cubic spline
 ;;http://stackoverflow.com/questions/10610355/batik-calculating-bounds-of-cubic-spline?rq=1
@@ -50,13 +50,19 @@
   (rehearse-bounds [this element]
     (rehearse-bounds-impl this dom element)))
 
-(defn batik-context [dom & {:keys [dynamic?]}]
-  (let [bridge (SVG12BridgeContext. (UserAgentAdapter.))]
-    (.setDynamic bridge (or dynamic? true))
-    (map->BatikContextRecord
-     {:dom dom
-      :bridge bridge
-      :gvt (.build (GVTBuilder.) bridge dom)})))
+(defn context
+  ([]
+     (context nil))
+  ([dom & {:keys [dynamic?]}]
+     (let [dom (or dom
+                   (-> (SVGDOMImplementation/getDOMImplementation)
+                       (.createDocument SVGDOMImplementation/SVG_NAMESPACE_URI "svg" nil)))
+           bridge (BridgeContext. (UserAgentAdapter.))]
+       (.setDynamic bridge (or dynamic? true))
+       (map->BatikContextRecord
+        {:dom dom
+         :bridge bridge
+         :gvt (.build (GVTBuilder.) bridge dom)}))))
 
 (defn parse-svg-uri [uri]
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
