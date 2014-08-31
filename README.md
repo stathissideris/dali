@@ -12,10 +12,10 @@ Here's a hello world for dali:
 (def document
   [:svg {:width 100 :height 100}
    [:circle
-    {:stroke :yello :stroke-width 4 :fill :red}
+    {:stroke :yellow :stroke-width 4 :fill :red}
     [50 50] 40]])
 
-(-> document s/dali->hiccup (s/spit-svg "simple.svg"))
+(-> document (s/dali->hiccup) (s/spit-svg "simple.svg"))
 ```
 
 ## Syntax
