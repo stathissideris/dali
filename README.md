@@ -124,7 +124,7 @@ The following table summarizes the diffent commands available for
 paths:
 
 | Standard | Long            | Parameters                        |
-|----------+-----------------+-----------------------------------|
+|----------|-----------------|-----------------------------------|
 | :M       | :move-to        | [x y]                             |
 | :m       | :move-by        | [dx dy]                           |
 | :L       | :line-to        | [x y]                             |
