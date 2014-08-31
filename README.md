@@ -5,6 +5,19 @@ allows the creation and manipulation of SVG file. The syntax used to
 describe the graphical elements is based on
 [hiccup](https://github.com/weavejester/hiccup) with a few extensions.
 
+Here's a hello world for dali:
+
+```clojure
+(require '[dali.syntax :as s])
+(def document
+  [:svg {:width 100 :height 100}
+   [:circle
+    {:stroke :yello :stroke-width 4 :fill :red}
+    [50 50] 40]])
+
+(-> document s/dali->hiccup (s/spit-svg "simple.svg"))
+```
+
 ## Syntax
 
 ### Basics
@@ -12,7 +25,7 @@ describe the graphical elements is based on
 In order to use dali you need to know the SVG syntax, because dali's
 syntax is essentially equivalent to how you would represent SVG in
 hiccup. For example, here is how you would write a very simple SVG
-document ih hiccup:
+document in hiccup:
 
 ```clojure
 [:svg {:width 100 :height 100}
@@ -27,8 +40,8 @@ being replaced by page:
  [:circle {:cx 50 :cy 50 :r 40}]]
 ```
 
-You could use dali like that, but in the dali syntax there is a
-shorter and more convenient way to represent circles:
+You could use dali like that, but there is a shorter and more
+convenient way to represent circles:
 
 ```clojure
 [:svg {:width 100 :height 100}
@@ -40,22 +53,22 @@ normal hiccup convention of an optional attribute map in the second
 position still applies):
 
 ```clojure
-[:circle {:stroke :green :stroke-width 4 :fill :yelow} [50 50] 40]
+[:circle {:stroke :green :stroke-width 4 :fill :yellow} [50 50] 40]
 ```
 
-In fact, :stroke is an attribute that can be nested for clarity and
+In fact, `:stroke` is an attribute that can be nested for clarity and
 conciseness:
 
 ```clojure
-[:circle {:stroke {:paint :green :width 4} :fill :yelow} [50 50] 40]
+[:circle {:stroke {:paint :green :width 4} :fill :yellow} [50 50] 40]
 ```
 
-Because it is not constrained by th limitations of XML, dali can use
+Because it is not constrained by the limitations of XML, dali can use
 the flexibility of the [EDN format](https://github.com/edn-format/edn)
 to re-organise the hiccup SVG representation so that it, hopefully,
 makes more sense. Because the dali syntax is a superset of hiccup, you
 can choose to ignore the shortcuts provided and stick with the normal
-hiccup representation of SVG.
+hiccup representation of SVG and everything will still work as normal.
 
 ### Shapes syntax
 
@@ -123,7 +136,7 @@ Or you can use the long version of the commands:
 The following table summarizes the diffent commands available for
 paths:
 
-| Standard | Long            | Parameters                        |
+| Standard | Long for        | Parameters                        |
 |----------|-----------------|-----------------------------------|
 | :M       | :move-to        | [x y]                             |
 | :m       | :move-by        | [dx dy]                           |
