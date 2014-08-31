@@ -30,10 +30,18 @@
 
 (defn triangle-arrow-end
   [id & {:keys [width height style]}]
-  (let [w (float (/ (or width 10) 2))
-        h (or height 10)]
-   [:marker {:id id :ref-x (- h 2.5) :ref-y 0 :orient :auto :style "overflow:visible;"}
+  (let [w (float (/ (or width 8) 2))
+        h (or height 11)]
+   [:marker {:id id :ref-x (- h 2.3) :ref-y 0 :orient :auto :style "overflow:visible;"}
     [:path (merge {:fill :black :stroke :none} style)
      :M [0 w] :L [h 0] :L [0 (- w)] :z]]))
 
-;;M -0.78996659,-4.0017078 10.13591,0.01601414 -0.78996719,4.0337352 c 1.74549835,-2.3720609 1.73544075,-5.6174519 6e-7,-8.035443 z
+(defn curvy-arrow-end
+  [id & {:keys [width height style]}]
+  (let [w (float (/ (or width 10) 2))
+        h (or height 10)]
+   [:marker {:id id :ref-x (- h 2.3) :ref-y 0 :orient :auto :style "overflow:visible;"}
+    [:path (merge {:fill :black :stroke :none} style)
+     :M [-0.78996659 -4.0017078] :L [10.13591 0.01601414] :L [-0.78996719 4.0337352]
+     :c [1.74549835,-2.3720609] [1.73544075,-5.6174519] [0,-8.035443] :z]]))
+

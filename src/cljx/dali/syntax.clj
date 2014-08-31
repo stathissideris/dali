@@ -294,18 +294,23 @@
   (require '[dali.stock :as stock])
   (spit-svg
    (dali->hiccup
-    [:page
+    [:page {:stroke {:width 2 :paint :black}}
      [:defs
       (stock/sharp-arrow-end :sharp)
-      (stock/triangle-arrow-end :triangle)]
+      (stock/triangle-arrow-end :triangle)
+      (stock/curvy-arrow-end :curvy)]
      [:polyline
-      {:fill :none :stroke-width 1 :stroke :black :marker-end "url(#sharp)"}
-      [10 90] [50 80] [90 30]]
+      {:fill :none :marker-end "url(#sharp)"}
+      [50 80] [90 30]]
      [:polyline
-      {:fill :none :stroke-width 1 :stroke :black :marker-end "url(#triangle)"}
-      [30 90] [70 80] [110 30]]
+      {:fill :none :marker-end "url(#triangle)"}
+      [80 80] [120 30]]
+     [:polyline
+      {:fill :none :marker-end "url(#curvy)"}
+      [110 80] [150 30]]
      ;[:circle {:stroke :red :fill :none} [90 30] 2]
      ;[:circle {:stroke :red :fill :none} [110 30] 2]
+     ;[:circle {:stroke :red :fill :none} [130 30] 2]
      ])
    "s:/temp/svg_marker.svg")
   )
