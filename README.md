@@ -9,6 +9,7 @@ Here's a hello world for dali:
 
 ```clojure
 (require '[dali.syntax :as s])
+
 (def document
   [:svg {:width 100 :height 100}
    [:circle
@@ -138,7 +139,7 @@ paths:
 
 | Standard | Long form       | Parameters                        |
 |----------|-----------------|-----------------------------------|
-| `:M`       | :move-to        | [x y]                             |
+| :M       | :move-to        | [x y]                             |
 | :m       | :move-by        | [dx dy]                           |
 | :L       | :line-to        | [x y]                             |
 | :l       | :line-by        | [dx dy]                           |
