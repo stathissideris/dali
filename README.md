@@ -136,9 +136,9 @@ Or you can use the long version of the commands:
 The following table summarizes the diffent commands available for
 paths:
 
-| Standard | Long for        | Parameters                        |
+| Standard | Long form       | Parameters                        |
 |----------|-----------------|-----------------------------------|
-| :M       | :move-to        | [x y]                             |
+| `:M`       | :move-to        | [x y]                             |
 | :m       | :move-by        | [dx dy]                           |
 | :L       | :line-to        | [x y]                             |
 | :l       | :line-by        | [dx dy]                           |
