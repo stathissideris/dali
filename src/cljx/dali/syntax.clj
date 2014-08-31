@@ -298,7 +298,8 @@
      [:defs
       (stock/sharp-arrow-end :sharp)
       (stock/triangle-arrow-end :triangle)
-      (stock/curvy-arrow-end :curvy)]
+      (stock/curvy-arrow-end :curvy)
+      (stock/dot-end :dot)]
      [:polyline
       {:fill :none :marker-end "url(#sharp)"}
       [50 80] [90 30]]
@@ -308,6 +309,9 @@
      [:polyline
       {:fill :none :marker-end "url(#curvy)"}
       [110 80] [150 30]]
+     [:polyline
+      {:fill :none :marker-end "url(#dot)"}
+      [140 80] [180 30]]
      ;[:circle {:stroke :red :fill :none} [90 30] 2]
      ;[:circle {:stroke :red :fill :none} [110 30] 2]
      ;[:circle {:stroke :red :fill :none} [130 30] 2]
