@@ -1,3 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.2//EN" "http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd">
-<svg height="50" stroke-width="2" stroke="black" version="1.2" width="90" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><rect height="20" transform="rotate(30 30 20)" width="20" x="20" y="10"></rect><circle cx="30" cy="20" fill="deepskyblue" r="2" stroke="none"></circle><rect height="20" transform="rotate(10 60 20) skewX(30)" width="20" x="50" y="10"></rect></svg>
+<svg fill="none" height="50" stroke-width="2" stroke="black" version="1.2" width="90" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><rect height="20" transform="rotate(30 30 20)" width="20" x="20" y="10"></rect><circle cx="30" cy="20" fill="red" r="2" stroke="none"></circle><rect height="20" transform="rotate(10 60 20) skewX(30)" width="20" x="50" y="10"></rect></svg>

@@ -172,18 +172,19 @@ paths:
 ### Attributes
 
 Generally, attributes are represented as a map which is the standard
-hiccup way. All the usual conversions apply, so keywords are converted
-to strings, and this also applies for numbers. There are however some
-optional extensions in attribute handling as well:
+hiccup way. All the usual conversions apply, so keywords and numbers
+are converted to strings. There are however some optional extensions
+in attribute handling as well:
 
 `:transform` can be passed as a vector of vectors that describe the
 transformations to be applied:
 
 ```clojure
-[:page {:width 90 :height 50 :stroke :black :stroke-width 2}
-     [:rect {:transform [[:rotate [30 30 20]]]} ;;rotate around center marked by circle below
+[:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
+     
+     [:rect {:transform [[:rotate [30 30 20]]]} ;;rotate around center marked by circle
       [20 10] [20 20]]
-     [:circle {:stroke :none :fill :deepskyblue} [30 20] 2]
+     [:circle {:stroke :none :fill :red} [30 20] 2]
 
      [:rect {:transform [[:rotate [10 60 20]] [:skew-x [30]]]}
       [50 10] [20 20]]]
