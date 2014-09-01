@@ -13,7 +13,7 @@ Here's a hello world for dali:
 (def document
   [:page {:width 100 :height 100}
    [:circle
-    {:stroke :blue :stroke-width 4 :fill :yellow}
+    {:stroke :indigo :stroke-width 4 :fill :darkorange}
     [50 50] 40]])
 
 (-> document (s/dali->hiccup) (s/spit-svg "simple.svg"))
@@ -168,6 +168,26 @@ paths:
 | :a       | :arc-by         | [rx ry] x-rot large? sweep? [x y] |
 | :Z       | :close          |                                   |
 | :z       | :close          |                                   |
+
+### Attributes
+
+Generally, attributes are represented as a map which is the standard
+hiccup way. All the usual conversions apply, so keywords are converted
+to strings, and this also applies for numbers. There are however some
+optional extensions in attribute handling as well.
+
+`stroke-dasharray` can be passed as a sequence of numbers, for example:
+
+```clojure
+[:page {:width 120 :height 30 :stroke :black :stroke-width 2}
+     [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
+     [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/dasharray.svg)
+
+The same applies to any attribute that's a sequence that contains just
+numbers: the numbers are converted to a space-delimited string.
 
 ## Roadmap
 
