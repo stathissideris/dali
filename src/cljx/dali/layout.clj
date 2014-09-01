@@ -1,4 +1,4 @@
-(ns cljx.dali.layout
+(ns dali.layout
   (:require [clojure.walk :as walk]
             [retrograde :as retro]
             [dali.syntax :as s]

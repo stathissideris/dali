@@ -189,7 +189,6 @@ transformations to be applied:
      [:rect {:transform [[:rotate [10 60 20]] [:skew-x [30]]]}
       [50 10] [20 20]]]
 ```
-
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/transform.svg)
 
 `:stroke-dasharray` can be passed as a sequence of numbers, for example:
@@ -199,16 +198,34 @@ transformations to be applied:
      [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
      [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]
 ```
-
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/dasharray.svg)
 
-In the example `[10 5]` becomes `"10 5"`. The same applies to any
-attribute which is a sequence that contains just numbers: the numbers
-are converted to a space-delimited string.
+In the example `[10 5]` becomes `"10,5"`. A similar rule applies to
+any attribute which is a sequence that contains just numbers: the
+numbers are converted to a **space-delimited** string.
+
+### Layout
+
+There are currently two ways to layout elements in dali: you can stack
+them on top of each other or you can distribute them at equal
+distances. They both involve custom syntax. The
+[Apache Batik](http://xmlgraphics.apache.org/batik/) is used for
+figuring out the sizes of various elements. Please note that for some
+reason the performance of layouts is currently quite poor, but this
+will be investigated and hopefully fixed in the next version.
+
+## Stock shapes etc
+
+## Examples
 
 ## Roadmap
 
-???TODO
+Planned for the future:
+
+* Better validation of the syntax using the Prismatic schema library.
+* Porting basic functionality to ClojureScript.
+* More stock shapes.
+* Easier ways to connect boxes by anchor.
 
 ## License
 
