@@ -301,17 +301,41 @@ default):
 There are two noteworthy things about this example: First, when you
 use text that participates in layouts, you should *always* be specific
 about the font and size, so that the size the font is rendered on the
-browser matches the size calculated when the SVG was generated
-(assuming that the font is available in both places).
+browser matches the size calculated when the SVG is generated and
+everything aligns as expected (assuming that the font is available in
+both places).
 
 Second, when creating functions that return a collection of elements,
 they have to be returned as lists and not vectors, because dali will
 expand lists but will try to interpret vectors as tags (hiccup behaves
 in the same way).
 
-## Stock shapes etc
+The other way is to distribute the centers of the elements in equal
+distances:
 
-## Examples
+```clojure
+[:page {:width 200 :height 60 :stroke :none}
+ [:distribute
+  {:position [10 20] :direction :right}
+  [:rect {:fill :mediumslateblue} :_ [50 20]]
+  [:rect {:fill :sandybrown} :_ [30 20]]
+  [:rect {:fill :green} :_ [40 20]]
+  [:rect {:fill :orange} :_ [20 20]]]
+
+ ;;show centers
+ [:g (map #(vector
+            :line
+            {:stroke {:paint :red :width 2}} [% 40] [% 50])
+          (range 35 200 50))]]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/distribute1.svg)
+
+The exact distance between the centers is determined by the widest or
+tallest element (depending on the direction) and also the gap
+parameter. The distribute layout also supports the 4 directions
+supported by stack.
+
+## Stock shapes etc
 
 ## Roadmap
 
@@ -320,7 +344,9 @@ Planned for the future:
 * Better validation of the syntax using the Prismatic schema library.
 * Porting basic functionality to ClojureScript.
 * More stock shapes.
-* Easier ways to connect boxes by anchor.
+* More layout functionality
+    * Easier ways to connect boxes by anchor.
+    * Placing an element in the center of another element.
 
 ## License
 

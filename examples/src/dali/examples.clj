@@ -76,15 +76,32 @@
     :document
     (let [shapes (fn [s]
                    (list
-                    [:text {:font-family "Georgia" :font-size 20} s]
+                    [:text {:font-family "Georgia" :font-size 20
+                            :stroke :none :fill :black} s]
                     [:rect :_ [20 20]]
                     [:circle :_ 15]
                     [:polyline [0 0] [20 0] [10 20] [20 20]]))]
-      [:page {:width 350 :height 500 :stroke {:paint :black :width 2} :fill :none}
+      [:page {:width 150 :height 260 :stroke {:paint :black :width 2} :fill :none}
        [:stack {:position [20 20] :direction :right} (shapes "right")]
        [:stack {:position [130 70] :gap 5 :direction :left} (shapes "left")]
        [:stack {:position [40 150] :gap 5 :direction :down} (shapes "down")]
-       [:stack {:position [90 250] :gap 18 :direction :up} (shapes "up")]])}])
+       [:stack {:position [110 250] :gap 18 :direction :up} (shapes "up")]])}
+
+   {:filename "distribute1.svg"
+    :document
+    [:page {:width 200 :height 60 :stroke :none}
+     [:distribute
+      {:position [10 20] :direction :right}
+      [:rect {:fill :mediumslateblue} :_ [50 20]]
+      [:rect {:fill :sandybrown} :_ [30 20]]
+      [:rect {:fill :green} :_ [40 20]]
+      [:rect {:fill :orange} :_ [20 20]]]
+
+     ;;show centers
+     [:g (map #(vector
+                :line
+                {:stroke {:paint :red :width 2}} [% 40] [% 50])
+              (range 35 200 50))]]}])
 
 (defn render-examples [documents]
   (doseq [{:keys [document filename]} documents]
@@ -93,7 +110,8 @@
         (s/dali->hiccup)
         (s/spit-svg (str "examples/output/" filename)))))
 
-
-(render-examples examples)
+(comment
+ (render-examples examples)
+ )
 
 
