@@ -19,7 +19,7 @@ Here's a hello world for dali:
 (-> document (s/dali->hiccup) (s/spit-svg "simple.svg"))
 ```
 
-![](examples/output/hello-world.svg?raw=true)
+![](https://raw.githubusercontent.com/stathissideris/dali/master/examples/output/hello-world.svg)
 
 ## Using dali in your project
 
