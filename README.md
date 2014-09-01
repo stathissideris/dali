@@ -11,13 +11,24 @@ Here's a hello world for dali:
 (require '[dali.syntax :as s])
 
 (def document
-  [:svg {:width 100 :height 100}
+  [:page {:width 100 :height 100}
    [:circle
-    {:stroke :yellow :stroke-width 4 :fill :red}
+    {:stroke :blue :stroke-width 4 :fill :yellow}
     [50 50] 40]])
 
 (-> document (s/dali->hiccup) (s/spit-svg "simple.svg"))
 ```
+
+![](examples/output/hello-world.svg?raw=true)
+
+## Using dali in your project
+
+Before adding dali as a dependency, please consider that it still a
+very immature project where the API and syntax can (an very likely
+will) change. Having said that, you are very welcome to give it a
+go. Just add this to the dependencies of your project.clj:
+
+???TODO
 
 ## Syntax
 
@@ -33,8 +44,8 @@ document in hiccup:
  [:circle {:cx 50 :cy 50 :r 40}]]
 ```
 
-This almost valid dali syntax, with the small exception of the svg tag
-being replaced by page:
+This is almost valid dali syntax, with the small exception of the
+`svg` tag being replaced by `page`:
 
 ```clojure
 [:page {:width 100 :height 100}
@@ -157,6 +168,10 @@ paths:
 | :a       | :arc-by         | [rx ry] x-rot large? sweep? [x y] |
 | :Z       | :close          |                                   |
 | :z       | :close          |                                   |
+
+## Roadmap
+
+???TODO
 
 ## License
 
