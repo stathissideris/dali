@@ -174,9 +174,24 @@ paths:
 Generally, attributes are represented as a map which is the standard
 hiccup way. All the usual conversions apply, so keywords are converted
 to strings, and this also applies for numbers. There are however some
-optional extensions in attribute handling as well.
+optional extensions in attribute handling as well:
 
-`stroke-dasharray` can be passed as a sequence of numbers, for example:
+`:transform` can be passed as a vector of vectors that describe the
+transformations to be applied:
+
+```clojure
+[:page {:width 90 :height 50 :stroke :black :stroke-width 2}
+     [:rect {:transform [[:rotate [30 30 20]]]} ;;rotate around center marked by circle below
+      [20 10] [20 20]]
+     [:circle {:stroke :none :fill :deepskyblue} [30 20] 2]
+
+     [:rect {:transform [[:rotate [10 60 20]] [:skew-x [30]]]}
+      [50 10] [20 20]]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/transform.svg)
+
+`:stroke-dasharray` can be passed as a sequence of numbers, for example:
 
 ```clojure
 [:page {:width 120 :height 30 :stroke :black :stroke-width 2}
@@ -186,8 +201,9 @@ optional extensions in attribute handling as well.
 
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/dasharray.svg)
 
-The same applies to any attribute that's a sequence that contains just
-numbers: the numbers are converted to a space-delimited string.
+In the example `[10 5]` becomes `"10 5"`. The same applies to any
+attribute which is a sequence that contains just numbers: the numbers
+are converted to a space-delimited string.
 
 ## Roadmap
 
