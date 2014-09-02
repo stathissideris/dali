@@ -1,5 +1,8 @@
 # dali
 
+> I do not understand why, when I ask for grilled lobster in a restaurant, I'm never served a cooked telephone.
+> -- Salvador Dalí
+
 dali is a Clojure library for representing the SVG graphics format. It
 allows the creation and manipulation of SVG file. The syntax used to
 describe the graphical elements is based on
@@ -26,9 +29,11 @@ Here's a hello world for dali:
 Before adding dali as a dependency, please consider that it still a
 very immature project where the API and syntax can (an very likely
 will) change. Having said that, you are very welcome to give it a
-go. Just add this to the dependencies of your project.clj:
+go. Just add this to the dependencies of your `project.clj`:
 
-???TODO
+```
+[dali "0.5.0"]
+```
 
 ## Syntax
 
