@@ -27,7 +27,7 @@ Here's a hello world for dali:
 ## Using dali in your project
 
 Before adding dali as a dependency, please consider that it still a
-very immature project where the API and syntax can (an very likely
+very immature project where the API and syntax can (and very likely
 will) change. Having said that, you are very welcome to give it a
 go. Just add this to the dependencies of your `project.clj`:
 
