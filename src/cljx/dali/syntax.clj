@@ -311,11 +311,7 @@
       [110 80] [150 30]]
      [:polyline
       {:fill :none :marker-end "url(#dot)"}
-      [140 80] [180 30]]
-     ;[:circle {:stroke :red :fill :none} [90 30] 2]
-     ;[:circle {:stroke :red :fill :none} [110 30] 2]
-     ;[:circle {:stroke :red :fill :none} [130 30] 2]
-     ])
+      [140 80] [180 30]]])
    "s:/temp/svg_marker.svg")
   )
 

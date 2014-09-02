@@ -335,7 +335,93 @@ tallest element (depending on the direction) and also the gap
 parameter. The distribute layout also supports the 4 directions
 supported by stack.
 
+Layouts can also be nested within each other. The deepest layouts are
+resolved first and then they may be moved by their parents.
+
 ## Stock shapes etc
+
+The `dali.stock` namespace defines some markers for arrows, which are
+parameterizable. See the individual functions in the namespace for
+more details.
+
+```clojure
+[:page {:stroke {:width 2 :paint :black}}
+ [:defs
+  (stock/sharp-arrow-end :sharp)
+  (stock/triangle-arrow-end :triangle)
+  (stock/curvy-arrow-end :curvy)
+  (stock/dot-end :dot)
+  (stock/sharp-arrow-end :very-sharp :height 32)]
+ [:polyline
+  {:fill :none :marker-end "url(#sharp)"}
+  [50 80] [90 30]]
+ [:polyline
+  {:fill :none :marker-end "url(#triangle)"}
+  [80 80] [120 30]]
+ [:polyline
+  {:fill :none :marker-end "url(#curvy)"}
+  [110 80] [150 30]]
+ [:polyline
+  {:fill :none :marker-end "url(#dot)"}
+  [140 80] [180 30]]
+ [:polyline
+  {:fill :none :marker-end "url(#very-sharp)"}
+  [170 80] [210 30]]]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/markers1.svg)
+
+## Examples
+
+Altough dali is a generic graphics lirbary, it's really easy to create
+bar charts with it, so here are some examples:
+
+```clojure
+[:page {:width 260 :height 140}
+ [:stack
+  {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
+  (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
+       [10 30 22 56 90 59 23 12 44 50])]]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/graph1.svg)
+
+Nested layouts make adding text easy:
+
+```clojure
+[:stack
+ {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
+ (map (fn [h]
+        [:stack
+         {:direction :up :gap 6}
+         [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]]
+         [:text {:text-family "Verdana" :font-size 12} (str h)]])
+      [10 30 22 56 90 59 23 12 44 50])]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/graph2.svg)
+
+Stacked bar charts are a piece of cake:
+
+```clojure
+[:page {:width 270 :height 150}
+ [:stack
+  {:position [10 140], :direction :right, :anchor :bottom-left, :gap 2}
+  (map (fn [[a b c]]
+         [:stack
+          {:direction :up}
+          [:rect {:stroke :none, :fill "#D46A6A"} :_ [20 a]]
+          [:rect {:stroke :none, :fill "#D49A6A"} :_ [20 b]]
+          [:rect {:stroke :none, :fill "#407F7F"} :_ [20 c]]])
+       [[10 10 15]
+        [30 10 20]
+        [22 10 25]
+        [56 10 10]
+        [90 10 30]
+        [59 22 25]
+        [23 10 13]
+        [12 6 8]
+        [44 22 18]
+        [50 20 10]])]]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/graph3.svg)
 
 ## Roadmap
 
@@ -344,6 +430,7 @@ Planned for the future:
 * Better validation of the syntax using the Prismatic schema library.
 * Porting basic functionality to ClojureScript.
 * More stock shapes.
+* Support for graph-oriented elements (axes etc).
 * More layout functionality
     * Easier ways to connect boxes by anchor.
     * Placing an element in the center of another element.

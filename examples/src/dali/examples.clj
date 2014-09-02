@@ -1,6 +1,7 @@
 (ns dali.examples
   (:require [dali.syntax :as s]
-            [dali.layout :as layout]))
+            [dali.layout :as layout]
+            [dali.stock :as stock]))
 
 (def examples
   [{:filename "hello-world.svg"
@@ -101,7 +102,75 @@
      [:g (map #(vector
                 :line
                 {:stroke {:paint :red :width 2}} [% 40] [% 50])
-              (range 35 200 50))]]}])
+              (range 35 200 50))]]}
+
+   {:filename "markers1.svg"
+    :document
+    [:page {:width 220 :height 90 :stroke {:width 2 :paint :black}}
+     [:defs
+      (stock/sharp-arrow-end :sharp)
+      (stock/triangle-arrow-end :triangle)
+      (stock/curvy-arrow-end :curvy)
+      (stock/dot-end :dot)
+      (stock/sharp-arrow-end :very-sharp :height 32)]
+     [:polyline
+      {:fill :none :marker-end "url(#sharp)"}
+      [50 80] [90 30]]
+     [:polyline
+      {:fill :none :marker-end "url(#triangle)"}
+      [80 80] [120 30]]
+     [:polyline
+      {:fill :none :marker-end "url(#curvy)"}
+      [110 80] [150 30]]
+     [:polyline
+      {:fill :none :marker-end "url(#dot)"}
+      [140 80] [180 30]]
+     [:polyline
+      {:fill :none :marker-end "url(#very-sharp)"}
+      [170 80] [210 30]]]}
+
+   {:filename "graph1.svg"
+    :document
+    [:page {:width 260 :height 140}
+     [:stack
+      {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
+      (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
+           [10 30 22 56 90 59 23 12 44 50])]]}
+
+   {:filename "graph2.svg"
+    :document
+    [:page {:width 270 :height 140}
+     [:stack
+      {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
+      (map (fn [h]
+             [:stack
+              {:direction :up :gap 6}
+              [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]]
+              [:text {:text-family "Verdana" :font-size 12} (str h)]])
+           [10 30 22 56 90 59 23 12 44 50])]]}
+
+   {:filename "graph3.svg"
+    :document
+    [:page {:width 270 :height 150}
+     [:stack
+      {:position [10 140], :direction :right, :anchor :bottom-left, :gap 2}
+      (map (fn [[a b c]]
+             [:stack
+              {:direction :up}
+              [:rect {:stroke :none, :fill "#D46A6A"} :_ [20 a]]
+              [:rect {:stroke :none, :fill "#D49A6A"} :_ [20 b]]
+              [:rect {:stroke :none, :fill "#407F7F"} :_ [20 c]]])
+           [[10 10 15]
+            [30 10 20]
+            [22 10 25]
+            [56 10 10]
+            [90 10 30]
+            [59 22 25]
+            [23 10 13]
+            [12 6 8]
+            [44 22 18]
+            [50 20 10]])]]}
+   ])
 
 (defn render-examples [documents]
   (doseq [{:keys [document filename]} documents]
