@@ -1,7 +1,9 @@
 (ns dali.examples
-  (:require [dali.syntax :as s]
+  (:require [clojure.java.io :as io]
+            [dali.syntax :as s]
             [dali.layout :as layout]
-            [dali.stock :as stock]))
+            [dali.stock :as stock]
+            [dali.batik :as batik]))
 
 (def examples
   [{:filename "hello-world.svg"
@@ -11,6 +13,13 @@
       {:stroke :indigo :stroke-width 4 :fill :darkorange}
       [30 30] 20]]}
 
+   {:filename "zig-zag.svg"
+    :document
+    [:page {:width 220 :height 130 :stroke-width 2 :stroke :black :fill :none}
+     [:polyline (map #(vector %1 %2) (range 10 210 20) (cycle [10 30]))]
+     [:polyline (map #(vector %1 %2) (range 10 210 5) (cycle [60 80]))]
+     [:polyline (map #(vector %1 %2) (range 10 210 10) (cycle [100 100 120 120]))]]}
+   
    ;;transform syntax demonstrated
    {:filename "transform.svg"
     :document
@@ -178,6 +187,12 @@
         (layout/resolve-layout)
         (s/dali->hiccup)
         (s/spit-svg (str "examples/output/" filename)))))
+
+(comment ;;TODO
+ (defn render-folder-to-png [from-folder to-folder]
+   (let [dir (io/file from-folder)
+         files (file-seq dir)]
+     files)))
 
 (comment
  (render-examples examples)
