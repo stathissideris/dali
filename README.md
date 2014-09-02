@@ -61,7 +61,7 @@ You could use dali like that, but there is a shorter and more
 convenient way to represent circles:
 
 ```clojure
-[:svg {:width 100 :height 100}
+[:page {:width 100 :height 100}
  [:circle [50 50] 40]]
 ```
 
