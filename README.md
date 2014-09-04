@@ -4,7 +4,7 @@
 > -- Salvador Dalí
 
 dali is a Clojure library for representing the SVG graphics format. It
-allows the creation and manipulation of SVG file. The syntax used to
+allows the creation and manipulation of SVG files. The syntax used to
 describe the graphical elements is based on
 [hiccup](https://github.com/weavejester/hiccup) with a few extensions.
 
