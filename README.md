@@ -32,7 +32,7 @@ will) change. Having said that, you are very welcome to give it a
 go. Just add this to the dependencies of your `project.clj`:
 
 ```
-[dali "0.5.0"]
+[dali "0.6.0"]
 ```
 
 ## Syntax
