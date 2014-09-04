@@ -2,7 +2,6 @@
   (:require [clojure.java.io :as io]
             [clojure.pprint :refer [cl-format]]
             [clojure.string :as string]
-            [dali.core :as core]
             [hiccup.core :as hiccup]
             [hiccup.page]))
 
