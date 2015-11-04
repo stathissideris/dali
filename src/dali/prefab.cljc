@@ -1,4 +1,4 @@
-(ns dali.stock)
+(ns dali.prefab)
 
 (defn stripe-pattern [id & {:keys (angle width fill width2 fill2)}]
   (let [width (or width 10)

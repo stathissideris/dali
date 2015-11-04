@@ -25,7 +25,7 @@
   
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
 
-  :profiles {:dev {:source-paths ["dev"]
+  :profiles {:dev {:source-paths ["dev" "examples/src"]
                    :dependencies [[org.clojure/tools.namespace "0.2.11"]]}}
   
   :cljsbuild

@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]
             [dali.syntax :as s]
             [dali.layout :as layout]
-            [dali.stock :as stock]
+            [dali.prefab :as prefab]
             [dali.batik :as batik]))
 
 (def examples
@@ -117,11 +117,11 @@
     :document
     [:page {:width 220 :height 90 :stroke {:width 2 :paint :black}}
      [:defs
-      (stock/sharp-arrow-end :sharp)
-      (stock/triangle-arrow-end :triangle)
-      (stock/curvy-arrow-end :curvy)
-      (stock/dot-end :dot)
-      (stock/sharp-arrow-end :very-sharp :height 32)]
+      (prefab/sharp-arrow-end :sharp)
+      (prefab/triangle-arrow-end :triangle)
+      (prefab/curvy-arrow-end :curvy)
+      (prefab/dot-end :dot)
+      (prefab/sharp-arrow-end :very-sharp :height 32)]
      [:polyline
       {:fill :none :marker-end "url(#sharp)"}
       [50 80] [90 30]]
@@ -197,5 +197,3 @@
 (comment
  (render-examples examples)
  )
-
-
