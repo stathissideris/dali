@@ -1,9 +1,9 @@
 (ns dali.batik-test
   (:require [dali.batik :refer :all]
             [clojure.test :refer :all]
-            [dali.svg-translate :as syntax]))
+            [dali.syntax :as syntax]))
 
-(deftest outline
+(deftest test-outline
   (testing "outline"
     (let [path [:page {:height 500 :width 500}
                 [:path
@@ -16,6 +16,6 @@
                  syntax/dali->hiccup
                  syntax/hiccup->svg-document-string
                  parse-svg-string
-                 batik-context
+                 context
                  (gvt-node-by-id "path")
                  (outline)))))))

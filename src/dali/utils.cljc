@@ -42,5 +42,10 @@
        (= size (count v))
        (every? num-or-fn? v)))
 
-(defn exception [& msg]
-  (#+clj Exception. #+cljs js/Error. (apply str msg)))
+#?(:clj
+   (defn exception [& msg]
+     (Exception. (apply str msg)))
+   
+   :cljc
+   (defn exception [& msg]
+     (js/Error. (apply str msg))))

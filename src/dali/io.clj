@@ -1,4 +1,5 @@
 (ns dali.io
+  (:refer-clojure :exclude [namespace])
   (:require [clojure.java.io :as io]
             [net.cgrand.xml :as xml]
             [net.cgrand.enlive-html :as en]

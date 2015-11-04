@@ -1,15 +1,15 @@
 (ns dali.math)
 
-#+cljs
-(def PI (.-PI js/Math))
+#?(:cljs
+   (def PI (.-PI js/Math)))
 
-#+clj
-(defn abs [x]
-  (java.lang.Math/abs x))
+#?(:clj
+   (defn abs [x]
+     (java.lang.Math/abs x))
 
-#+cljs
-(defn abs [x]
-  (.abs js/Math x))
+   :cljs
+   (defn abs [x]
+     (.abs js/Math x)))
   
 (defn within
   "Tests whether x is within the range of a and b. a can be less or
@@ -22,67 +22,67 @@
      (or (and (>= x (- a error)) (<= x (+ b error)))
          (and (>= x (- b error)) (<= x (+ a error))))))
 
-#+clj
-(defn radians->degrees [x]
-  (java.lang.Math/toDegrees x))
+#?(:clj
+   (defn radians->degrees [x]
+     (java.lang.Math/toDegrees x))
 
-#+cljs
-(defn radians->degrees [x]
-  (/ (* x 180) PI))
+   :cljs
+   (defn radians->degrees [x]
+     (/ (* x 180) PI)))
 
-#+clj
-(defn degrees->radians [x]
-  (java.lang.Math/toRadians x))
+#?(:clj
+   (defn degrees->radians [x]
+     (java.lang.Math/toRadians x))
+   
+   :cljs
+   (defn degrees->radians [x]
+     (* (/ x 180) PI)))
 
-#+cljs
-(defn degrees->radians [x]
-  (* (/ x 180) PI))
+#?(:clj
+   (defn sin
+     "The sine of angle x (in degrees)"
+     [x]
+     (java.lang.Math/sin (degrees->radians x)))
 
-#+clj
-(defn sin
-  "The sine of angle x (in degrees)"
-  [x]
-  (java.lang.Math/sin (degrees->radians x)))
+   :cljs
+   (defn sin
+     "The sine of angle x (in degrees)"
+     [x]
+     (.sin js/Math (degrees->radians x))))
 
-#+cljs
-(defn sin
-  "The sine of angle x (in degrees)"
-  [x]
-  (.sin js/Math (degrees->radians x)))
+#?(:clj
+   (defn cos
+     "The cosine of angle x (in degrees)"
+     [x]
+     (java.lang.Math/cos (degrees->radians x)))
 
-#+clj
-(defn cos
-  "The cosine of angle x (in degrees)"
-  [x]
-  (java.lang.Math/cos (degrees->radians x)))
+   :cljs
+   (defn cos
+     "The cosine of angle x (in degrees)"
+     [x]
+     (.cos js/Math (degrees->radians x))))
 
-#+cljs
-(defn cos
-  "The cosine of angle x (in degrees)"
-  [x]
-  (.cos js/Math (degrees->radians x)))
-
-#+clj
-(defn atan2 [x y]
-  (java.lang.Math/atan2 x y))
-
-#+cljs
-(defn atan2 [x y]
-  (.atan2 js/Math x y))
+#?(:clj
+   (defn atan2 [x y]
+     (java.lang.Math/atan2 x y))
+   
+   :cljs
+   (defn atan2 [x y]
+     (.atan2 js/Math x y)))
 
 (defn polar-angle
   [x y]
   (radians->degrees (atan2 x y)))
 
-#+clj
-(defn sqrt
-  [x]
-  (java.lang.Math/sqrt x))
+#?(:clj
+   (defn sqrt
+     [x]
+     (java.lang.Math/sqrt x))
 
-#+cljs
-(defn sqrt
-  [x]
-  (.sqrt js/Math x))
+   :cljs
+   (defn sqrt
+     [x]
+     (.sqrt js/Math x)))
 
 (defn minus
   "Makes all the numbers of a seq negative and returns it as a vector"
