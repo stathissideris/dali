@@ -1,6 +1,7 @@
 (ns dali.examples
-  (:require [clojure.java.io :as io]
+  (:require [clojure.java.io :as java-io]
             [dali.syntax :as s]
+            [dali.io :as io]
             [dali.layout :as layout]
             [dali.prefab :as prefab]
             [dali.batik :as batik]))
@@ -186,7 +187,7 @@
     (-> document
         (layout/resolve-layout)
         (s/dali->hiccup)
-        (s/spit-svg (str "examples/output/" filename)))))
+        (io/spit-svg (str "examples/output/" filename)))))
 
 (comment ;;TODO
  (defn render-folder-to-png [from-folder to-folder]

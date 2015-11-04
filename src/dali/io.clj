@@ -4,7 +4,9 @@
             [net.cgrand.xml :as xml]
             [net.cgrand.enlive-html :as en]
             [clojure.walk :as walk]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [hiccup.core :as hiccup]
+            [hiccup.page]))
 
 (defn load-enlive-svg [filename]
   (xml/parse (io/file filename)))
@@ -72,6 +74,19 @@
   (if(or (not attrs) (empty? attrs))
     tag
     (vec (concat [(first tag) attrs] (rest tag)))))
+
+(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd\">\n")
+
+(defn hiccup->svg-document-string [hiccup]
+  (str
+   (hiccup.page/xml-declaration "UTF-8")
+   svg-doctype
+   (hiccup/html hiccup)))
+
+(defn spit-svg [hiccup-string filename]
+  (spit
+   filename
+   (hiccup->svg-document-string hiccup-string)))
 
 #_(def
   hiccup->dali-convertors

@@ -1,12 +1,10 @@
 (ns dali.syntax
-  (:require [clojure.java.io :as io]
+  (:require [clojure.java.io :as java-io]
             [clojure.pprint :refer [cl-format]]
-            [clojure.string :as string]
-            [hiccup.core :as hiccup]
-            [hiccup.page]))
+            [clojure.string :as string]))
 
 (def attr-key-lookup
-  (-> "attr-key-lookup.edn" io/resource slurp read-string))
+  (-> "attr-key-lookup.edn" java-io/resource slurp read-string))
 
 (def map-path-command
   {:move-to :M ;;:M [x y]
@@ -222,19 +220,6 @@
        :else
        [tag merged-map]))))
 
-(def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd\">\n")
-
-(defn hiccup->svg-document-string [hiccup]
-  (str
-   (hiccup.page/xml-declaration "UTF-8")
-   svg-doctype
-   (hiccup/html hiccup)))
-
-(defn spit-svg [hiccup-string filename]
-  (spit
-   filename
-   (hiccup->svg-document-string hiccup-string)))
-
 (comment
   (spit-svg
    (dali->hiccup
@@ -267,56 +252,6 @@
 (comment
   (spit-svg
    (dali->hiccup
-    [:page
-     {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
-     [:path :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]])
-   "s:/temp/svg2.svg")
-  )
-
-(comment
-  (spit-svg
-   (dali->hiccup
-    [:page
-     [:defs
-      [:marker {:id :triangle :view-box [0 0 10 10]
-                :ref-x 1 :ref-y 5
-                :marker-width 6 :marker-height 6
-                :orient :auto}
-       [:path :M [0 0] :L [10 5] :L [0 10] :Z]]]
-     [:polyline
-      {:fill :none :stroke-width 2 :stroke :black :marker-end "url(#triangle)"}
-      [10 90] [50 80] [90 20]]])
-   "s:/temp/svg3.svg")
-  )
-
-(comment
-  (require '[dali.stock :as stock])
-  (spit-svg
-   (dali->hiccup
-    [:page {:stroke {:width 2 :paint :black}}
-     [:defs
-      (stock/sharp-arrow-end :sharp)
-      (stock/triangle-arrow-end :triangle)
-      (stock/curvy-arrow-end :curvy)
-      (stock/dot-end :dot)]
-     [:polyline
-      {:fill :none :marker-end "url(#sharp)"}
-      [50 80] [90 30]]
-     [:polyline
-      {:fill :none :marker-end "url(#triangle)"}
-      [80 80] [120 30]]
-     [:polyline
-      {:fill :none :marker-end "url(#curvy)"}
-      [110 80] [150 30]]
-     [:polyline
-      {:fill :none :marker-end "url(#dot)"}
-      [140 80] [180 30]]])
-   "s:/temp/svg_marker.svg")
-  )
-
-(comment
-  (spit-svg
-   (dali->hiccup
     [:page {:width 500 :height 500}
      [:defs
       [:g {:id :logo :stroke {:paint :green :width 4} :fill :white}
@@ -328,7 +263,7 @@
      [:use {:xlink:href "#cc" :x 20 :y 30}]
      [:use :logo [20 100]]
      [:use :logo [20 150]]])
-   "s:/temp/svg4.svg")
+   "/tmp/svg4.svg")
   )
 
 (comment
@@ -340,5 +275,5 @@
       (-> "resources/symbol.svg" io/load-enlive-svg io/extract-svg-content :content first io/enlive->hiccup)]
      [:use :symbol [50 50]]
      [:use :symbol [150 70]]])
-   "s:/temp/svg5.svg")
+   "/tmp/svg5.svg")
   )

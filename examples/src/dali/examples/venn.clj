@@ -1,7 +1,8 @@
 (ns dali.examples.venn
   (:require [dali.syntax :as dali]
             [dali.prefab :refer [stripe-pattern]]
-            [dali.batik :as btk]))
+            [dali.batik :as btk]
+            [dali.io :as io]))
 
 (defn png-venn-diagram [filename]
   (->
@@ -22,7 +23,7 @@
       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])
    dali/dali->hiccup
    ;;(spit-svg "/tmp/venn2.svg")
-   dali/hiccup->svg-document-string
+   io/hiccup->svg-document-string
    btk/parse-svg-string
    (btk/render-document-to-png filename)))
 
