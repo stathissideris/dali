@@ -25,6 +25,8 @@
          (node->xml [:rect
                      {:transform [:rotate [10 60 20] :skew-x [30]]}
                      [50 10] [20 20]])))
+  (is (= {:tag :b, :content ["test"]}
+         (node->xml [:b "test"])))
   (is (= {:tag :path,
           :attrs
           {:id :thick,

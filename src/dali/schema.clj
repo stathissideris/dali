@@ -1,9 +1,11 @@
 (ns dali.schema
   (:require [dali.syntax :as dali]
             [dali.syntax :as syntax]
-            [schema.core :as s]))
+            [schema.core :as s]
+            [clojure.pprint :refer [pprint]]))
 
 (def one-of s/cond-pre)
+
 (def opt s/optional-key)
 
 (def AttrName (s/named (one-of s/Str s/Keyword) :attr-name))
@@ -22,13 +24,13 @@
    (mapv #(s/one s %) names)))
 
 (def TransformOperation
-  (one-of
-   (elms [(s/eq :matrix) :operation (elms s/Num [:a :b :c :d :e :f]) :params])
-   (elms [(s/eq :translate) :operation (one-of (elms s/Num [:x :y]) (elms s/Num [:x])) :params])
-   (elms [(s/eq :scale) :operation (one-of (elms s/Num [:x :y]) (elms s/Num [:x])) :params])
-   (elms [(s/eq :rotate) :operation (one-of (elms s/Num [:x :y]) (elms s/Num [:a])) :params])
-   (elms [(s/eq :skew-x) :operation (elms s/Num [:a]) :params])
-   (elms [(s/eq :skew-y) :operation (elms s/Num [:a]) :params])))
+  (s/either ;;cond-pre fails with complex schemas
+   (elms [(s/eq :matrix) :op    (elms s/Num [:a :b :c :d :e :f]) :params])
+   (elms [(s/eq :translate) :op (one-of (elms s/Num [:x :y]) (elms s/Num [:x])) :params])
+   (elms [(s/eq :scale) :op     (one-of (elms s/Num [:x :y]) (elms s/Num [:x])) :params])
+   (elms [(s/eq :rotate) :op    (one-of (elms s/Num [:a :x :y]) (elms s/Num [:a])) :params])
+   (elms [(s/eq :skew-x) :op    (elms s/Num [:a]) :params])
+   (elms [(s/eq :skew-y) :op    (elms s/Num [:a]) :params])))
 
 (def AttrMap {(opt :transform) [TransformOperation]
               AttrName AttrValue})
@@ -59,9 +61,9 @@
 (def RectTag
   {:tag (s/eq :rect)
    :attrs (cattr
-           (one-of (elms [Point :pos Dimensions :dimensions])
-                   (elms [Point :pos Dimensions :dimensions s/Num :rounded])
-                   (elms [Point :pos Dimensions :dimensions Dimensions :rounded])))})
+           (s/either (elms [Point :pos Dimensions :dimensions])
+                     (elms [Point :pos Dimensions :dimensions s/Num :rounded])
+                     (elms [Point :pos Dimensions :dimensions Dimensions :rounded])))})
 
 (def PolylineTag
   {:tag (s/eq :polyline)
@@ -80,41 +82,50 @@
     Point  :pos2]))
 
 (def PathOperation
-  (one-of
-   (elms [(s/enum :move-to :M) :operation        [Point] :params])
-   (elms [(s/enum :move-by :m) :operation        [Point] :params])
-   (elms [(s/enum :line-to :L) :operation        [Point] :params])
-   (elms [(s/enum :line-by :l) :operation        [Point] :params])
-   (elms [(s/enum :horizontal-to :H) :operation  [s/Num] :params])
-   (elms [(s/enum :horizontal-by :h) :operation  [s/Num] :params])
-   (elms [(s/enum :vertical-to :V) :operation    [s/Num] :params])
-   (elms [(s/enum :vertical-by :v) :operation    [s/Num] :params])
-   (elms [(s/enum :cubic-to :C) :operation       (elms [Point :p1 Point :p2 Point :p3]) :params])
-   (elms [(s/enum :cubic-by :c) :operation       (elms [Point :p1 Point :p2 Point :p3]) :params])
-   (elms [(s/enum :symmetrical-to :S) :operation (elms [Point :p1 Point :p2]) :params])
-   (elms [(s/enum :symmetrical-by :s) :operation (elms [Point :p1 Point :p2]) :params])
-   (elms [(s/enum :quad-to :Q) :operation        (elms [Point :p1 Point :p2]) :params])
-   (elms [(s/enum :quad-by :q) :operation        (elms [Point :p1 Point :p2]) :params])
-   (elms [(s/enum :arc-to :A) :operation         PathArcSpec :params])
-   (elms [(s/enum :arc-by :a) :operation         PathArcSpec :params])
-   (elms [(s/enum :close :Z) :operation          [] :params])))
+  (s/either ;;cond-pre fails with complex schemas
+   (elms [(s/enum :move-to :M) :op        [(s/one Point :point)] :params])
+   (elms [(s/enum :move-by :m) :op        [(s/one Point :point)] :params])
+   (elms [(s/enum :line-to :L) :op        [(s/one Point :point)] :params])
+   (elms [(s/enum :line-by :l) :op        [(s/one Point :point)] :params])
+   (elms [(s/enum :horizontal-to :H) :op  [(s/one s/Num :delta)] :params])
+   (elms [(s/enum :horizontal-by :h) :op  [(s/one s/Num :delta)] :params])
+   (elms [(s/enum :vertical-to :V) :op    [(s/one s/Num :delta)] :params])
+   (elms [(s/enum :vertical-by :v) :op    [(s/one s/Num :delta)] :params])
+   (elms [(s/enum :cubic-to :C) :op       (elms [Point :p1 Point :p2 Point :p3]) :params])
+   (elms [(s/enum :cubic-by :c) :op       (elms [Point :p1 Point :p2 Point :p3]) :params])
+   (elms [(s/enum :symmetrical-to :S) :op (elms [Point :p1 Point :p2]) :params])
+   (elms [(s/enum :symmetrical-by :s) :op (elms [Point :p1 Point :p2]) :params])
+   (elms [(s/enum :quad-to :Q) :op        (elms [Point :p1 Point :p2]) :params])
+   (elms [(s/enum :quad-by :q) :op        (elms [Point :p1 Point :p2]) :params])
+   (elms [(s/enum :arc-to :A) :op         PathArcSpec :params])
+   (elms [(s/enum :arc-by :a) :op         PathArcSpec :params])
+   (elms [(s/enum :close :Z :z) :op       (s/eq nil) :params])))
 
 (def PathTag
   {:tag (s/eq :path)
    :attrs (cattr [PathOperation])})
 
+(declare Tag)
+
 (def GenericTag
   {:tag TagName
-   (opt :attrs) AttrMap
-   (opt :content) [(s/recursive #'GenericTag)]})
+   (opt :attrs) (s/both AttrMap (s/pred #(not (:dali/content-attr %)) :no-content-attr))
+   (opt :content) (s/either
+                   [s/Str]
+                   [(s/pred #(nil? (s/check Tag %)) :nested-tag)])})
 
-(def Tag (one-of GenericTag LineTag CircleTag EllipseTag RectTag
-                 PolylineTag PolygonTag
-                 PathTag
-                 ))
+(def Tag (s/either LineTag CircleTag EllipseTag RectTag PolylineTag PolygonTag PathTag GenericTag))
+;;(def Tag GenericTag)
 
 (def Document Tag)
 
 (defn validate [document]
-  (s/validate Document (syntax/dali->xml document))
-  document)
+  (let [c (s/check Document (syntax/dali->xml document))]
+    (if (nil? c)
+      document
+      (throw (ex-info "document does not match dali schema"
+                      {:document document
+                       :bad-parts c})))))
+
+(defn print-fail [e]
+  (-> e ex-data :bad-parts pprint))

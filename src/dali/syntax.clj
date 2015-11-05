@@ -210,25 +210,27 @@
     (let [attrs         (attrs->xml (when (map? (first r)) (first r)))
           r             (if (empty? attrs) r (rest r))
           content       (not-empty (if (seq? (first r)) (first r) r))
-          content-attr? (and (not-empty content) (every? (complement tag?) content))
+          content-attr? (and (not-empty content)
+                             (not (every? string? content))
+                             (every? (complement tag?) content))
 
           attrs         (if content-attr?
-                          (assoc attrs :dali/content-attr content)
+                          (assoc attrs :dali/content-attr (vec content))
                           attrs)
           content       (if content-attr? nil content)
 
-          node          (merge
+          xml-node      (merge
                          {:tag tag}
                          (when attrs {:attrs attrs})
-                         (when content {:content content}))]
+                         (when content {:content (vec content)}))]
       (if (= :path tag)
-        (update-in node [:attrs :dali/content-attr] split-params-by-keyword)
-        node))))
+        (update-in xml-node [:attrs :dali/content-attr] (comp vec split-params-by-keyword))
+        xml-node))))
 
 (defn dali-zipper [document]
   (zip/zipper #(some? (:content %))
               :content
-              #(assoc %1 :content %2)
+              #(assoc %1 :content (vec %2))
               document))
 
 (defn dali->xml [document]
