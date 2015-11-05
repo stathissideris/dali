@@ -4,7 +4,8 @@
             [dali.io :as io]
             [dali.layout :as layout]
             [dali.prefab :as prefab]
-            [dali.batik :as batik]))
+            [dali.batik :as batik]
+            [dali.schema :as schema]))
 
 (def examples
   [{:filename "hello-world.svg"
@@ -182,12 +183,18 @@
             [50 20 10]])]]}
    ])
 
+(defn render-example [filename document]
+  (-> document
+      schema/validate
+      layout/resolve-layout
+      schema/validate
+      s/dali->hiccup
+      (io/spit-svg (str "examples/output/" filename))))
+
 (defn render-examples [documents]
-  (doseq [{:keys [document filename]} documents]
-    (-> document
-        (layout/resolve-layout)
-        (s/dali->hiccup)
-        (io/spit-svg (str "examples/output/" filename)))))
+  (doseq [{:keys [filename document]} documents]
+    (println (format "Rendering example \"%s\"" filename))
+    (render-example filename document)))
 
 (comment ;;TODO
  (defn render-folder-to-png [from-folder to-folder]
