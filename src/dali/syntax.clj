@@ -198,11 +198,6 @@
 (defn tag? [element]
   (and (vector? element) (keyword? (first element))))
 
-(defn- attrs->xml [attrs]
-  (if (and attrs (:transform attrs) (not (string? (:transform attrs))))
-    (update attrs :transform (partial partition 2))
-    attrs))
-
 (defn normalize-hiccup-node
   "Makes all the elements look like [tag {...} content], even if the
   attrs were skipped or the content was nil. Deprecated, will be
@@ -212,12 +207,18 @@
         content (if (seq? (first r)) (first r) r)]
     [tag attrs content]))
 
-(defn node->xml
-  [[tag & r :as node]]
+(defn- attrs->xml [attrs]
+  (if (and attrs (:transform attrs) (not (string? (:transform attrs))))
+    (update attrs :transform (partial partition 2))
+    attrs))
+
+(defn node->xml ;;TODO find out why this gets called with nodes that are already XML
+  [node]
   (if-not (tag? node)
     node
-    (let [attrs         (attrs->xml (when (map? (first r)) (first r)))
-          r             (if (empty? attrs) r (rest r))
+    (let [[tag & r] node
+          attrs         (attrs->xml (when (map? (first r)) (first r)))
+          r             (if (map? (first r)) (rest r) r)
           content       (not-empty (if (seq? (first r)) (first r) r))
           content-attr? (and (not-empty content)
                              (not (every? string? content))

@@ -27,10 +27,17 @@
                      [50 10] [20 20]])))
   (is (= {:tag :b, :content ["test"]}
          (node->xml [:b "test"])))
-  (is (= {:tag :path,
+  (is (= {:tag :g
+          :attrs {}
+          :content
+          [[:rect {:x 0 :y 0}]]}
+       (node->xml
+        [:g {}
+         [:rect {:x 0 :y 0}]])))
+  (is (= {:tag :path
           :attrs
-          {:id :thick,
-           :stroke-width 20,
+          {:id :thick
+           :stroke-width 20
            :dali/content-attr
            [[:M [[110 80]]]
             [:C [[140 10] [165 10] [195 80]]]
