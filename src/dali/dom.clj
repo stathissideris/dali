@@ -10,7 +10,7 @@
   (.setAttributeNS element nil (name k) (str v)))
 
 (defn hiccup->element [dom hiccup]
-  (let [{:keys [tag attrs content]} (s/node->xml hiccup)
+  (let [{:keys [tag attrs content]} (s/dali->xml hiccup)
         e (element dom (name tag))]
     (if-not attrs
       e

@@ -46,7 +46,7 @@
      (v- position (v- anchor-point original-position))
      bounds)))
 
-(defn stack [ctx {:keys [position direction anchor gap] :as params} & elements]
+(defn stack [ctx {:keys [position direction anchor gap] :as params} elements]
   (let [gap (or gap 0)
         position (or position [0 0])
         direction (or direction :down)
@@ -77,7 +77,7 @@
         element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
        elements))))
 
-(defn distribute [ctx {:keys [position direction anchor gap] :as params} & elements]
+(defn distribute [ctx {:keys [position direction anchor gap] :as params} elements]
   (let [direction (or direction :right)
         anchor (or anchor :center)
         vertical? (or (= direction :down) (= direction :up))]
