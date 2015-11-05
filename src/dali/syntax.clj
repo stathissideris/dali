@@ -170,7 +170,7 @@
              [1 :transform]
              (fn [x]
                (let [x (or x [])]
-                 (conj x transform)))))
+                 (concat x transform)))))
 
 (defn- process-attr-map
   "Unwraps nested attribute maps (mainly for :stroke and :fill).
@@ -202,6 +202,15 @@
   (if (and attrs (:transform attrs) (not (string? (:transform attrs))))
     (update attrs :transform (partial partition 2))
     attrs))
+
+(defn normalize-hiccup-node
+  "Makes all the elements look like [tag {...} content], even if the
+  attrs were skipped or the content was nil. Deprecated, will be
+  phased out."
+  [[tag sec & r]]
+  (let [attrs (if (map? sec) sec {})
+        content (if (seq? (first r)) (first r) r)]
+    [tag attrs content]))
 
 (defn node->xml
   [[tag & r :as node]]
