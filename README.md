@@ -187,11 +187,11 @@ transformations to be applied:
 ```clojure
 [:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
      
-     [:rect {:transform [[:rotate [30 30 20]]]} ;;rotate around center marked by circle
+     [:rect {:transform [:rotate [30 30 20]]} ;;rotate around center marked by circle
       [20 10] [20 20]]
      [:circle {:stroke :none :fill :red} [30 20] 2]
 
-     [:rect {:transform [[:rotate [10 60 20]] [:skew-x [30]]]}
+     [:rect {:transform [:rotate [10 60 20] :skew-x [30]]}
       [50 10] [20 20]]]
 ```
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/transform.svg)

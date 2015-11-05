@@ -35,7 +35,7 @@
   [element top-left bounds]
   (let [type (first element)
         [_ current-pos [w h]] bounds]
-    (s/add-transform element [:translate (v- top-left current-pos)])))
+    (s/add-transform element (concat [:translate] (v- top-left current-pos)))))
 
 (defn place-by-anchor
   [element anchor position bounds]
@@ -118,7 +118,7 @@
       (fn [e]
         (if-not (and (vector? e) (#{:stack :distribute} (first e)))
           e
-          (let [[tag attrs content] (s/normalize-element e)]
+          (let [{:keys [tag attrs content]} (s/node->xml e)]
             (condp = tag
               :stack (stack ctx attrs content)
               :distribute (distribute ctx attrs content))))) doc)))

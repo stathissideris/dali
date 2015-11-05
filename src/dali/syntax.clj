@@ -1,7 +1,8 @@
 (ns dali.syntax
   (:require [clojure.java.io :as java-io]
             [clojure.pprint :refer [cl-format]]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.zip :as zip]))
 
 (def attr-key-lookup
   (-> "attr-key-lookup.edn" java-io/resource slurp read-string))
@@ -121,15 +122,15 @@
    :skey-y "skewY"})
 
 (defn- process-transform-attr
-  "Converts things like [[:translate [10 20]] [:scale [20]]] to
-  \"translate(10 20) scale(20)\" to be used in the transform
+  "Converts attributes that look like [:translate [10 20] :scale [20]]
+  to \"translate(10 20) scale(20)\" to be used in the transform
   attribute."
   [tr]
   (if (string? tr) tr
       (string/join
        " " (map (fn [[transform params]]
                   (str (transform-attr-mapping transform)
-                       "(" (string/join " " params) ")")) tr))))
+                       "(" (string/join " " params) ")")) (partition 2 tr)))))
 
 (defn- process-attr-value [k v]
   (cond
@@ -194,13 +195,49 @@
               (or (attr-key-lookup k) k)
               (process-attr-value k v)))) {})))
 
-(defn normalize-element
-  "Makes all the elements look like [tag {...} content], even if the
-  attrs were skipped or the content was nil."
-  [[tag sec & r]]
-  (let [attrs (if (map? sec) sec {})
-        content (if (seq? (first r)) (first r) r)]
-    [tag attrs content]))
+(defn tag? [element]
+  (and (vector? element) (keyword? (first element))))
+
+(defn- attrs->xml [attrs]
+  (if (and attrs (:transform attrs) (not (string? (:transform attrs))))
+    (update attrs :transform (partial partition 2))
+    attrs))
+
+(defn node->xml
+  [[tag & r :as node]]
+  (if-not (tag? node)
+    node
+    (let [attrs         (attrs->xml (when (map? (first r)) (first r)))
+          r             (if (empty? attrs) r (rest r))
+          content       (not-empty (if (seq? (first r)) (first r) r))
+          content-attr? (and (not-empty content) (every? (complement tag?) content))
+
+          attrs         (if content-attr?
+                          (assoc attrs :dali/content-attr content)
+                          attrs)
+          content       (if content-attr? nil content)
+
+          node          (merge
+                         {:tag tag}
+                         (when attrs {:attrs attrs})
+                         (when content {:content content}))]
+      (if (= :path tag)
+        (update-in node [:attrs :dali/content-attr] split-params-by-keyword)
+        node))))
+
+(defn dali-zipper [document]
+  (zip/zipper #(some? (:content %))
+              :content
+              #(assoc %1 :content %2)
+              document))
+
+(defn dali->xml [document]
+  (loop [zipper (dali-zipper document)]
+    (if (zip/end? zipper)
+      (zip/root zipper)
+      (recur (zip/next (zip/replace
+                        zipper
+                        (node->xml (zip/node zipper))))))))
 
 (defn dali->hiccup [element]
   (let [[type sec & r] element
