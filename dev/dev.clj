@@ -1,13 +1,25 @@
 (ns dev
   (:require [clojure.tools.namespace.repl :refer [clear refresh-all]]
             [net.cgrand.enlive-html :as html]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.test :as t]
+            [dali.examples :as examples]))
 
 (defn refresh []
   (clojure.tools.namespace.repl/refresh))
 
 (defn load-print []
   (require '[print :refer [pprint-analyze]]))
+
+(defn run-tests []
+  (t/run-tests
+   'dali.schema-test
+   'dali.syntax-test
+;;   'dali.batik-test
+   ))
+
+(defn generate-examples []
+  (examples/render-examples examples/examples))
 
 (defn generate-attr-lookup-map
   "Loads all the attribute names from the SVG documentation, extracts

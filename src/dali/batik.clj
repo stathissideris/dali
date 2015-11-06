@@ -33,7 +33,7 @@
 (def ^:private rehearse-bounds-impl
   (fn [this dom element]
     (let [element (->> element
-                       s/dali->hiccup
+                       s/ixml->xml
                        (dom/hiccup->element dom))]
       (dom/add-to-svg dom element)
       (let [bbox (to-rect (-> element .getBBox))]

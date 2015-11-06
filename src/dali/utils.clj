@@ -1,4 +1,5 @@
-(ns dali.utils)
+(ns dali.utils
+  (:require [clojure.zip :as zip]))
 
 (defn match-non-match
   "Given a predicate and 2 values, it returns a vector with the
@@ -42,10 +43,28 @@
        (= size (count v))
        (every? num-or-fn? v)))
 
-#?(:clj
-   (defn exception [& msg]
-     (Exception. (apply str msg)))
-   
-   :cljc
-   (defn exception [& msg]
-     (js/Error. (apply str msg))))
+(defn exception [& msg]
+  (Exception. (apply str msg)))
+
+;;TODO fix, does not play well with tools.namespace
+;; #?(:clj
+;;    (defn exception [& msg]
+;;      (Exception. (apply str msg)))
+;;    
+;;    :cljs
+;;    (defn exception [& msg]
+;;      (js/Error. (apply str msg))))
+
+(defn ixml-zipper [document]
+  (zip/zipper #(some? (:content %))
+               :content
+              #(assoc %1 :content (vec %2))
+              document))
+
+(defn transform-zipper [zipper replace-fn]
+  (loop [zipper zipper]
+    (if (zip/end? zipper)
+      (zip/root zipper)
+      (recur (zip/next (zip/replace
+                        zipper
+                        (replace-fn (zip/node zipper))))))))

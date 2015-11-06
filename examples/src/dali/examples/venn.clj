@@ -21,7 +21,7 @@
       [:circle {:stroke :none :fill "url(#stripes2)" :opacity 0.2} [x2 y] r]
       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x1 y] r]
       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])
-   dali/dali->hiccup
+   dali/ixml->xml
    ;;(spit-svg "/tmp/venn2.svg")
    io/hiccup->svg-document-string
    btk/parse-svg-string

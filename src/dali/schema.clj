@@ -120,7 +120,7 @@
 (def Document Tag)
 
 (defn validate [document]
-  (let [c (s/check Document (syntax/dali->xml document))]
+  (let [c (s/check Document (syntax/dali->ixml document))]
     (if (nil? c)
       document
       (throw (ex-info "document does not match dali schema"

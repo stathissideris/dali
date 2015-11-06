@@ -2,7 +2,8 @@
   (:require [clojure.java.io :as java-io]
             [clojure.pprint :refer [cl-format]]
             [clojure.string :as string]
-            [clojure.zip :as zip]))
+            [clojure.zip :as zip]
+            [dali.utils :as utils]))
 
 (def attr-key-lookup
   (-> "attr-key-lookup.edn" java-io/resource slurp read-string))
@@ -195,7 +196,7 @@
               (or (attr-key-lookup k) k)
               (process-attr-value k v)))) {})))
 
-(defn tag? [element]
+(defn dali-tag? [element]
   (and (vector? element) (keyword? (first element))))
 
 (defn normalize-hiccup-node
@@ -207,22 +208,22 @@
         content (if (seq? (first r)) (first r) r)]
     [tag attrs content]))
 
-(defn- attrs->xml [attrs]
+(defn- attrs->ixml [attrs]
   (if (and attrs (:transform attrs) (not (string? (:transform attrs))))
     (update attrs :transform (partial partition 2))
     attrs))
 
-(defn node->xml ;;TODO find out why this gets called with nodes that are already XML
+(defn node->ixml ;;TODO find out why this gets called with nodes that are already XML
   [node]
-  (if-not (tag? node)
+  (if-not (dali-tag? node)
     node
     (let [[tag & r] node
-          attrs         (attrs->xml (when (map? (first r)) (first r)))
+          attrs         (attrs->ixml (when (map? (first r)) (first r)))
           r             (if (map? (first r)) (rest r) r)
           content       (not-empty (if (seq? (first r)) (first r) r))
           content-attr? (and (not-empty content)
                              (not (every? string? content))
-                             (every? (complement tag?) content))
+                             (every? (complement dali-tag?) content))
 
           attrs         (if content-attr?
                           (assoc attrs :dali/content-attr (vec content))
@@ -237,21 +238,10 @@
         (update-in xml-node [:attrs :dali/content-attr] (comp vec split-params-by-keyword))
         xml-node))))
 
-(defn dali-zipper [document]
-  (zip/zipper #(some? (:content %))
-              :content
-              #(assoc %1 :content (vec %2))
-              document))
+(defn dali->ixml [document]
+  (utils/transform-zipper (utils/ixml-zipper document) node->ixml))
 
-(defn dali->xml [document]
-  (loop [zipper (dali-zipper document)]
-    (if (zip/end? zipper)
-      (zip/root zipper)
-      (recur (zip/next (zip/replace
-                        zipper
-                        (node->xml (zip/node zipper))))))))
-
-(defn dali->hiccup [element]
+(defn ixml->xml [element]
   (let [[type sec & r] element
         style-map (when (map? sec) sec)
         params (if style-map r (rest element))
@@ -265,7 +255,7 @@
        (and content (string? (first content)))
        [tag merged-map (first content)]
        content
-       (into [] (concat [tag merged-map] (map dali->hiccup content)))
+       (into [] (concat [tag merged-map] (map ixml->xml content)))
        :else
        [tag merged-map]))))
 

@@ -14,7 +14,7 @@
                  :C [225 150] [250 150] [280 80]]]]
       (is (= path
              (-> path
-                 syntax/dali->hiccup
+                 syntax/ixml->xml
                  io/hiccup->svg-document-string
                  parse-svg-string
                  context

@@ -188,7 +188,7 @@
       schema/validate
       layout/resolve-layout
       schema/validate
-      s/dali->hiccup
+      s/ixml->xml
       (io/spit-svg (str "examples/output/" filename))))
 
 (defn render-examples [documents]
