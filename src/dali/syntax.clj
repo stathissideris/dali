@@ -62,10 +62,9 @@
                         x y))
         :z nil)))))
 
-(defn- convert-path-spec [spec]
-  (let [params (split-params-by-keyword spec)]
-    (string/join
-     " " (map convert-path-command params))))
+(defn- convert-path-spec [commands]
+  (string/join
+   " " (map convert-path-command commands)))
 
 ;;the following implements a behaviour that also exists in hiccup: if
 ;;the first element of the content is a seq, it is unwrapped in order

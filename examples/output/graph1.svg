@@ -1,3 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.2//EN" "http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd">
-<svg height="140" version="1.2" width="260" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><rect fill="darkorchid" height="10" stroke="none" transform="translate(10.0 120.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="30" stroke="none" transform="translate(32.0 100.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="22" stroke="none" transform="translate(54.0 108.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="56" stroke="none" transform="translate(76.0 74.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="90" stroke="none" transform="translate(98.0 40.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="59" stroke="none" transform="translate(120.0 71.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="23" stroke="none" transform="translate(142.0 107.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="12" stroke="none" transform="translate(164.0 118.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="44" stroke="none" transform="translate(186.0 86.0)" width="20" x="0" y="0"></rect><rect fill="darkorchid" height="50" stroke="none" transform="translate(208.0 80.0)" width="20" x="0" y="0"></rect></g></svg>
+<svg xmlns='http://www.w3.org/2000/svg' version='1.2' xmlns:xlink='http://www.w3.org/1999/xlink' width='260' height='140'>
+<g>
+<rect x='0' y='0' width='20' height='10' stroke='none' fill='darkorchid' transform='translate(10.0 120.0)'/>
+<rect x='0' y='0' width='20' height='30' stroke='none' fill='darkorchid' transform='translate(32.0 100.0)'/>
+<rect x='0' y='0' width='20' height='22' stroke='none' fill='darkorchid' transform='translate(54.0 108.0)'/>
+<rect x='0' y='0' width='20' height='56' stroke='none' fill='darkorchid' transform='translate(76.0 74.0)'/>
+<rect x='0' y='0' width='20' height='90' stroke='none' fill='darkorchid' transform='translate(98.0 40.0)'/>
+<rect x='0' y='0' width='20' height='59' stroke='none' fill='darkorchid' transform='translate(120.0 71.0)'/>
+<rect x='0' y='0' width='20' height='23' stroke='none' fill='darkorchid' transform='translate(142.0 107.0)'/>
+<rect x='0' y='0' width='20' height='12' stroke='none' fill='darkorchid' transform='translate(164.0 118.0)'/>
+<rect x='0' y='0' width='20' height='44' stroke='none' fill='darkorchid' transform='translate(186.0 86.0)'/>
+<rect x='0' y='0' width='20' height='50' stroke='none' fill='darkorchid' transform='translate(208.0 80.0)'/>
+</g>
+</svg>
