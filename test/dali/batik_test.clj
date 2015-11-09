@@ -15,7 +15,7 @@
       (is (= path
              (-> path
                  syntax/ixml->xml
-                 io/hiccup->svg-document-string
+                 io/xml->svg-document-string
                  parse-svg-string
                  context
                  (gvt-node-by-id "path")

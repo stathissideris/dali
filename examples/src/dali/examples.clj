@@ -186,10 +186,11 @@
 (defn render-example [filename document]
   (-> document
       schema/validate
+      s/dali->ixml
       layout/resolve-layout
-      schema/validate
       s/ixml->xml
-      (io/spit-svg (str "examples/output/" filename))))
+      (io/spit-svg (str "examples/output/" filename))
+      ))
 
 (defn render-examples [documents]
   (doseq [{:keys [filename document]} documents]

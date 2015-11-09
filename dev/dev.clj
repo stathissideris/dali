@@ -21,6 +21,29 @@
 (defn generate-examples []
   (examples/render-examples examples/examples))
 
+(defn generate-example [filename]
+  (let [document (->> examples/examples
+                      (filter #(-> % :filename (= filename)))
+                      first
+                      :document)]
+    (examples/render-example filename document)))
+
+
+(defmacro hiccup->xml [node]
+  (let [tag (first node)
+        attrs (if (map? (second node)) (second node) nil)
+        content (if (map? (second node))
+                  (drop 2 node)
+                  (rest node))]
+    (merge {:tag tag}
+           (when-not (empty? attrs) {:attrs attrs})
+           (when-not (empty? content) {:content content}))))
+
+
+
+
+
+
 (defn generate-attr-lookup-map
   "Loads all the attribute names from the SVG documentation, extracts
   the ones that are camelcase and produces the mapping of the

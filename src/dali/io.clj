@@ -4,6 +4,7 @@
             [net.cgrand.xml :as xml]
             [net.cgrand.enlive-html :as en]
             [clojure.walk :as walk]
+            [clojure.xml :as cxml]
             [clojure.string :as string]
             [hiccup.core :as hiccup]
             [hiccup.page]))
@@ -41,21 +42,27 @@
 (defn extract-svg-content
   "Extract \"useful\" SVG content from an enlive document for
   inclusion to another SVG document. Returns a map with :content and
-  :defs (both can be empty). Only tags and attrs with the namespace
-  svg or default namespace are included."
+  :defs that contain maps of SVG IDs (as keywords) to SVG elements (in
+  clojure.xml format). Only tags and attrs with the namespace svg or
+  default namespace are included."
   [document & {:keys [namespaces]}]
-  (let [namespaces (or namespaces #{:svg :dali/default-namespace})
-        clean (en/transformation
-               [:metadata] (en/substitute nil)
-               [(tag-namespace-not= namespaces)] (en/substitute nil))
+  (let [namespaces  (or namespaces #{:svg :dali/default-namespace})
+        clean       (en/transformation
+                     [:metadata] (en/substitute nil)
+                     [(tag-namespace-not= namespaces)] (en/substitute nil))
         all-content (->
                      (clean document)
                      (en/select [:svg :> :*])
                      (en/transform [:*] (attr-ns-remover namespaces)))
-        defs (:content (first (en/select all-content [:defs])))
-        content (en/transform all-content [:defs] (en/substitute nil))]
-    {:defs defs
-     :content content}))
+        defs        (:content (first (en/select all-content [:defs])))
+        content     (en/transform all-content [:defs] (en/substitute nil))
+        get-id      #(-> % :attrs :id keyword)
+        make-map    (fn [nodes] (->> nodes
+                                     (remove (complement map?))
+                                     (map #(vector (get-id %) %))
+                                     (into {})))]
+    {:defs (make-map defs)
+     :content (make-map content)}))
 
 (defn enlive-tag? [x]
   (and (map? x) (:tag x)))
@@ -70,63 +77,31 @@
         x))
     document)))
 
-(defn- add-attrs [tag attrs]
-  (if(or (not attrs) (empty? attrs))
-    tag
-    (vec (concat [(first tag) attrs] (rest tag)))))
-
 (def svg-doctype "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.2//EN\" \"http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd\">\n")
 
-(defn hiccup->svg-document-string [hiccup]
-  (str
-   (hiccup.page/xml-declaration "UTF-8")
-   svg-doctype
-   (hiccup/html hiccup)))
+(defn- xml-declaration
+  "Create a standard XML declaration for the following encoding."
+  [encoding]
+  (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
 
-(defn spit-svg [hiccup-string filename]
+(defn xml->xml-string ;;TODO placeholder implementation, replace with something more performant
+  "Converts clojure.xml representation to an XML string."
+  [xml]
+  (with-out-str
+    (cxml/emit-element xml)))
+
+(defn xml->svg-document-string
+  "Converts clojure.xml representation to an SVG document string,
+  complete with doctype and XML declaration."
+  [xml]
+  (str
+   (xml-declaration "UTF-8")
+   svg-doctype
+   (xml->xml-string xml)))
+
+(defn spit-svg [xml filename]
   (spit
    filename
-   (hiccup->svg-document-string hiccup-string)))
-
-#_(def
-  hiccup->dali-convertors
-  {:use ;;;TODO
-   (fn [[ref [x y]]]
-     (if (and ref x y)
-       [:use {:xlink:href (str "#" (name ref)) :x x :y y}]
-       [:use {}]))
-   :line
-   (fn [[_ {:keys [x1 y1 x2 y2] :as attrs}]]
-     (add-attrs [:line [[x1 y1] [x2 y2]]]
-                (dissoc attrs :x1 :y1 :x2 :y2)))
-   :circle
-   (fn [[_ {:keys [cx cy r] :as attrs}]]
-     (add-attrs [:circle [cx cy] r]
-                (dissoc attrs :cx :cy :r)))
-   :ellipse
-   (fn [[_ {:keys [cx cy rx ry] :as attrs}]]
-     (add-attrs [:ellipse [cx cy] rx ry]
-                (dissoc attrs :cx :cy :rx :ry)))
-   :rect
-   (fn [[_ {:keys [x y w h rx ry] :as attrs}]]
-     (let [attrs (dissoc attrs :x :y :w :h :rx :ry)]
-      (if (and rx ry)
-        (if (= rx ry)
-          (add-attrs [:rect [x y] [w h] rx] attrs)
-          (add-attrs [:rect [x y] [w h] rx ry] attrs))
-        (add-attrs [:rect [x y] [w h]] attrs))))
-   :polyline ;;TODO
-   (fn [points]
-     (let [points (unwrap-seq points)]
-       [:polyline {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}]))
-   :polygon ;;TODO
-   (fn [points]
-     (let [points (unwrap-seq points)]
-       [:polygon {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}]))
-   :path
-   (fn [spec]
-     [:path {:d (convert-path-spec spec)}])})
-
-(defn hiccup->dali [document])
+   (xml->svg-document-string xml)))
 
 #_(-> "resources/symbol.svg" load-enlive-svg extract-svg-content :content enlive->hiccup pprint)

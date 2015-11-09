@@ -61,6 +61,20 @@
               #(assoc %1 :content (vec %2))
               document))
 
+(defn generic-zipper
+  "Walks vectors, lists, maps, and maps' keys and values
+  individually. Take care not to replace a keypair with a single
+  value (will throw an exception)."
+  [x]
+  (zip/zipper
+   (some-fn sequential? map?)
+   seq
+   (fn [node children]
+     (cond (vector? node) (vec children)
+           (seq? node) (seq children)
+           (map? node) (into {} children)))
+   x))
+
 (defn transform-zipper [zipper replace-fn]
   (loop [zipper zipper]
     (if (zip/end? zipper)

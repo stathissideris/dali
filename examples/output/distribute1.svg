@@ -1,3 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.2//EN" "http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd">
-<svg height="60" stroke="none" version="1.2" width="200" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><rect fill="mediumslateblue" height="20" transform="translate(10.0 10.0)" width="50" x="0" y="0"></rect><rect fill="sandybrown" height="20" transform="translate(70.0 10.0)" width="30" x="0" y="0"></rect><rect fill="green" height="20" transform="translate(115.0 10.0)" width="40" x="0" y="0"></rect><rect fill="orange" height="20" transform="translate(175.0 10.0)" width="20" x="0" y="0"></rect></g><g><line stroke-width="2" stroke="red" x1="35" x2="35" y1="40" y2="50"></line><line stroke-width="2" stroke="red" x1="85" x2="85" y1="40" y2="50"></line><line stroke-width="2" stroke="red" x1="135" x2="135" y1="40" y2="50"></line><line stroke-width="2" stroke="red" x1="185" x2="185" y1="40" y2="50"></line></g></svg>
+<svg xmlns='http://www.w3.org/2000/svg' version='1.2' xmlns:xlink='http://www.w3.org/1999/xlink' width='200' height='60' stroke='none'>
+<g>
+<rect x='0' y='0' width='50' height='20' fill='mediumslateblue' transform='translate(10.0 10.0)'/>
+<rect x='0' y='0' width='30' height='20' fill='sandybrown' transform='translate(70.0 10.0)'/>
+<rect x='0' y='0' width='40' height='20' fill='green' transform='translate(115.0 10.0)'/>
+<rect x='0' y='0' width='20' height='20' fill='orange' transform='translate(175.0 10.0)'/>
+</g>
+<g>
+<line x1='35' y1='40' x2='35' y2='50' stroke='red' stroke-width='2'/>
+<line x1='85' y1='40' x2='85' y2='50' stroke='red' stroke-width='2'/>
+<line x1='135' y1='40' x2='135' y2='50' stroke='red' stroke-width='2'/>
+<line x1='185' y1='40' x2='185' y2='50' stroke='red' stroke-width='2'/>
+</g>
+</svg>

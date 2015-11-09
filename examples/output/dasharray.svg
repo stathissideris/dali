@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.2//EN" "http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd">
-<svg height="30" stroke-width="2" stroke="black" version="1.2" width="120" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><line stroke-dasharray="10,5" x1="10" x2="110" y1="10" y2="10"></line><line stroke-dasharray="5,10" x1="10" x2="110" y1="20" y2="20"></line></svg>
+<svg xmlns='http://www.w3.org/2000/svg' version='1.2' xmlns:xlink='http://www.w3.org/1999/xlink' width='120' height='30' stroke='black' stroke-width='2'>
+<line x1='10' y1='10' x2='110' y2='10' stroke-dasharray='10,5'/>
+<line x1='10' y1='20' x2='110' y2='20' stroke-dasharray='5,10'/>
+</svg>

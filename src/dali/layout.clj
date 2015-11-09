@@ -47,27 +47,29 @@
      bounds)))
 
 (defn stack [ctx {:keys [position direction anchor gap] :as params} elements]
-  (let [gap (or gap 0)
-        position (or position [0 0])
-        direction (or direction :down)
-        anchor (or anchor (direction->default-anchor direction))
-        elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
+  (let [gap         (or gap 0)
+        position    (or position [0 0])
+        direction   (or direction :down)
+        anchor      (or anchor (direction->default-anchor direction))
+        elements    (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
         
-        vertical? (or (= direction :down) (= direction :up))
-        [x y] position
-        elements (map #(replace-blanks % [0 0]) elements)
+        vertical?   (or (= direction :down) (= direction :up))
+        [x y]       position
+        elements    (map #(replace-blanks % [0 0]) elements)
         advance-pos (if (or (= direction :down) (= direction :right)) + -)
-        get-size (if vertical?
-                   (fn get-size [[_ _ [_ h]]] h)
-                   (fn get-size [[_ _ [w _]]] w))
-        get-pos (if vertical?
-                   (fn get-pos [[_ [_ y] _]] y)
-                   (fn get-pos [[_ [x _] _]] x))
+        get-size    (if vertical?
+                      (fn get-size [[_ _ [_ h]]] h)
+                      (fn get-size [[_ _ [w _]]] w))
+        get-pos     (if vertical?
+                      (fn get-pos [[_ [_ y] _]] y)
+                      (fn get-pos [[_ [x _] _]] x))
         place-point (if vertical?
                       (fn place-point [x y pos] [x pos])
                       (fn place-point [x y pos] [pos y]))
         initial-pos (if vertical? y x)]
-    (into [:g]
+    {:tag :g
+     :content
+     (vec
       (retro/transform
        [this-gap 0 gap
         bounds nil (batik/rehearse-bounds ctx element)
@@ -75,7 +77,7 @@
         pos 0 (get-pos bounds)
         this-pos initial-pos (advance-pos this-pos' size' this-gap')
         element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
-       elements))))
+       elements))}))
 
 (defn distribute [ctx {:keys [position direction anchor gap] :as params} elements]
   (let [direction (or direction :right)
@@ -106,9 +108,11 @@
                       :up    (range (- y first-offset) Integer/MIN_VALUE (- step))
                       :right (range (+ x first-offset) Integer/MAX_VALUE step)
                       :left  (range (- x first-offset) Integer/MIN_VALUE (- step)))]
-      (into [:g]
-            (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
-                 elements positions bounds)))))
+      {:tag :g
+       :content
+       (vec
+         (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
+              elements positions bounds))})))
 
 (defn resolve-layout
   ([doc]
@@ -116,9 +120,9 @@
   ([ctx doc]
      (walk/postwalk
       (fn [e]
-        (if-not (and (vector? e) (#{:stack :distribute} (first e)))
+        (if-not (#{:stack :distribute} (:tag e))
           e
-          (let [[tag attrs content] (s/normalize-hiccup-node e)]
+          (let [{:keys [tag attrs content]} e]
             (condp = tag
               :stack (stack ctx attrs content)
               :distribute (distribute ctx attrs content))))) doc)))

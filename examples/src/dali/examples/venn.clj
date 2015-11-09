@@ -23,7 +23,7 @@
       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])
    dali/ixml->xml
    ;;(spit-svg "/tmp/venn2.svg")
-   io/hiccup->svg-document-string
+   io/xml->svg-document-string
    btk/parse-svg-string
    (btk/render-document-to-png filename)))
 

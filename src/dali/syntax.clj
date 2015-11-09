@@ -78,41 +78,53 @@
 (def
   convertors
   {:page
-   (fn [content]
-     (concat [:svg {:xmlns "http://www.w3.org/2000/svg" :version "1.2"
-                    :xmlns:xlink "http://www.w3.org/1999/xlink"}] content))
+   (fn svg-tranform [_ _ content]
+     {:tag :svg
+      :attrs
+      {:xmlns "http://www.w3.org/2000/svg"
+       :version "1.2"
+       :xmlns:xlink "http://www.w3.org/1999/xlink"}
+      :content content})
    :use
-   (fn [[ref [x y]]]
+   (fn use-tranform [_ [ref [x y]] _]
      (if (and ref x y)
-       [:use {:xlink:href (str "#" (name ref)) :x x :y y}]
-       [:use {}]))
+       {:tag :use :attrs {:xlink:href (str "#" (name ref)) :x x :y y}}
+       {:tag :use}))
    :line
-   (fn [[[x1 y1] [x2 y2]]]
-     [:line {:x1 x1, :y1 y1, :x2 x2, :y2 y2}])
+   (fn line-tranform [_ [[x1 y1] [x2 y2]] _]
+     {:tag :line :attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2}})
    :circle
-   (fn [[[cx cy] r]]
-     [:circle {:cx cx, :cy cy, :r r}])
+   (fn circle-tranform [_ [[cx cy] r] _]
+     {:tag :circle :attrs {:cx cx :cy cy :r r}})
    :ellipse
-   (fn [[[cx cy] rx ry]]
-     [:ellipse {:cx cx, :cy cy, :rx rx, :ry ry}])
+   (fn ellipse-tranform [_ [[cx cy] rx ry] _]
+     {:tag :ellipse :attrs {:cx cx :cy cy :rx rx :ry ry}})
    :rect
-   (fn [[[x y] [w h] rounded]]
+   (fn rect-tranform [_ [[x y] [w h] rounded] _]
      (if-not rounded
-       [:rect {:x x, :y y, :width w, :height h}]
+       {:tag :rect :attrs {:x x :y y :width w :height h}}
        (if (vector? rounded)
-         [:rect {:x x, :y y, :width w, :height h, :rx (first rounded) :ry (second rounded)}]
-         [:rect {:x x, :y y, :width w, :height h, :rx rounded :ry rounded}])))
+         {:tag :rect
+          :attrs {:x x :y y
+                  :width w :height h
+                  :rx (first rounded) :ry (second rounded)}}
+         {:tag :rect
+          :attrs {:x x :y y
+                  :width w :height h
+                  :rx rounded :ry rounded}})))
    :polyline
-   (fn [points]
+   (fn polyline-tranform [_ points _]
      (let [points (unwrap-seq points)]
-       [:polyline {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}]))
+       {:tag :polyline
+        :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}))
    :polygon
-   (fn [points]
+   (fn polygon-transform [_ points _]
      (let [points (unwrap-seq points)]
-       [:polygon {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}]))
+       {:tag :polygon
+        :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}))
    :path
-   (fn [spec]
-     [:path {:d (convert-path-spec spec)}])})
+   (fn path-transform [_ spec _]
+     {:tag :path :attrs {:d (convert-path-spec spec)}})})
 
 (def transform-attr-mapping
   {:matrix "matrix"
@@ -121,6 +133,8 @@
    :rotate "rotate"
    :skew-x "skewX"
    :skey-y "skewY"})
+
+(mapv inc (range 50))
 
 (defn- process-transform-attr
   "Converts attributes that look like [:translate [10 20] :scale [20]]
@@ -131,7 +145,7 @@
       (string/join
        " " (map (fn [[transform params]]
                   (str (transform-attr-mapping transform)
-                       "(" (string/join " " params) ")")) (partition 2 tr)))))
+                       "(" (string/join " " params) ")")) tr))))
 
 (defn- process-attr-value [k v]
   (cond
@@ -141,6 +155,8 @@
      (process-transform-attr v)
    (and (sequential? v) (every? number? v))
      (string/join " " v)
+   (keyword? v)
+     (name v)
    :else
      v))
 
@@ -153,25 +169,8 @@
      (fn [m k v] (assoc m (make-key k) v))
      {} m)))
 
-(defn add-attrs [element]
-  (if (map? (second element))
-    element
-    (into [(first element) {}] (rest element))))
-
-(defn transform-attrs [element fun]
-  (let [element (add-attrs element)
-        attrs (second element)]
-    (assoc element 1 (fun attrs))))
-
-(defn assoc-attr [element k v]
-  (transform-attrs element #(assoc % k v)))
-
-(defn add-transform [element transform]
-  (update-in (add-attrs element)
-             [1 :transform]
-             (fn [x]
-               (let [x (or x [])]
-                 (concat x transform)))))
+(defn add-transform [node transform]
+  (update-in node [:attrs :transform] conj transform))
 
 (defn- process-attr-map
   "Unwraps nested attribute maps (mainly for :stroke and :fill).
@@ -183,18 +182,19 @@
   space-delimited string, except when it comes to :stroke-dasharray
   which becomes a comma-delimited string."
   [m]
-  (->> m
-       (reduce-kv
-        (fn [m k v]
-          (if (map? v)
-            (merge m (process-nested-attr-map k v))
-            (assoc m k v))) {})
-       (reduce-kv
-        (fn [m k v]
-          (let [k (keyword k)]
-            (assoc m
-              (or (attr-key-lookup k) k)
-              (process-attr-value k v)))) {})))
+  (as-> m m
+    (reduce-kv
+     (fn [m k v]
+       (if (map? v)
+         (merge m (process-nested-attr-map k v))
+         (assoc m k v))) {} m)
+    (reduce-kv
+     (fn [m k v]
+       (let [k (keyword k)]
+         (assoc m
+                (or (attr-key-lookup k) k)
+                (process-attr-value k v)))) {} m)
+    (dissoc m :dali/content-attr)))
 
 (defn dali-tag? [element]
   (and (vector? element) (keyword? (first element))))
@@ -213,7 +213,7 @@
     (update attrs :transform (partial partition 2))
     attrs))
 
-(defn node->ixml ;;TODO find out why this gets called with nodes that are already XML
+(defn dali-node->ixml-node ;;TODO find out why this gets called with nodes that are already XML
   [node]
   (if-not (dali-tag? node)
     node
@@ -239,25 +239,29 @@
         xml-node))))
 
 (defn dali->ixml [document]
-  (utils/transform-zipper (utils/ixml-zipper document) node->ixml))
+  (let [document (utils/transform-zipper
+                  (utils/generic-zipper document)
+                  #(if (= :_ %) [0 0] %))]
+   (utils/transform-zipper (utils/ixml-zipper document) dali-node->ixml-node)))
 
-(defn ixml->xml [element]
-  (let [[type sec & r] element
-        style-map (when (map? sec) sec)
-        params (if style-map r (rest element))
-        convert-fn (or (convertors type)
-                       (fn [content] ;;generic containment tag
-                         (concat [type {}] content)))]
-    (let [[tag attr & content] (convert-fn params)
-          merged-map (process-attr-map (merge attr style-map))
-          content (unwrap-seq content)]
-      (cond
-       (and content (string? (first content)))
-       [tag merged-map (first content)]
-       content
-       (into [] (concat [tag merged-map] (map ixml->xml content)))
-       :else
-       [tag merged-map]))))
+(defn ixml-node->xml-node
+  [{:keys [tag attrs content] :as node}]
+  (if (string? node)
+    node
+    (let [original-attrs              attrs
+          convert-fn                  (or (convertors tag)
+                                          (fn identity-convertor [_ _ _]
+                                            {:tag tag :attrs attrs :content content}))
+          {:keys [tag attrs content]} (convert-fn tag (:dali/content-attr attrs) content)
+          merged-attrs                (process-attr-map (merge attrs original-attrs))
+          content                     (unwrap-seq content)]
+      (merge
+       {:tag tag}
+       (when-not (empty? merged-attrs) {:attrs merged-attrs})
+       (when-not (empty? content) {:content content})))))
+
+(defn ixml->xml [document]
+  (utils/transform-zipper (utils/ixml-zipper document) ixml-node->xml-node))
 
 (comment
   (spit-svg
@@ -311,7 +315,7 @@
    (dali->hiccup
     [:page {:width 500 :height 500}
      [:defs
-      (-> "resources/symbol.svg" io/load-enlive-svg io/extract-svg-content :content first io/enlive->hiccup)]
+      (-> "resources/symbol.svg" io/load-enlive-svg io/extract-svg-content :content :symbol io/enlive->hiccup)]
      [:use :symbol [50 50]]
      [:use :symbol [150 70]]])
    "/tmp/svg5.svg")
