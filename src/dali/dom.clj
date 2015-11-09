@@ -9,20 +9,19 @@
 (defn set-attr! [element k v]
   (.setAttributeNS element nil (name k) (str v)))
 
-(defn hiccup->element [dom hiccup]
-  (let [{:keys [tag attrs content]} (s/dali->ixml hiccup)
+(defn xml->dom-element [dom node]
+  (let [{:keys [tag attrs content] :as node} node
         e (element dom (name tag))]
-    (if-not attrs
-      e
-      (do
+    (do
+      (when attrs
         (doseq [[k v] attrs]
-          (set-attr! e k v))
-        (when content
-          (if (string? (first content))
-            (.appendChild e (.createTextNode dom (first content)))
-            (doseq [child content]
-              (.appendChild e (hiccup->element dom child))))) ;;TODO mind the stack
-        e))))
+          (set-attr! e k v)))
+      (when content
+        (if (string? (first content))
+          (.appendChild e (.createTextNode dom (first content))) ;;TODO only first??
+          (doseq [child content]
+            (.appendChild e (xml->dom-element dom child))))) ;;TODO mind the stack
+      e)))
 
 (defn first-by-tag [dom tag]
   (-> dom (.getElementsByTagName tag) (.item 0)))

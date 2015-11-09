@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.2//EN" "http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd">
-<svg xmlns='http://www.w3.org/2000/svg' version='1.2' xmlns:xlink='http://www.w3.org/1999/xlink' width='90' height='50' stroke='black' stroke-width='2' fill='none'>
-<rect x='20' y='10' width='20' height='20' transform='rotate(30 30 20)'/>
-<circle cx='30' cy='20' r='2' stroke='none' fill='red'/>
-<rect x='50' y='10' width='20' height='20' transform='rotate(10 60 20) skewX(30)'/>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.2' width='90' height='50' stroke='black' stroke-width='2' fill='none'>
+<rect y='10' width='20' x='20' height='20' transform='rotate(30 30 20)'/>
+<circle r='2' cx='30' cy='20' stroke='none' fill='red'/>
+<rect y='10' width='20' x='50' height='20' transform='rotate(10 60 20) skewX(30)'/>
 </svg>

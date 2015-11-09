@@ -30,15 +30,14 @@
    [(.getWidth rect)
     (.getHeight rect)]])
 
-(def ^:private rehearse-bounds-impl
-  (fn [this dom element]
-    (let [element (->> element
-                       s/ixml->xml
-                       (dom/hiccup->element dom))]
-      (dom/add-to-svg dom element)
-      (let [bbox (to-rect (-> element .getBBox))]
-        (dom/remove-from-svg dom element)
-        bbox))))
+(defn- rehearse-bounds-impl [this dom element]
+  (let [element (->> element
+                     s/ixml->xml
+                     (dom/xml->dom-element dom))]
+    (dom/add-to-svg dom element)
+    (let [bbox (to-rect (-> element .getBBox))]
+      (dom/remove-from-svg dom element)
+      bbox)))
 
 (defrecord BatikContextRecord [bridge gvt dom]
   BatikContext

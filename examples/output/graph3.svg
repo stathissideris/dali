@@ -1,3 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.2//EN" "http://www.w3.org/Graphics/SVG/1.2/DTD/svg12.dtd">
-<svg height="150" version="1.2" width="270" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><g><g transform="translate(20.0 140.0)"><rect fill="#D46A6A" height="10" stroke="none" transform="translate(-10.0 -10.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="10" stroke="none" transform="translate(-10.0 -20.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="15" stroke="none" transform="translate(-10.0 -35.0)" width="20" x="0" y="0"></rect></g><g transform="translate(42.0 140.0)"><rect fill="#D46A6A" height="30" stroke="none" transform="translate(-10.0 -30.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="10" stroke="none" transform="translate(-10.0 -40.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="20" stroke="none" transform="translate(-10.0 -60.0)" width="20" x="0" y="0"></rect></g><g transform="translate(64.0 140.0)"><rect fill="#D46A6A" height="22" stroke="none" transform="translate(-10.0 -22.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="10" stroke="none" transform="translate(-10.0 -32.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="25" stroke="none" transform="translate(-10.0 -57.0)" width="20" x="0" y="0"></rect></g><g transform="translate(86.0 140.0)"><rect fill="#D46A6A" height="56" stroke="none" transform="translate(-10.0 -56.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="10" stroke="none" transform="translate(-10.0 -66.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="10" stroke="none" transform="translate(-10.0 -76.0)" width="20" x="0" y="0"></rect></g><g transform="translate(108.0 140.0)"><rect fill="#D46A6A" height="90" stroke="none" transform="translate(-10.0 -90.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="10" stroke="none" transform="translate(-10.0 -100.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="30" stroke="none" transform="translate(-10.0 -130.0)" width="20" x="0" y="0"></rect></g><g transform="translate(130.0 140.0)"><rect fill="#D46A6A" height="59" stroke="none" transform="translate(-10.0 -59.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="22" stroke="none" transform="translate(-10.0 -81.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="25" stroke="none" transform="translate(-10.0 -106.0)" width="20" x="0" y="0"></rect></g><g transform="translate(152.0 140.0)"><rect fill="#D46A6A" height="23" stroke="none" transform="translate(-10.0 -23.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="10" stroke="none" transform="translate(-10.0 -33.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="13" stroke="none" transform="translate(-10.0 -46.0)" width="20" x="0" y="0"></rect></g><g transform="translate(174.0 140.0)"><rect fill="#D46A6A" height="12" stroke="none" transform="translate(-10.0 -12.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="6" stroke="none" transform="translate(-10.0 -18.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="8" stroke="none" transform="translate(-10.0 -26.0)" width="20" x="0" y="0"></rect></g><g transform="translate(196.0 140.0)"><rect fill="#D46A6A" height="44" stroke="none" transform="translate(-10.0 -44.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="22" stroke="none" transform="translate(-10.0 -66.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="18" stroke="none" transform="translate(-10.0 -84.0)" width="20" x="0" y="0"></rect></g><g transform="translate(218.0 140.0)"><rect fill="#D46A6A" height="50" stroke="none" transform="translate(-10.0 -50.0)" width="20" x="0" y="0"></rect><rect fill="#D49A6A" height="20" stroke="none" transform="translate(-10.0 -70.0)" width="20" x="0" y="0"></rect><rect fill="#407F7F" height="10" stroke="none" transform="translate(-10.0 -80.0)" width="20" x="0" y="0"></rect></g></g></svg>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.2' width='270' height='150'>
+<g>
+<g transform='translate(20.0 140.0)'>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#D46A6A' transform='translate(-10.0 -10.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#D49A6A' transform='translate(-10.0 -20.0)'/>
+<rect y='0' width='20' x='0' height='15' stroke='none' fill='#407F7F' transform='translate(-10.0 -35.0)'/>
+</g>
+<g transform='translate(42.0 140.0)'>
+<rect y='0' width='20' x='0' height='30' stroke='none' fill='#D46A6A' transform='translate(-10.0 -30.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#D49A6A' transform='translate(-10.0 -40.0)'/>
+<rect y='0' width='20' x='0' height='20' stroke='none' fill='#407F7F' transform='translate(-10.0 -60.0)'/>
+</g>
+<g transform='translate(64.0 140.0)'>
+<rect y='0' width='20' x='0' height='22' stroke='none' fill='#D46A6A' transform='translate(-10.0 -22.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#D49A6A' transform='translate(-10.0 -32.0)'/>
+<rect y='0' width='20' x='0' height='25' stroke='none' fill='#407F7F' transform='translate(-10.0 -57.0)'/>
+</g>
+<g transform='translate(86.0 140.0)'>
+<rect y='0' width='20' x='0' height='56' stroke='none' fill='#D46A6A' transform='translate(-10.0 -56.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#D49A6A' transform='translate(-10.0 -66.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#407F7F' transform='translate(-10.0 -76.0)'/>
+</g>
+<g transform='translate(108.0 140.0)'>
+<rect y='0' width='20' x='0' height='90' stroke='none' fill='#D46A6A' transform='translate(-10.0 -90.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#D49A6A' transform='translate(-10.0 -100.0)'/>
+<rect y='0' width='20' x='0' height='30' stroke='none' fill='#407F7F' transform='translate(-10.0 -130.0)'/>
+</g>
+<g transform='translate(130.0 140.0)'>
+<rect y='0' width='20' x='0' height='59' stroke='none' fill='#D46A6A' transform='translate(-10.0 -59.0)'/>
+<rect y='0' width='20' x='0' height='22' stroke='none' fill='#D49A6A' transform='translate(-10.0 -81.0)'/>
+<rect y='0' width='20' x='0' height='25' stroke='none' fill='#407F7F' transform='translate(-10.0 -106.0)'/>
+</g>
+<g transform='translate(152.0 140.0)'>
+<rect y='0' width='20' x='0' height='23' stroke='none' fill='#D46A6A' transform='translate(-10.0 -23.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#D49A6A' transform='translate(-10.0 -33.0)'/>
+<rect y='0' width='20' x='0' height='13' stroke='none' fill='#407F7F' transform='translate(-10.0 -46.0)'/>
+</g>
+<g transform='translate(174.0 140.0)'>
+<rect y='0' width='20' x='0' height='12' stroke='none' fill='#D46A6A' transform='translate(-10.0 -12.0)'/>
+<rect y='0' width='20' x='0' height='6' stroke='none' fill='#D49A6A' transform='translate(-10.0 -18.0)'/>
+<rect y='0' width='20' x='0' height='8' stroke='none' fill='#407F7F' transform='translate(-10.0 -26.0)'/>
+</g>
+<g transform='translate(196.0 140.0)'>
+<rect y='0' width='20' x='0' height='44' stroke='none' fill='#D46A6A' transform='translate(-10.0 -44.0)'/>
+<rect y='0' width='20' x='0' height='22' stroke='none' fill='#D49A6A' transform='translate(-10.0 -66.0)'/>
+<rect y='0' width='20' x='0' height='18' stroke='none' fill='#407F7F' transform='translate(-10.0 -84.0)'/>
+</g>
+<g transform='translate(218.0 140.0)'>
+<rect y='0' width='20' x='0' height='50' stroke='none' fill='#D46A6A' transform='translate(-10.0 -50.0)'/>
+<rect y='0' width='20' x='0' height='20' stroke='none' fill='#D49A6A' transform='translate(-10.0 -70.0)'/>
+<rect y='0' width='20' x='0' height='10' stroke='none' fill='#407F7F' transform='translate(-10.0 -80.0)'/>
+</g>
+</g>
+</svg>
