@@ -15,6 +15,7 @@
   (t/run-tests
    'dali.schema-test
    'dali.syntax-test
+   'dali.layout-test
 ;;   'dali.batik-test
    ))
 

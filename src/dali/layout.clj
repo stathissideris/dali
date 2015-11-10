@@ -1,9 +1,11 @@
 (ns dali.layout
   (:require [clojure.walk :as walk]
-            [retrograde :as retro]
-            [dali.syntax :as s]
+            [clojure.zip :as zip]
             [dali.batik :as batik]
-            [dali.geom :as geom :refer [v+ v- v-half]]))
+            [dali.geom :as geom :refer [v+ v- v-half]]
+            [dali.syntax :as s]
+            [dali.utils :as utils]
+            [retrograde :as retro]))
 
 (def anchors #{:top-left :top :top-right :left :right :bottom-left :bottom :bottom-right :center})
 
@@ -26,11 +28,22 @@
     :bottom-right [(+ x w) (+ y h)]
     :center       [(+ x (/ w 2)) (+ y (/ h 2))]))
 
+(defn- tree-path [path]
+  (interleave (repeat :content) (rest path)))
+
+(defn- get-in-tree [tree path]
+  (get-in tree (tree-path path)))
+
+(defn- assoc-in-tree [tree path value]
+  (assoc-in tree (tree-path path) value))
+
+(defn- update-in-tree [tree path fun & params]
+  (apply update-in tree (tree-path path) fun params))
+
 (defn- index-tree [document]
   (utils/transform-zipper
    (utils/ixml-zipper document)
    (fn [z]
-     (prn "parent" (some-> z zip/up zip/node))
      (let [parent-path (or (some-> z zip/up zip/node :attrs :dali/path) [])
            left-index  (or (some-> z zip/left zip/node :attrs :dali/path last) -1)
            this-path   (conj parent-path (inc left-index))]
