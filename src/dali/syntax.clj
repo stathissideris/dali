@@ -235,10 +235,13 @@
         (update-in xml-node [:attrs :dali/content-attr] (comp vec split-params-by-keyword))
         xml-node))))
 
+(defn- replace-empty-coords [document]
+  (utils/transform-zipper
+   (utils/generic-zipper document)
+   #(if (= :_ %) [0 0] %)))
+
 (defn dali->ixml [document]
-  (let [document (utils/transform-zipper
-                  (utils/generic-zipper document)
-                  #(if (= :_ %) [0 0] %))]
+  (let [document (replace-empty-coords document)]
    (utils/transform-zipper (utils/ixml-zipper document) dali-node->ixml-node)))
 
 (defn ixml-node->xml-node
@@ -259,6 +262,11 @@
 
 (defn ixml->xml [document]
   (utils/transform-zipper (utils/ixml-zipper document) ixml-node->xml-node))
+
+(defn dali->xml [document]
+  (let [document (replace-empty-coords document)]
+    (utils/transform-zipper (utils/ixml-zipper document) (comp ixml-node->xml-node
+                                                               dali-node->ixml-node))))
 
 (comment
   (spit-svg

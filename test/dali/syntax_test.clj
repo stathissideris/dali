@@ -59,6 +59,16 @@
            :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]))))
 
 (deftest test-dali->xml
+  (is (= {:tag :path
+          :attrs {:d "M 110 80 C 140 10, 165 10, 195 80 S 250 150, 280 80"
+                  :id "thick"
+                  :stroke-width 20}}
+         (dali->xml
+          [:path
+           {:id :thick :stroke-width 20}
+           :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]))))
+
+(deftest test-dali->ixml
   (is (= {:tag :polyline, :content [{:tag :foo}]}
          (dali->ixml [:polyline [:foo]])))
   (is (= {:tag :polyline, :content [{:tag :foo} {:tag :bar}]}
