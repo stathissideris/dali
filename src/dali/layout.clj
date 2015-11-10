@@ -26,6 +26,16 @@
     :bottom-right [(+ x w) (+ y h)]
     :center       [(+ x (/ w 2)) (+ y (/ h 2))]))
 
+(defn- index-tree [document]
+  (utils/transform-zipper
+   (utils/ixml-zipper document)
+   (fn [z]
+     (prn "parent" (some-> z zip/up zip/node))
+     (let [parent-path (or (some-> z zip/up zip/node :attrs :dali/path) [])
+           left-index  (or (some-> z zip/left zip/node :attrs :dali/path last) -1)
+           this-path   (conj parent-path (inc left-index))]
+       (assoc-in (zip/node z) [:attrs :dali/path] this-path)))))
+
 (defn place-top-left
   "Adds a translation transform to an element so that its top-left
   corner is at the passed position."
