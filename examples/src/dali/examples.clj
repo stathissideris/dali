@@ -185,7 +185,7 @@
 
 (defn render-example [filename document]
   (-> document
-      schema/validate
+      ;;schema/validate
       s/dali->ixml
       layout/resolve-layout
       s/ixml->xml
