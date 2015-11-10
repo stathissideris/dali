@@ -133,8 +133,6 @@
    :skew-x "skewX"
    :skey-y "skewY"})
 
-(mapv inc (range 50))
-
 (defn- process-transform-attr
   "Converts attributes that look like [:translate [10 20] :scale [20]]
   to \"translate(10 20) scale(20)\" to be used in the transform
