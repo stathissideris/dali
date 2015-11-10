@@ -26,9 +26,6 @@
     :bottom-right [(+ x w) (+ y h)]
     :center       [(+ x (/ w 2)) (+ y (/ h 2))]))
 
-(defn- replace-blanks [element replacement]
-  (walk/postwalk (fn [f] (if (= f :_) replacement f)) element))
-
 (defn place-top-left
   "Adds a translation transform to an element so that its top-left
   corner is at the passed position."
@@ -55,7 +52,6 @@
         
         vertical?   (or (= direction :down) (= direction :up))
         [x y]       position
-        elements    (map #(replace-blanks % [0 0]) elements)
         advance-pos (if (or (= direction :down) (= direction :right)) + -)
         get-size    (if vertical?
                       (fn get-size [[_ _ [_ h]]] h)
@@ -93,7 +89,6 @@
           elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
           
           [x y] position
-          elements (map #(replace-blanks % [0 0]) elements)
           bounds (map #(batik/rehearse-bounds ctx %) elements)
           step (+ gap (if vertical?
                         (apply max (map (fn [[_ _ [_ h]]] h) bounds))
