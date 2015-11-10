@@ -62,10 +62,11 @@
   (is (= {:tag :path
           :attrs {:d "M 110 80 C 140 10, 165 10, 195 80 S 250 150, 280 80"
                   :id "thick"
-                  :stroke-width 20}}
+                  :stroke-width 20
+                  :stroke "red"}}
          (dali->xml
           [:path
-           {:id :thick :stroke-width 20}
+           {:id :thick :stroke-width 20 :stroke :red}
            :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]))))
 
 (deftest test-dali->ixml
