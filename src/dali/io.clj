@@ -84,11 +84,10 @@
   [encoding]
   (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
 
-(defn xml->xml-string ;;TODO placeholder implementation, replace with something more performant
+(defn xml->xml-string
   "Converts clojure.xml representation to an XML string."
   [xml]
-  (with-out-str
-    (cxml/emit-element xml)))
+  (apply str (en/emit* xml)))
 
 (defn xml->svg-document-string
   "Converts clojure.xml representation to an SVG document string,
