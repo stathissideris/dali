@@ -81,4 +81,5 @@
       (zip/root zipper)
       (recur (zip/next (zip/replace
                         zipper
-                        (replace-fn (zip/node zipper))))))))
+                        (replace-fn zipper)))))))
+

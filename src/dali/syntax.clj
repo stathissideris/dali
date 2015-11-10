@@ -238,11 +238,12 @@
 (defn- replace-empty-coords [document]
   (utils/transform-zipper
    (utils/generic-zipper document)
-   #(if (= :_ %) [0 0] %)))
+   #(let [node (zip/node %)] (if (= :_ node) [0 0] node))))
 
 (defn dali->ixml [document]
   (let [document (replace-empty-coords document)]
-   (utils/transform-zipper (utils/ixml-zipper document) dali-node->ixml-node)))
+    (utils/transform-zipper (utils/ixml-zipper document)
+                            (comp dali-node->ixml-node zip/node))))
 
 (defn ixml-node->xml-node
   [{:keys [tag attrs content] :as node}]
@@ -261,12 +262,13 @@
        (when-not (empty? content) {:content content})))))
 
 (defn ixml->xml [document]
-  (utils/transform-zipper (utils/ixml-zipper document) ixml-node->xml-node))
+  (utils/transform-zipper (utils/ixml-zipper document) (comp ixml-node->xml-node zip/node)))
 
 (defn dali->xml [document]
   (let [document (replace-empty-coords document)]
     (utils/transform-zipper (utils/ixml-zipper document) (comp ixml-node->xml-node
-                                                               dali-node->ixml-node))))
+                                                               dali-node->ixml-node
+                                                               zip/node))))
 
 (comment
   (spit-svg
