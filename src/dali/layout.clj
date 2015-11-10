@@ -66,7 +66,7 @@
      (v- position (v- anchor-point original-position))
      bounds)))
 
-(defn stack [ctx {:keys [position direction anchor gap] :as params} elements]
+(defn stack [{:keys [position direction anchor gap] :as params} elements bounds-fn]
   (let [gap         (or gap 0)
         position    (or position [0 0])
         direction   (or direction :down)
@@ -91,14 +91,15 @@
      (vec
       (retro/transform
        [this-gap 0 gap
-        bounds nil (batik/rehearse-bounds ctx element)
+        bounds nil (bounds-fn element)
         size 0 (get-size bounds)
         pos 0 (get-pos bounds)
         this-pos initial-pos (advance-pos this-pos' size' this-gap')
         element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
        elements))}))
 
-(defn distribute [ctx {:keys [position direction anchor gap] :as params} elements]
+
+(defn distribute [{:keys [position direction anchor gap] :as params} elements bounds-fn]
   (let [direction (or direction :right)
         anchor (or anchor :center)
         vertical? (or (= direction :down) (= direction :up))]
@@ -112,7 +113,7 @@
           elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
           
           [x y] position
-          bounds (map #(batik/rehearse-bounds ctx %) elements)
+          bounds (map bounds-fn elements)
           step (+ gap (if vertical?
                         (apply max (map (fn [[_ _ [_ h]]] h) bounds))
                         (apply max (map (fn [[_ _ [w _]]] w) bounds))))
@@ -136,14 +137,15 @@
   ([doc]
      (resolve-layout (batik/context) doc))
   ([ctx doc]
-     (walk/postwalk
-      (fn [e]
-        (if-not (#{:stack :distribute} (:tag e))
-          e
-          (let [{:keys [tag attrs content]} e]
-            (condp = tag
-              :stack (stack ctx attrs content)
-              :distribute (distribute ctx attrs content))))) doc)))
+   (let [bounds-fn #(batik/rehearse-bounds ctx %)]
+    (walk/postwalk
+     (fn [e]
+       (if-not (#{:stack :distribute} (:tag e))
+         e
+         (let [{:keys [tag attrs content]} e]
+           (condp = tag
+             :stack (stack attrs content bounds-fn)
+             :distribute (distribute attrs content bounds-fn))))) doc))))
 
 (comment
   (do
