@@ -49,6 +49,14 @@
            this-path   (conj parent-path (inc left-index))]
        (assoc-in (zip/node z) [:attrs :dali/path] this-path)))))
 
+(defn- de-index-tree [document]
+  (utils/transform-zipper
+   (utils/ixml-zipper document)
+   (fn [z]
+     (as-> (zip/node z) x
+       (update x :attrs dissoc :dali/path)
+       (if (empty? (:attrs x)) (dissoc x :attrs) x)))))
+
 (defn place-top-left
   "Adds a translation transform to an element so that its top-left
   corner is at the passed position."
