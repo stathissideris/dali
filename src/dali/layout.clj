@@ -5,6 +5,7 @@
             [dali.geom :as geom :refer [v+ v- v-half]]
             [dali.syntax :as s]
             [dali.utils :as utils]
+            [net.cgrand.enlive-html :as en]
             [retrograde :as retro]))
 
 (def anchors #{:top-left :top :top-right :left :right :bottom-left :bottom :bottom-right :center})
@@ -44,18 +45,24 @@
   (utils/transform-zipper
    (utils/ixml-zipper document)
    (fn [z]
-     (let [parent-path (or (some-> z zip/up zip/node :attrs :dali/path) [])
-           left-index  (or (some-> z zip/left zip/node :attrs :dali/path last) -1)
-           this-path   (conj parent-path (inc left-index))]
-       (assoc-in (zip/node z) [:attrs :dali/path] this-path)))))
+     (let [node (zip/node z)]
+       (if (string? node)
+         node
+         (let [parent-path (or (some-> z zip/up zip/node :attrs :dali/path) [])
+               left-index  (or (some-> z zip/left zip/node :attrs :dali/path last) -1)
+               this-path   (conj parent-path (inc left-index))]
+           (assoc-in node [:attrs :dali/path] this-path)))))))
 
-(defn- de-index-tree [document]
+(defn- de-index-tree [document] ;;TODO this is probably simpler with enlive
   (utils/transform-zipper
    (utils/ixml-zipper document)
    (fn [z]
-     (as-> (zip/node z) x
-       (update x :attrs dissoc :dali/path)
-       (if (empty? (:attrs x)) (dissoc x :attrs) x)))))
+     (let [node (zip/node z)]
+       (if (string? node)
+         node
+         (as-> node x
+           (update x :attrs dissoc :dali/path)
+           (if (empty? (:attrs x)) (dissoc x :attrs) x)))))))
 
 (defn place-top-left
   "Adds a translation transform to an element so that its top-left
@@ -74,8 +81,9 @@
      (v- position (v- anchor-point original-position))
      bounds)))
 
-(defn stack [{:keys [position direction anchor gap] :as params} elements bounds-fn]
-  (let [gap         (or gap 0)
+(defn stack [{{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
+  (let [
+        gap         (or gap 0)
         position    (or position [0 0])
         direction   (or direction :down)
         anchor      (or anchor (direction->default-anchor direction))
@@ -94,20 +102,17 @@
                       (fn place-point [x y pos] [x pos])
                       (fn place-point [x y pos] [pos y]))
         initial-pos (if vertical? y x)]
-    {:tag :g
-     :content
-     (vec
-      (retro/transform
-       [this-gap 0 gap
-        bounds nil (bounds-fn element)
-        size 0 (get-size bounds)
-        pos 0 (get-pos bounds)
-        this-pos initial-pos (advance-pos this-pos' size' this-gap')
-        element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
-       elements))}))
+    (retro/transform
+     [this-gap 0 gap
+      bounds nil (bounds-fn element)
+      size 0 (get-size bounds)
+      pos 0 (get-pos bounds)
+      this-pos initial-pos (advance-pos this-pos' size' this-gap')
+      element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
+     elements)))
 
 
-(defn distribute [{:keys [position direction anchor gap] :as params} elements bounds-fn]
+(defn distribute [{{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
   (let [direction (or direction :right)
         anchor (or anchor :center)
         vertical? (or (= direction :down) (= direction :up))]
@@ -135,25 +140,63 @@
                       :up    (range (- y first-offset) Integer/MIN_VALUE (- step))
                       :right (range (+ x first-offset) Integer/MAX_VALUE step)
                       :left  (range (- x first-offset) Integer/MIN_VALUE (- step)))]
-      {:tag :g
-       :content
-       (vec
-         (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
-              elements positions bounds))})))
+      (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
+           elements positions bounds))))
+
+(def layout-selector ;;TODO make this dynamic so that it's extensible
+  [#{:layout :stack :distribute}])
+
+(def has-selector [(en/attr? :selector)])
+
+(defn- get-layouts [document]
+  (en/select document layout-selector))
+
+(defn- layout-node->group-node [node]
+  (-> node
+      (assoc :tag :g)
+      (update :attrs select-keys [:id :class])))
+
+(def remove-node (en/substitute []))
+
+(defn- remove-layouts [document]
+  (-> [document]
+      (en/transform has-selector remove-node)
+      (en/transform layout-selector layout-node->group-node)
+      first))
+
+(defn- patch-elements [document new-elements]
+  (reduce (fn [doc e]
+            (assoc-in-tree doc (-> e :attrs :dali/path) e))
+          document new-elements))
+
+(defmulti layout-nodes (fn [tag _ _] (:tag tag)))
+
+(defmethod layout-nodes :stack
+  [tag elements bound-fn]
+  (stack tag elements bound-fn))
+
+(defmethod layout-nodes :distribute
+  [tag elements bound-fn]
+  (distribute tag elements bound-fn))
+
+(defn- apply-layout [document layout-tag bounds-fn]
+  (let [selector     (get-in layout-tag [:attrs :selector])
+        elements     (if selector
+                       (en/select document selector)
+                       (:content layout-tag))
+        new-elements (layout-nodes layout-tag elements bounds-fn)]
+    (patch-elements document new-elements)))
 
 (defn resolve-layout
   ([doc]
-     (resolve-layout (batik/context) doc))
+   (resolve-layout (batik/context) doc))
   ([ctx doc]
-   (let [bounds-fn #(batik/rehearse-bounds ctx %)]
-    (walk/postwalk
-     (fn [e]
-       (if-not (#{:stack :distribute} (:tag e))
-         e
-         (let [{:keys [tag attrs content]} e]
-           (condp = tag
-             :stack (stack attrs content bounds-fn)
-             :distribute (distribute attrs content bounds-fn))))) doc))))
+   (let [bounds-fn #(batik/rehearse-bounds ctx %)
+         doc       (index-tree doc)
+         doc       (reduce (fn [doc layout]
+                             (apply-layout doc layout bounds-fn))
+                           doc (get-layouts doc))]
+     (-> doc remove-layouts de-index-tree))))
 
 (comment
   (do

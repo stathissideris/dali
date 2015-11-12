@@ -181,6 +181,27 @@
             [12 6 8]
             [44 22 18]
             [50 20 10]])]]}
+   {:filename "graph4.svg"
+    :document
+    [:page {:width 270 :height 150}
+     [:stack
+      {:position [10 140], :direction :right, :anchor :bottom-left, :gap 2}
+      (map (fn [[cl a b c]]
+             [:g
+              [:rect {:class cl :stroke :none, :fill "#D46A6A"} :_ [20 a]]
+              [:rect {:class cl :stroke :none, :fill "#D49A6A"} :_ [20 b]]
+              [:rect {:class cl :stroke :none, :fill "#407F7F"} :_ [20 c]]
+              [:stack {:direction :up :select [(keyword (str "." cl))]}]])
+           [[:g0 10 10 15]
+            [:g1 30 10 20]
+            [:g2 22 10 25]
+            [:g3 56 10 10]
+            [:g4 90 10 30]
+            [:g5 59 22 25]
+            [:g6 23 10 13]
+            [:g7 12 6 8]
+            [:g8 44 22 18]
+            [:g9 50 20 10]])]]}
    ])
 
 (defn render-example [filename document]
