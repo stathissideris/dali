@@ -237,7 +237,7 @@
            [240 :right]
            [310 :v-center]])
      [:align {:relative-to :first :axis :center}
-      [:circle {:fill :none :stroke :black} [195 150] 30]
+      [:circle {:fill :none :stroke :gray :stroke-dasharray [5 5]} [195 150] 30]
       [:text {:text-family "Verdana" :font-size 12} "aligned!"]]]}])
 
 (defn render-example [filename document]
