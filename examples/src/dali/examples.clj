@@ -207,7 +207,35 @@
            [12 6 8]
            [44 22 18]
            [50 20 10]])]}
-   ])
+   {:filename "align-test.svg"
+    :document
+    [:page {:width 330 :height 200}
+     (map (fn [[guide axis]]
+            [:g
+             [:align
+              {:relative-to guide :axis axis}
+              [:rect {:stroke :none, :fill "#D49A6A"} [20 0] [20 30]]
+              [:rect {:stroke :none, :fill "#D46A6A"} [45 0] [20 20]]
+              [:rect {:stroke :none, :fill "#D49A6A"} [70 0] [20 10]]
+              [:rect {:stroke :none, :fill "#407F7F"} [95 0] [20 25]]
+              [:rect {:stroke :none, :fill "#D49A6A"} [120 0] [20 15]]]
+             [:line {:stroke :black} [10 guide] [130 guide]]])
+          [[10 :top]
+           [100 :bottom]
+           [150 :h-center]])
+     (map (fn [[guide axis]]
+            [:g
+             [:align
+              {:relative-to guide :axis axis}
+              [:rect {:stroke :none, :fill "#D49A6A"} [0 20] [30 20]]
+              [:rect {:stroke :none, :fill "#D46A6A"} [0 45] [20 20]]
+              [:rect {:stroke :none, :fill "#D49A6A"} [0 70] [10 20]]
+              [:rect {:stroke :none, :fill "#407F7F"} [0 95] [25 20]]
+              [:rect {:stroke :none, :fill "#D49A6A"} [0 120] [15 20]]]
+             [:line {:stroke :black} [guide 10] [guide 130]]])
+          [[150 :left]
+           [240 :right]
+           [310 :v-center]])]}])
 
 (defn render-example [filename document]
   (-> document

@@ -145,8 +145,48 @@
       (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
            elements positions bounds))))
 
+(def ^:private align-axes
+  #{:top :bottom :left :right :v-center :h-center :center})
+
+(defn- guide-from-element [node axis bounds-fn]
+  (let [[_ [x y] [w h]] (bounds-fn node)]
+    (condp = axis
+      :top y
+      :bottom (+ y h)
+      :left x
+      :right (+ x w)
+      :v-center (+ y (/ h 2))
+      :h-center (+ x (/ w 2)))))
+
+(defn align [{{:keys [relative-to axis]} :attrs} elements bounds-fn]
+  (assert (or (= :first relative-to)
+              (= :last relative-to)
+              (number? relative-to)) ":relative-to can either be a number or :first or :last")
+  (assert (align-axes axis)
+          (str ":axis has to be one of " (string/join ", " align-axes)))
+
+  (let [guide     (if (number? relative-to)
+                    relative-to
+                    (guide-from-element (if (= :first relative-to)
+                                          (first elements)
+                                          (last elements)) axis bounds-fn))
+        anchor    (condp = axis
+                    :v-center :center
+                    :h-center :center
+                    axis)
+        v-guide?  (#{:right :left :v-center} axis)
+        bounds    (map bounds-fn elements)
+        positions (if v-guide?
+                    (map (fn [[_ [_ y]]] y) bounds)
+                    (map (fn [[_ [x _]]] x) bounds))]
+    (map (fn [e pos bounds]
+           (place-by-anchor e anchor (if v-guide?
+                                       [guide pos]
+                                       [pos guide]) bounds))
+         elements positions bounds)))
+
 (def layout-tags ;;TODO make this mutable so that it's extensible
-  #{:layout :stack :distribute})
+  #{:layout :stack :distribute :align})
 
 (def layout-selector
   [layout-tags])
@@ -184,17 +224,21 @@
   [tag elements bound-fn]
   (distribute tag elements bound-fn))
 
+(defmethod layout-nodes :align
+  [tag elements bound-fn]
+  (align tag elements bound-fn))
+
 (defn- apply-selector-layout [document layout-tag bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
         elements     (en/select document selector)
         new-elements (layout-nodes layout-tag elements bounds-fn)]
     (patch-elements document new-elements)))
 
-(defn nested-layout? [node]
+(defn- nested-layout? [node]
   (and (-> node :tag layout-tags)
        (-> node :attrs :select not)))
 
-(defn selector-layout? [node]
+(defn- selector-layout? [node]
   (and (-> node :tag layout-tags)
        (-> node :attrs :select)))
 
