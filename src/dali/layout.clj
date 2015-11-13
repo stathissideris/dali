@@ -1,6 +1,8 @@
 (ns dali.layout
-  (:require [clojure.walk :as walk]
+  (:require [clojure.string :as string]
+            [clojure.walk :as walk]
             [clojure.zip :as zip]
+            [clojure.string :as string]
             [dali.batik :as batik]
             [dali.geom :as geom :refer [v+ v- v-half]]
             [dali.syntax :as s]
@@ -143,25 +145,28 @@
       (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
            elements positions bounds))))
 
-(def layout-selector ;;TODO make this dynamic so that it's extensible
-  [#{:layout :stack :distribute}])
+(def layout-tags ;;TODO make this mutable so that it's extensible
+  #{:layout :stack :distribute})
 
-(def has-selector [(en/attr? :selector)])
+(def layout-selector
+  [layout-tags])
 
-(defn- get-layouts [document]
-  (en/select document layout-selector))
+(def has-selector [(en/attr? :select)])
+
+(defn- get-selector-layouts [document]
+  (en/select document has-selector))
 
 (defn- layout-node->group-node [node]
   (-> node
       (assoc :tag :g)
-      (update :attrs select-keys [:id :class])))
+      (update :attrs select-keys [:id :class :dali/path])))
 
 (def remove-node (en/substitute []))
 
-(defn- remove-layouts [document]
+(defn- remove-selector-layouts [document]
   (-> [document]
       (en/transform has-selector remove-node)
-      (en/transform layout-selector layout-node->group-node)
+      ;;(en/transform layout-selector layout-node->group-node)
       first))
 
 (defn- patch-elements [document new-elements]
@@ -179,24 +184,63 @@
   [tag elements bound-fn]
   (distribute tag elements bound-fn))
 
-(defn- apply-layout [document layout-tag bounds-fn]
-  (let [selector     (get-in layout-tag [:attrs :selector])
-        elements     (if selector
-                       (en/select document selector)
-                       (:content layout-tag))
+(defn- apply-selector-layout [document layout-tag bounds-fn]
+  (let [selector     (get-in layout-tag [:attrs :select])
+        elements     (en/select document selector)
         new-elements (layout-nodes layout-tag elements bounds-fn)]
     (patch-elements document new-elements)))
+
+(defn nested-layout? [node]
+  (and (-> node :tag layout-tags)
+       (-> node :attrs :select not)))
+
+(defn selector-layout? [node]
+  (and (-> node :tag layout-tags)
+       (-> node :attrs :select)))
+
+(defn apply-nested-layouts [doc bounds-fn]
+  (utils/transform-zipper-backwards
+   (-> doc utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
+   (fn [zipper]
+     (let [node (zip/node zipper)]
+       (if (nested-layout? node)
+         (let [new-elements (layout-nodes node (:content node) bounds-fn)]
+           (-> node
+               layout-node->group-node
+               (assoc :content (vec new-elements))))
+         node)))))
+
+;;enlive expects id and class to be strings, otherwise id or
+;;class-based selectors fail with exceptions. This doesn't seem to be
+;;a problem with other attributes.
+(defn- fix-id-and-class-for-enlive [doc]
+  (utils/transform-zipper
+   (utils/ixml-zipper doc)
+   (fn [zipper]
+     (let [node (zip/node zipper)]
+       (-> node
+           (utils/safe-update-in [:attrs :id] name)
+           (utils/safe-update-in
+            [:attrs :class]
+            (fn [c]
+              (cond (keyword? c) (name c)
+                    (sequential? c) (string/join " " (map name c))))))))))
 
 (defn resolve-layout
   ([doc]
    (resolve-layout (batik/context) doc))
   ([ctx doc]
-   (let [bounds-fn #(batik/rehearse-bounds ctx %)
-         doc       (index-tree doc)
-         doc       (reduce (fn [doc layout]
-                             (apply-layout doc layout bounds-fn))
-                           doc (get-layouts doc))]
-     (-> doc remove-layouts de-index-tree))))
+   (let [bounds-fn        #(batik/rehearse-bounds ctx %)
+         selector-layouts (get-selector-layouts doc)
+         doc              (-> doc
+                              remove-selector-layouts
+                              fix-id-and-class-for-enlive
+                              index-tree
+                              (apply-nested-layouts bounds-fn))
+         doc              (reduce (fn [doc layout]
+                                    (apply-selector-layout doc layout bounds-fn))
+                                  doc selector-layouts)]
+     (-> doc de-index-tree))))
 
 (comment
   (do

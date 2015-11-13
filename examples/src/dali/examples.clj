@@ -1,11 +1,13 @@
 (ns dali.examples
   (:require [clojure.java.io :as java-io]
-            [dali.syntax :as s]
+            [clojure.zip :as zip]
+            [dali.batik :as batik]
             [dali.io :as io]
             [dali.layout :as layout]
             [dali.prefab :as prefab]
-            [dali.batik :as batik]
-            [dali.schema :as schema]))
+            [dali.schema :as schema]
+            [dali.syntax :as s]
+            [dali.utils :as utils]))
 
 (def examples
   [{:filename "hello-world.svg"
@@ -184,32 +186,37 @@
    {:filename "graph4.svg"
     :document
     [:page {:width 270 :height 150}
-     [:stack
-      {:position [10 140], :direction :right, :anchor :bottom-left, :gap 2}
-      (map (fn [[cl a b c]]
-             [:g
-              [:rect {:class cl :stroke :none, :fill "#D46A6A"} :_ [20 a]]
-              [:rect {:class cl :stroke :none, :fill "#D49A6A"} :_ [20 b]]
-              [:rect {:class cl :stroke :none, :fill "#407F7F"} :_ [20 c]]
-              [:stack {:direction :up :select [(keyword (str "." cl))]}]])
-           [[:g0 10 10 15]
-            [:g1 30 10 20]
-            [:g2 22 10 25]
-            [:g3 56 10 10]
-            [:g4 90 10 30]
-            [:g5 59 22 25]
-            [:g6 23 10 13]
-            [:g7 12 6 8]
-            [:g8 44 22 18]
-            [:g9 50 20 10]])]]}
+     [:stack {:position [10 140]
+              :direction :right
+              :anchor :bottom-left
+              :gap 2
+              :select [:.col]}]
+     (map (fn [[a b c]]
+            [:stack
+             {:direction :up :class :col}
+             [:rect {:stroke :none, :fill "#D46A6A"} :_ [20 a]]
+             [:rect {:stroke :none, :fill "#D49A6A"} :_ [20 b]]
+             [:rect {:stroke :none, :fill "#407F7F"} :_ [20 c]]])
+          [[10 10 15]
+           [30 10 20]
+           [22 10 25]
+           [56 10 10]
+           [90 10 30]
+           [59 22 25]
+           [23 10 13]
+           [12 6 8]
+           [44 22 18]
+           [50 20 10]])]}
    ])
 
 (defn render-example [filename document]
   (-> document
       ;;schema/validate
       s/dali->ixml
+      ;;utils/ixml-zipper utils/zipper-last (utils/dump-zipper zip/prev)
       layout/resolve-layout
       s/ixml->xml
+      ;;>pprint
       (io/spit-svg (str "examples/output/" filename))
       ))
 

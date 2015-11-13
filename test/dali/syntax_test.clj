@@ -107,7 +107,25 @@
          (dali->ixml [:page {:width 60 :height 60}
                       [:circle
                        {:stroke :indigo :stroke-width 4 :fill :darkorange}
-                       :_ 20]]))))
+                       :_ 20]])))
+  (is (= {:tag :page, :attrs {:width 60, :height 60}}
+         (dali->ixml [:page {:width 60 :height 60}])))
+  (is (= {:tag :page,
+          :attrs {:width 60, :height 60},
+          :content
+          [{:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 20]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 1]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 2]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 3]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 4]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 20]}}]}
+         (dali->ixml
+          [:page {:width 60 :height 60}
+           [:circle  {:stroke :indigo} :_ 20]
+           (map
+            (fn [r] [:circle {:stroke :indigo} :_ r])
+            [1 2 3 4])
+           [:circle {:stroke :indigo} :_ 20]]))))
 
 (deftest test-ixml-node->xml-node
   (is (= {:tag :circle

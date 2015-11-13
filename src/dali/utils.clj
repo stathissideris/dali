@@ -83,3 +83,27 @@
                         zipper
                         (replace-fn zipper)))))))
 
+(defn zipper-last [zipper]
+  (loop [zipper zipper]
+    (if (zip/end? (zip/next zipper)) zipper (recur (zip/next zipper)))))
+
+(defn transform-zipper-backwards
+  ([z replace-fn]
+   (loop [z z]
+     (let [p (zip/prev (zip/replace z (replace-fn z)))]
+       (if (nil? p) ;;we've hit top, not previous node
+         (zip/node z)
+         (recur p))))))
+
+(defn dump-zipper
+  ([z]
+   (dump-zipper z zip/next))
+  ([z next-fn]
+   (loop [z z]
+     (when-not (nil? z)
+       (prn (zip/node z))
+       (recur (next-fn z))))))
+
+(defn safe-update-in [m [k & ks] f & args]
+  (if-not (apply get-in m [(cons k ks)])
+    m (apply update-in m (cons k ks) f args)))

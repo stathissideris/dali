@@ -210,6 +210,9 @@
     (update attrs :transform (partial partition 2))
     attrs))
 
+(defn- flatten-1 [coll]
+  (mapcat (fn [x] (if (seq? x) x [x])) coll))
+
 (defn dali-node->ixml-node ;;TODO find out why this gets called with nodes that are already XML
   [node]
   (if-not (dali-tag? node)
@@ -217,7 +220,7 @@
     (let [[tag & r] node
           attrs         (attrs->ixml (when (map? (first r)) (first r)))
           r             (if (map? (first r)) (rest r) r)
-          content       (not-empty (if (seq? (first r)) (first r) r))
+          content       (not-empty (flatten-1 r))
           content-attr? (and (not-empty content)
                              (not (every? string? content))
                              (every? (complement dali-tag?) content))
