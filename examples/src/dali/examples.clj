@@ -241,7 +241,7 @@
       [:text {:text-family "Verdana" :font-size 12} "aligned!"]]]}
    {:filename "align-test2.svg"
     :document
-    [:page {:width 330 :height 200}
+    [:page {:width 120 :height 120}
      [:align {:relative-to :first :axis :center :select [:.label]}]
      [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
