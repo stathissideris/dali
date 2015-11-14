@@ -50,3 +50,30 @@
   (let [radius (or radius 2.2)]
    [:marker {:id id :ref-x 0 :ref-y 0 :orient :auto :style "overflow:visible;"}
     [:circle [0 0] radius]]))
+
+(defn drop-shadow
+  [id & {:keys [color offset radius opacity filter-padding]}]
+  (let [offset              (or offset [5 5])
+        color               (or color "#000000")
+        radius              (or radius 4)
+        opacity             (or opacity 0.5)
+        filter-padding      (or filter-padding 20)
+        percent             #(str % "%")
+        filter-padding-pos  (percent (- filter-padding))
+        filter-padding-size (percent (+ 100 (* 2 filter-padding)))
+        [dx dy]             offset]
+    [:filter {:id id
+              :x filter-padding-pos
+              :y filter-padding-pos
+              :width filter-padding-size
+              :height filter-padding-size}
+     [:feGaussianBlur {:in "SourceAlpha"
+                       :stdDeviation (/ radius 2) ;; http://dbaron.org/log/20110225-blur-radius
+                       :result :blur-out}]
+     [:feOffset {:dx dx, :dy dy, :in :blur-out, :result :the-shadow}]
+     [:feColorMatrix {:in :the-shadow, :result :color-out, :type :matrix
+                      :values [0 0 0 0 0
+                               0 0 0 0 0
+                               0 0 0 0 0
+                               0 0 0 opacity 0]}]
+     [:feBlend {:in "SourceGraphic" :in2 :color-out :mode :normal}]]))

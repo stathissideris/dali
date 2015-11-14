@@ -142,6 +142,15 @@
       {:fill :none :marker-end "url(#very-sharp)"}
       [170 80] [210 30]]]}
 
+   {:filename "drop-shadow.svg"
+    :document
+    [:page {:width 200 :height 200}
+     [:defs
+      (prefab/drop-shadow :ds :opacity 0.8 :offset [10 10] :radius 10)
+      (prefab/stripe-pattern :stripes :angle -30 :fill :pink)]
+     [:rect {:fill "url(#stripes)"} [0 0] [200 200]]
+     [:circle {:fill :green :filter "url(#ds)"} [100 100] 75]]}
+   
    {:filename "graph1.svg"
     :document
     [:page {:width 260 :height 140}
