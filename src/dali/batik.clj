@@ -5,7 +5,7 @@
             [dali.dom :as dom])
   (:import [java.nio.charset StandardCharsets]
            [java.io ByteArrayInputStream]
-           [java.awt.geom PathIterator]
+           [java.awt.geom PathIterator AffineTransform]
            [org.apache.batik.transcoder.image PNGTranscoder]
            [org.apache.batik.transcoder
             TranscoderInput TranscoderOutput]
@@ -30,12 +30,32 @@
    [(.getWidth rect)
     (.getHeight rect)]])
 
+(defmacro maybe [call]
+  `(try ~call (catch Exception ~'e nil)))
+
+(def id-transform (AffineTransform.))
+
+(defn all-bounds [node]
+  {:normal (maybe (to-rect (.getBounds node)))
+   :geometry (maybe (to-rect (.getGeometryBounds node)))
+   :primitive (maybe (to-rect (.getPrimitiveBounds node)))
+   :sensitive (maybe (to-rect (.getSensitiveBounds node)))
+   :transformed (to-rect (.getTransformedBounds node id-transform))
+   :transformed-geometry (to-rect (.getTransformedGeometryBounds node id-transform))
+   :transformed-primitive (to-rect (.getTransformedPrimitiveBounds node id-transform))
+   :transformed-sensitive (to-rect (.getTransformedSensitiveBounds node id-transform))})
+
+(defn- transformed-geometry-bounds [node]
+  (to-rect (.getTransformedGeometryBounds node id-transform)))
+
 (defn- rehearse-bounds-impl [this dom element]
+  ;;(>pprint (-> element s/ixml->xml))
   (let [element (->> element
                      s/ixml->xml
                      (dom/xml->dom-element dom))]
     (dom/add-to-svg dom element)
-    (let [bbox (to-rect (-> element .getBBox))]
+    ;;(>pprint (all-bounds (gvt-node this element)))
+    (let [bbox (->> element (gvt-node this) transformed-geometry-bounds)]
       (dom/remove-from-svg dom element)
       bbox)))
 
@@ -86,19 +106,6 @@
 
 (defn sensitive-bounds [node]
   (to-rect (.getSensitiveBounds node)))
-
-(defmacro maybe [call]
-  `(try ~call (catch Exception ~'e nil)))
-
-(defn all-bounds [node]
-  {:normal (maybe (to-rect (.getBounds node)))
-   :geometry (maybe (to-rect (.getGeometryBounds node)))
-   :primitive (maybe (to-rect (.getPrimitiveBounds node)))
-   :sensitive (maybe (to-rect (.getSensitiveBounds node)))
-   :transformed (maybe (to-rect (.getTransformedBounds node)))
-   :transformed-geometry (maybe (to-rect (.getTransformedGeometryBounds node)))
-   :transformed-primitive (maybe (to-rect (.getTransformedPrimitiveBounds node)))
-   :transformed-sensitive (maybe (to-rect (.getTransformedSensitiveBounds node)))})
 
 (def path-segment-types
   {PathIterator/SEG_MOVETO :M
