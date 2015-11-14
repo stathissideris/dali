@@ -12,14 +12,14 @@
 (def examples
   [{:filename "hello-world.svg"
     :document
-    [:page {:width 60 :height 60}
+    [:page
      [:circle
       {:stroke :indigo :stroke-width 4 :fill :darkorange}
       [30 30] 20]]}
 
    {:filename "zig-zag.svg"
     :document
-    [:page {:width 220 :height 130 :stroke-width 2 :stroke :black :fill :none}
+    [:page {:stroke-width 2 :stroke :black :fill :none}
      [:polyline (map #(vector %1 %2) (range 10 210 20) (cycle [10 30]))]
      [:polyline (map #(vector %1 %2) (range 10 210 5) (cycle [60 80]))]
      [:polyline (map #(vector %1 %2) (range 10 210 10) (cycle [100 100 120 120]))]]}
@@ -27,7 +27,7 @@
    ;;transform syntax demonstrated
    {:filename "transform.svg"
     :document
-    [:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
+    [:page {:stroke :black :stroke-width 2 :fill :none}
      
      [:rect {:transform [:rotate [30 30 20]]} ;;rotate around center marked by circle
       [20 10] [20 20]]
@@ -250,12 +250,12 @@
    {:filename "align-test3.svg"
     :document
     [:page {:width 240 :height 140}
-     [:stack {:direction :down :position [20 20] :anchor :top-left :gap 10}
+     [:stack {:direction :down :anchor :top-left :gap 10}
       [:align {:relative-to :first :axis :bottom}
-       [:rect {:fill :mediumslateblue} [10 60] [50 20]]
-       [:rect {:fill :sandybrown} [60 0] [30 60]]
-       [:rect {:fill :green} [90 0] [40 10]]
-       [:rect {:fill :orange} [130 0] [20 40]]]
+       [:rect {:fill :mediumslateblue} [20 60] [50 20]]
+       [:rect {:fill :sandybrown} [70 0] [30 60]]
+       [:rect {:fill :green} [100 0] [40 10]]
+       [:rect {:fill :orange} [140 0] [20 40]]]
       [:text {:text-family "Helvetica" :font-size 14}
        "tests alignment with :relative-to :first"]]]}
    {:filename "composite-layout.svg"

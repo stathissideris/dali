@@ -293,6 +293,16 @@
               (cond (keyword? c) (name c)
                     (sequential? c) (string/join " " (map name c))))))))))
 
+(defn- has-page-dimensions? [doc]
+  (and (-> doc :attrs :width)
+       (-> doc :attrs :height)))
+
+(defn- resolve-page-dimensions [doc bounds-fn] ;;TODO round dimensions
+  (let [[_ [x y] [w h]] (bounds-fn {:tag :g :content (:content doc)})]
+    (-> doc
+        (assoc-in [:attrs :width] (+ x w 10)) ;;TODO make less hardcoded
+        (assoc-in [:attrs :height] (+ y h 10)))))
+
 (defn resolve-layout
   ([doc]
    (resolve-layout (batik/context) doc))
@@ -306,7 +316,10 @@
                               (apply-nested-layouts bounds-fn))
          doc              (reduce (fn [doc layout]
                                     (apply-selector-layout doc layout bounds-fn))
-                                  doc selector-layouts)]
+                                  doc selector-layouts)
+         doc              (if (has-page-dimensions? doc)
+                            doc
+                            (resolve-page-dimensions doc bounds-fn))]
      (-> doc de-index-tree))))
 
 (comment
