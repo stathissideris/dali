@@ -209,7 +209,7 @@
            [50 20 10]])]}
    {:filename "align-test.svg"
     :document
-    [:page {:width 330 :height 200}
+    [:page {:width 350 :height 220}
      (map (fn [[guide axis]]
             [:g
              [:align
@@ -219,7 +219,7 @@
               [:rect {:stroke :none, :fill "#D49A6A"} [70 0] [20 10]]
               [:rect {:stroke :none, :fill "#407F7F"} [95 0] [20 25]]
               [:rect {:stroke :none, :fill "#D49A6A"} [120 0] [20 15]]]
-             [:line {:stroke :black} [10 guide] [130 guide]]])
+             [:line {:stroke :black} [10 guide] [150 guide]]])
           [[10 :top]
            [100 :bottom]
            [150 :h-center]])
@@ -232,12 +232,12 @@
               [:rect {:stroke :none, :fill "#D49A6A"} [0 70] [10 20]]
               [:rect {:stroke :none, :fill "#407F7F"} [0 95] [25 20]]
               [:rect {:stroke :none, :fill "#D49A6A"} [0 120] [15 20]]]
-             [:line {:stroke :black} [guide 10] [guide 130]]])
-          [[150 :left]
-           [240 :right]
-           [310 :v-center]])
+             [:line {:stroke :black} [guide 10] [guide 150]]])
+          [[170 :left]
+           [260 :right]
+           [330 :v-center]])
      [:align {:relative-to :first :axis :center}
-      [:circle {:fill :none :stroke :gray :stroke-dasharray [5 5]} [195 150] 30]
+      [:circle {:fill :none :stroke :gray :stroke-dasharray [5 5]} [215 170] 30]
       [:text {:text-family "Verdana" :font-size 12} "aligned!"]]]}
    {:filename "align-test2.svg"
     :document
@@ -246,7 +246,27 @@
      [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
      [:circle {:class :label :fill :none :stroke :black} :_ 50]
-     [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]}])
+     [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]}
+   {:filename "align-test3.svg"
+    :document
+    [:page {:width 240 :height 140}
+     [:stack {:direction :down :position [20 20] :anchor :top-left :gap 10}
+      [:align {:relative-to :first :axis :bottom}
+       [:rect {:fill :mediumslateblue} [10 60] [50 20]]
+       [:rect {:fill :sandybrown} [60 0] [30 60]]
+       [:rect {:fill :green} [90 0] [40 10]]
+       [:rect {:fill :orange} [130 0] [20 40]]]
+      [:text {:text-family "Helvetica" :font-size 14}
+       "tests alignment with :relative-to :first"]]]}
+   {:filename "composite-layout.svg"
+    :document
+    [:page {:width 200 :height 120}
+     [:layout {:layouts [[:stack {:position [10 80] :direction :right}]
+                         [:align {:relative-to :first :axis :bottom}]]}
+      [:rect {:fill :mediumslateblue} :_ [50 20]]
+      [:rect {:fill :sandybrown} :_ [30 60]]
+      [:rect {:fill :green} :_ [40 10]]
+      [:rect {:fill :orange} :_ [20 40]]]]}])
 
 (defn render-example [filename document]
   (-> document

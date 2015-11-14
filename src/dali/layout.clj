@@ -2,10 +2,10 @@
   (:require [clojure.string :as string]
             [clojure.walk :as walk]
             [clojure.zip :as zip]
-            [clojure.string :as string]
             [dali.batik :as batik]
             [dali.geom :as geom :refer [v+ v- v-half]]
             [dali.syntax :as s]
+            [dali.syntax :as syntax]
             [dali.utils :as utils]
             [net.cgrand.enlive-html :as en]
             [retrograde :as retro]))
@@ -72,7 +72,10 @@
   [element top-left bounds]
   (let [type (first element)
         [_ current-pos [w h]] bounds]
-    (s/add-transform element [:translate (v- top-left current-pos)])))
+    (let [tr (v- top-left current-pos)]
+      (if (every? zero? tr)
+        element
+        (s/add-transform element [:translate tr])))))
 
 (defn place-by-anchor
   [element anchor position bounds]
@@ -181,9 +184,12 @@
                                             (first elements)
                                             (last elements)) axis bounds-fn))
           anchor    (condp = axis
-                      :v-center :center
-                      :h-center :center
-                      axis)
+                      :left     :top-left
+                      :right    :top-right
+                      :top      :top-left
+                      :bottom   :bottom-left
+                      :v-center :top
+                      :h-center :left)
           v-guide?  (#{:right :left :v-center} axis)
           bounds    (map bounds-fn elements)
           positions (if v-guide?
@@ -237,6 +243,15 @@
 (defmethod layout-nodes :align
   [tag elements bound-fn]
   (align tag elements bound-fn))
+
+(defn composite-layout [layout-tag elements bounds-fn]
+  (reduce (fn [elements layout-tag]
+            (layout-nodes layout-tag elements bounds-fn))
+          elements (->> layout-tag :attrs :layouts (map syntax/dali->ixml))))
+
+(defmethod layout-nodes :layout
+  [tag elements bound-fn]
+  (composite-layout tag elements bound-fn))
 
 (defn- apply-selector-layout [document layout-tag bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
