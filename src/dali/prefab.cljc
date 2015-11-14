@@ -1,6 +1,6 @@
 (ns dali.prefab)
 
-(defn stripe-pattern [id & {:keys (angle width fill width2 fill2)}]
+(defn stripe-pattern [id & [{:keys (angle width fill width2 fill2)}]]
   (let [width (or width 10)
         width2 (or width2 width)
         fill (or fill :black)
@@ -21,7 +21,7 @@
 
 (defn sharp-arrow-end
   ;;based on  Arrow1Lend in Inkscape
-  [id & {:keys [width height style]}]
+  [id & [{:keys [width height style]}]]
   (let [w (float (/ (or width 8) 2))
         h (float (/ (or height 20) 2))]
    [:marker {:id id :ref-x (- h 2.5) :ref-y 0 :orient :auto :style "overflow:visible;"}
@@ -29,7 +29,7 @@
      :M [0 0] :L [(- w) w] :L [h 0] :L [(- w) (- w)] :z]]))
 
 (defn triangle-arrow-end
-  [id & {:keys [width height style]}]
+  [id & [{:keys [width height style]}]]
   (let [w (float (/ (or width 8) 2))
         h (or height 11)]
    [:marker {:id id :ref-x (- h 2.3) :ref-y 0 :orient :auto :style "overflow:visible;"}
@@ -37,7 +37,7 @@
      :M [0 w] :L [h 0] :L [0 (- w)] :z]]))
 
 (defn curvy-arrow-end
-  [id & {:keys [width height style]}]
+  [id & [{:keys [width height style]}]]
   (let [w (float (/ (or width 10) 2))
         h (or height 10)]
    [:marker {:id id :ref-x (- h 2.3) :ref-y 0 :orient :auto :style "overflow:visible;"}
@@ -46,13 +46,13 @@
      :c [1.74549835,-2.3720609] [1.73544075,-5.6174519] [0,-8.035443] :z]]))
 
 (defn dot-end
-  [id & {:keys [radius]}]
+  [id & [{:keys [radius]}]]
   (let [radius (or radius 2.2)]
    [:marker {:id id :ref-x 0 :ref-y 0 :orient :auto :style "overflow:visible;"}
     [:circle [0 0] radius]]))
 
 (defn drop-shadow
-  [id & {:keys [color offset radius opacity filter-padding]}]
+  [id & [{:keys [color offset radius opacity filter-padding]}]]
   (let [offset              (or offset [5 5])
         color               (or color "#000000")
         radius              (or radius 4)

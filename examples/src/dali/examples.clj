@@ -125,7 +125,7 @@
       (prefab/triangle-arrow-end :triangle)
       (prefab/curvy-arrow-end :curvy)
       (prefab/dot-end :dot)
-      (prefab/sharp-arrow-end :very-sharp :height 32)]
+      (prefab/sharp-arrow-end :very-sharp {:height 32})]
      [:polyline
       {:fill :none :marker-end "url(#sharp)"}
       [50 80] [90 30]]
@@ -146,8 +146,8 @@
     :document
     [:page {:width 200 :height 200}
      [:defs
-      (prefab/drop-shadow :ds :opacity 0.8 :offset [10 10] :radius 10)
-      (prefab/stripe-pattern :stripes :angle -30 :fill :pink)]
+      (prefab/drop-shadow :ds {:opacity 0.8 :offset [10 10] :radius 10})
+      (prefab/stripe-pattern :stripes {:angle -30 :fill :pink})]
      [:rect {:fill "url(#stripes)"} [0 0] [200 200]]
      [:circle {:fill :green :filter "url(#ds)"} [100 100] 75]]}
    
@@ -275,7 +275,25 @@
       [:rect {:fill :mediumslateblue :stroke-width 20} [10 80] [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
       [:rect {:fill :green} :_ [40 10]]
-      [:rect {:fill :orange} :_ [20 40]]]]}])
+      [:rect {:fill :orange} :_ [20 40]]]]}
+
+   {:filename "venn.svg"
+    :document
+    (let [r 130
+          y 200
+          x1 200
+          x2 370
+          outline 3]
+      [:page {:width 570 :height 400}
+       [:defs
+        (prefab/stripe-pattern :stripes {:angle 0 :width 2 :width2 12 :fill :lightgray :fill2 :blue})
+        (prefab/stripe-pattern :stripes2 {:angle 90 :width 2 :width2 12 :fill :lightgray :fill2 :red})]
+       [:circle {:stroke :none :fill :white} [x1 y] r]
+       [:circle {:stroke :none :fill :white} [x2 y] r]
+       [:circle {:stroke :none :fill "url(#stripes)" :opacity 0.2} [x1 y] r]
+       [:circle {:stroke :none :fill "url(#stripes2)" :opacity 0.2} [x2 y] r]
+       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x1 y] r]
+       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])}])
 
 (defn render-example [filename document]
   (-> document
@@ -294,6 +312,13 @@
     (render-example filename document)))
 
 (comment ;;TODO
+
+ ;;render to png
+ dali/ixml->xml
+ ;;(spit-svg "/tmp/venn2.svg")
+ io/xml->svg-document-string
+ btk/parse-svg-string
+  
  (defn render-folder-to-png [from-folder to-folder]
    (let [dir (io/file from-folder)
          files (file-seq dir)]

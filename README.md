@@ -343,20 +343,20 @@ supported by stack.
 Layouts can also be nested within each other. The deepest layouts are
 resolved first and then they may be moved by their parents.
 
-## Stock shapes etc
+## Pre-fabricated shapes etc
 
-The `dali.stock` namespace defines some markers for arrows, which are
-parameterizable. See the individual functions in the namespace for
-more details.
+The `dali.prefab` namespace defines some markers for arrows, fills and
+SVG effects which are parameterizable. See the individual functions in
+the namespace for more details.
 
 ```clojure
 [:page {:stroke {:width 2 :paint :black}}
  [:defs
-  (stock/sharp-arrow-end :sharp)
-  (stock/triangle-arrow-end :triangle)
-  (stock/curvy-arrow-end :curvy)
-  (stock/dot-end :dot)
-  (stock/sharp-arrow-end :very-sharp :height 32)]
+  (prefab/sharp-arrow-end :sharp)
+  (prefab/triangle-arrow-end :triangle)
+  (prefab/curvy-arrow-end :curvy)
+  (prefab/dot-end :dot)
+  (prefab/sharp-arrow-end :very-sharp {:height 32})]
  [:polyline
   {:fill :none :marker-end "url(#sharp)"}
   [50 80] [90 30]]
