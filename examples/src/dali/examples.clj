@@ -261,9 +261,9 @@
    {:filename "composite-layout.svg"
     :document
     [:page {:width 200 :height 120}
-     [:layout {:layouts [[:stack {:position [10 80] :direction :right}]
+     [:layout {:layouts [[:stack {:direction :right}]
                          [:align {:relative-to :first :axis :bottom}]]}
-      [:rect {:fill :mediumslateblue :stroke-width 20} :_ [50 20]]
+      [:rect {:fill :mediumslateblue :stroke-width 20} [10 80] [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
       [:rect {:fill :green} :_ [40 10]]
       [:rect {:fill :orange} :_ [20 40]]]]}])

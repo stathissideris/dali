@@ -87,13 +87,11 @@
      bounds)))
 
 (defn stack [{{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
-  (let [
-        gap         (or gap 0)
-        position    (or position [0 0])
+  (let [gap         (or gap 0)
         direction   (or direction :down)
         anchor      (or anchor (direction->default-anchor direction))
         elements    (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
-        
+        position    (or position (second (bounds-fn (first elements))))
         vertical?   (or (= direction :down) (= direction :up))
         [x y]       position
         advance-pos (if (or (= direction :down) (= direction :right)) + -)
