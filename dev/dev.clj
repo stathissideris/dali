@@ -13,9 +13,10 @@
 
 (defn run-tests []
   (t/run-tests
-   'dali.schema-test
    'dali.syntax-test
    'dali.layout-test
+   'dali.utils-test
+   'dali.schema-test
 ;;   'dali.batik-test
    ))
 

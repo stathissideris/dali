@@ -56,8 +56,8 @@
 ;;      (js/Error. (apply str msg))))
 
 (defn ixml-zipper [document]
-  (zip/zipper #(some? (:content %))
-               :content
+  (zip/zipper #(not-empty (:content %))
+              :content
               #(assoc %1 :content (vec %2))
               document))
 
@@ -100,7 +100,7 @@
    (dump-zipper z zip/next))
   ([z next-fn]
    (loop [z z]
-     (when-not (nil? z)
+     (when (and (not (nil? z)) (not (zip/end? z)))
        (prn (zip/node z))
        (recur (next-fn z))))))
 
