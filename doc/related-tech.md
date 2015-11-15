@@ -10,6 +10,14 @@ The use of a "matrix" (something like a flexible grid) for tackling tricky place
 
 [p. 264](http://www.texample.net/media/pgf/builds/pgfmanualCVS2012-11-04.pdf#page=264) shows how to connect nodes of a flowchart.
 
+For example, here is a connection:
+
+```
+\path (decide) -| node [near start] {yes} (update);
+```
+
+This reads: "draw a path (arrow?) from node 'decide' to node 'update', by drawing a horizontal line first and then a verical line, and near the start of the whole path, place the 'yes' text". `near start` is explained on [p. 195](http://www.texample.net/media/pgf/builds/pgfmanualCVS2012-11-04.pdf#page=195).
+
 There are also the concepts of `at start`, `very near start`, `near start`, `midway`, `near end`,
 `very near end`, and `at end` to place symbols and text on paths ([p. 351](http://www.texample.net/media/pgf/builds/pgfmanualCVS2012-11-04.pdf#page=351)).
 
