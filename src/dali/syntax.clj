@@ -191,7 +191,7 @@
          (assoc m
                 (or (attr-key-lookup k) k)
                 (process-attr-value k v)))) {} m)
-    (dissoc m :dali/content-attr)))
+    (dissoc m :dali/content)))
 
 (defn dali-tag? [element]
   (and (vector? element) (keyword? (first element))))
@@ -226,7 +226,7 @@
                              (every? (complement dali-tag?) content))
 
           attrs         (if content-attr?
-                          (assoc attrs :dali/content-attr (vec content))
+                          (assoc attrs :dali/content (vec content))
                           attrs)
           content       (if content-attr? nil content)
 
@@ -235,7 +235,7 @@
                          (when attrs {:attrs attrs})
                          (when content {:content (vec content)}))]
       (if (= :path tag)
-        (update-in xml-node [:attrs :dali/content-attr] (comp vec split-params-by-keyword))
+        (update-in xml-node [:attrs :dali/content] (comp vec split-params-by-keyword))
         xml-node))))
 
 (defn- replace-empty-coords [document]
@@ -256,7 +256,7 @@
           convert-fn                  (or (convertors tag)
                                           (fn identity-convertor [_ _ _]
                                             {:tag tag :attrs attrs :content content}))
-          {:keys [tag attrs content]} (convert-fn tag (:dali/content-attr attrs) content)
+          {:keys [tag attrs content]} (convert-fn tag (:dali/content attrs) content)
           merged-attrs                (process-attr-map (merge attrs original-attrs))
           content                     (unwrap-seq content)]
       (merge

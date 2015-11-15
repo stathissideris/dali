@@ -11,7 +11,7 @@
            :stroke :indigo,
            :stroke-width 4,
            :fill :darkorange,
-           :dali/content-attr [[30 30] 20]}))))
+           :dali/content [[30 30] 20]}))))
 
 (deftest test-node->xml
   (is (= {:tag :polyline}
@@ -32,7 +32,7 @@
          (dali-node->ixml-node [:polyline {:foo :bar} [:foo] [:bar]])))
   (is (= {:tag :rect
           :attrs {:transform [[:rotate [10 60 20]] [:skew-x [30]]]
-                  :dali/content-attr [[50 10] [20 20]]}}
+                  :dali/content [[50 10] [20 20]]}}
          (dali-node->ixml-node [:rect
                      {:transform [:rotate [10 60 20] :skew-x [30]]}
                      [50 10] [20 20]])))
@@ -49,7 +49,7 @@
           :attrs
           {:id :thick
            :stroke-width 20
-           :dali/content-attr
+           :dali/content
            [[:M [[110 80]]]
             [:C [[140 10] [165 10] [195 80]]]
             [:S [[250 150] [280 80]]]]}}
@@ -76,9 +76,9 @@
          (dali->ixml [:polyline [:foo] [:bar]])))
   (is (= {:tag :polyline, :attrs {:foo :bar}, :content [{:tag :foo}]}
          (dali->ixml [:polyline {:foo :bar} [:foo]])))
-  (is (= {:tag :polyline, :attrs {:dali/content-attr [[1 2] [3 4]]}}
+  (is (= {:tag :polyline, :attrs {:dali/content [[1 2] [3 4]]}}
          (dali->ixml [:polyline [1 2] [3 4]])))
-  (is (= {:tag :polyline, :attrs {:foo :bar, :dali/content-attr [[1 2] [3 4]]}}
+  (is (= {:tag :polyline, :attrs {:foo :bar, :dali/content [[1 2] [3 4]]}}
          (dali->ixml [:polyline {:foo :bar} [1 2] [3 4]]))))
 
 (deftest test-dali->ixml
@@ -90,7 +90,7 @@
             {:stroke :indigo
              :stroke-width 4
              :fill :darkorange
-             :dali/content-attr [[30 30] 20]}}]}
+             :dali/content [[30 30] 20]}}]}
          (dali->ixml [:page {:width 60 :height 60}
                       [:circle
                        {:stroke :indigo :stroke-width 4 :fill :darkorange}
@@ -103,7 +103,7 @@
             {:stroke :indigo
              :stroke-width 4,
              :fill :darkorange
-             :dali/content-attr [[0 0] 20]}}]}
+             :dali/content [[0 0] 20]}}]}
          (dali->ixml [:page {:width 60 :height 60}
                       [:circle
                        {:stroke :indigo :stroke-width 4 :fill :darkorange}
@@ -113,12 +113,12 @@
   (is (= {:tag :page,
           :attrs {:width 60, :height 60},
           :content
-          [{:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 20]}}
-           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 1]}}
-           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 2]}}
-           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 3]}}
-           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 4]}}
-           {:tag :circle :attrs {:stroke :indigo :dali/content-attr [[0 0] 20]}}]}
+          [{:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 20]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 1]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 2]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 3]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 4]}}
+           {:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 20]}}]}
          (dali->ixml
           [:page {:width 60 :height 60}
            [:circle  {:stroke :indigo} :_ 20]
@@ -138,7 +138,7 @@
            :attrs {:stroke :indigo
                    :stroke-width 4
                    :fill :darkorange
-                   :dali/content-attr [[30 30] 20]}})))
+                   :dali/content [[30 30] 20]}})))
   (is (= {:tag :svg
           :attrs
           {:xmlns "http://www.w3.org/2000/svg"
@@ -152,7 +152,7 @@
             {:stroke :indigo
              :stroke-width 4
              :fill :darkorange
-             :dali/content-attr [[30 30] 20]}}]}
+             :dali/content [[30 30] 20]}}]}
          (ixml-node->xml-node
           {:tag :page,
            :attrs {:width 60 :height 60}
@@ -162,7 +162,7 @@
              {:stroke :indigo
               :stroke-width 4
               :fill :darkorange
-              :dali/content-attr [[30 30] 20]}}]})))
+              :dali/content [[30 30] 20]}}]})))
   (is (= {:tag :rect
           :attrs
           {:x 0 :y 0
@@ -173,7 +173,7 @@
           {:tag :rect
            :attrs
            {:fill :mediumslateblue
-            :dali/content-attr [[0 0] [50 20]]
+            :dali/content [[0 0] [50 20]]
             :transform [[:translate [10.0 10.0]]]}}))))
 
 (deftest test-ixml->xml
@@ -202,7 +202,7 @@
              {:stroke :indigo
               :stroke-width 4
               :fill :darkorange
-              :dali/content-attr [[30 30] 20]}}]})))
+              :dali/content [[30 30] 20]}}]})))
   (is (= {:tag :text
           :attrs {:font-family "Georgia"
                   :font-size 20

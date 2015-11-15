@@ -16,8 +16,8 @@
    'dali.syntax-test
    'dali.layout-test
    'dali.utils-test
-   'dali.schema-test
    'dali.regression-test
+   'dali.schema-test
 ;;   'dali.batik-test
    ))
 

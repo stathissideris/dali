@@ -44,7 +44,7 @@
 ;;TODO ref
 
 (defn cattr [value]
-  (merge AttrMap {:dali/content-attr value}))
+  (merge AttrMap {:dali/content value}))
 
 (def LineTag
   {:tag (s/eq :line)
@@ -109,7 +109,7 @@
 
 (def GenericTag
   {:tag TagName
-   (opt :attrs) (s/both AttrMap (s/pred #(not (:dali/content-attr %)) :no-content-attr))
+   (opt :attrs) (s/both AttrMap (s/pred #(not (:dali/content %)) :no-content-attr))
    (opt :content) (s/either
                    [s/Str]
                    [(s/pred #(nil? (s/check Tag %)) :nested-tag)])})
