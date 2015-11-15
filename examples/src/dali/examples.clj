@@ -295,7 +295,7 @@
        [:circle {:stroke {:paint :gray :width 3} :fill :none} [x1 y] r]
        [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])}])
 
-(defn render-example [filename document]
+(defn render-example [dir filename document]
   (-> document
       ;;schema/validate
       s/dali->ixml
@@ -303,13 +303,13 @@
       layout/resolve-layout
       s/ixml->xml
       ;;>pprint
-      (io/spit-svg (str "examples/output/" filename))
+      (io/spit-svg (str dir filename))
       ))
 
-(defn render-examples [documents]
+(defn render-examples [dir documents]
   (doseq [{:keys [filename document]} documents]
     (println (format "Rendering example \"%s\"" filename))
-    (render-example filename document)))
+    (render-example dir filename document)))
 
 (comment ;;TODO
 

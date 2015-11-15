@@ -17,18 +17,22 @@
    'dali.layout-test
    'dali.utils-test
    'dali.schema-test
+   'dali.regression-test
 ;;   'dali.batik-test
    ))
 
-(defn generate-examples []
-  (examples/render-examples examples/examples))
+(defn render-examples []
+  (examples/render-examples "examples/output/" examples/examples))
 
-(defn generate-example [filename]
+(defn render-fixtures []
+  (examples/render-examples "examples/fixtures/" examples/examples))
+
+(defn render-example [filename]
   (let [document (->> examples/examples
                       (filter #(-> % :filename (= filename)))
                       first
                       :document)]
-    (examples/render-example filename document)))
+    (examples/render-example "examples/output/" filename document)))
 
 
 (defmacro hiccup->xml [node]
@@ -40,11 +44,6 @@
     (merge {:tag tag}
            (when-not (empty? attrs) {:attrs attrs})
            (when-not (empty? content) {:content content}))))
-
-
-
-
-
 
 (defn generate-attr-lookup-map
   "Loads all the attribute names from the SVG documentation, extracts

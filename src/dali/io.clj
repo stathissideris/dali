@@ -10,7 +10,7 @@
             [hiccup.page]))
 
 (defn load-enlive-svg [filename]
-  (xml/parse (io/file filename)))
+  (en/xml-resource (io/file filename)))
 
 (defn namespace [tag-name]
   (if-let [r (->> tag-name name (re-find #"^(.+?)\:") second)]
@@ -82,7 +82,7 @@
 (defn- xml-declaration
   "Create a standard XML declaration for the following encoding."
   [encoding]
-  (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
+  (str "<?xml version=\"1.0\" encoding=\"" encoding "\" standalone=\"no\"?>\n"))
 
 (defn xml->xml-string
   "Converts clojure.xml representation to an XML string."
@@ -95,7 +95,7 @@
   [xml]
   (str
    (xml-declaration "UTF-8")
-   svg-doctype
+   ;;svg-doctype
    (xml->xml-string xml)))
 
 (defn spit-svg [xml filename]
