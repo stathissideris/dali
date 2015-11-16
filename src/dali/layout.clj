@@ -225,7 +225,10 @@
 
 (defn- patch-elements [document new-elements]
   (reduce (fn [doc e]
-            (assoc-in-tree doc (-> e :attrs :dali/path) e))
+            (let [path (-> e :attrs :dali/path)]
+              (if (= :append path)
+                (update doc :content conj e)
+                (assoc-in-tree doc (-> e :attrs :dali/path) e))))
           document new-elements))
 
 (defmulti layout-nodes (fn [tag _ _] (:tag tag)))
