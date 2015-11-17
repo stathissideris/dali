@@ -86,7 +86,10 @@
      (v- position (v- anchor-point original-position))
      bounds)))
 
-(defn stack [{{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
+
+;;;;;;;;;;;;;;;; stack ;;;;;;;;;;;;;;;;
+
+(defn stack [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
   (let [gap         (or gap 0)
         direction   (or direction :down)
         anchor      (or anchor (direction->default-anchor direction))
@@ -115,7 +118,7 @@
      elements)))
 
 
-(defn distribute [{{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
+(defn distribute [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
   (let [direction (or direction :right)
         anchor (or anchor :center)
         vertical? (or (= direction :down) (= direction :up))]
@@ -146,6 +149,9 @@
       (map (fn [e pos bounds] (place-by-anchor e anchor (place-point x y pos) bounds))
            elements positions bounds))))
 
+
+;;;;;;;;;;;;;;;; align ;;;;;;;;;;;;;;;;
+
 (def ^:private align-axes
   #{:top :bottom :left :right :v-center :h-center :center})
 
@@ -168,7 +174,7 @@
    (map (fn [e b]
           (place-by-anchor e :center pos b)) elements bounds)))
 
-(defn align [{{:keys [relative-to axis]} :attrs :as tag} elements bounds-fn]
+(defn align [_ {{:keys [relative-to axis]} :attrs :as tag} elements bounds-fn]
   (assert (or (= :first relative-to)
               (= :last relative-to)
               (number? relative-to)) ":relative-to can either be a number or :first or :last")
@@ -198,6 +204,9 @@
                                          [guide pos]
                                          [pos guide]) bounds))
            elements positions bounds))))
+
+
+;;;;;;;;;;;;;;;; layout infrastructure ;;;;;;;;;;;;;;;;
 
 (def layout-tags ;;TODO make this mutable so that it's extensible
   #{:layout :stack :distribute :align})
@@ -231,33 +240,33 @@
                 (assoc-in-tree doc (-> e :attrs :dali/path) e))))
           document new-elements))
 
-(defmulti layout-nodes (fn [tag _ _] (:tag tag)))
+(defmulti layout-nodes (fn [_ tag _ _] (:tag tag)))
 
 (defmethod layout-nodes :stack
-  [tag elements bound-fn]
-  (stack tag elements bound-fn))
+  [document tag elements bound-fn]
+  (stack document tag elements bound-fn))
 
 (defmethod layout-nodes :distribute
-  [tag elements bound-fn]
-  (distribute tag elements bound-fn))
+  [document tag elements bound-fn]
+  (distribute document tag elements bound-fn))
 
 (defmethod layout-nodes :align
-  [tag elements bound-fn]
-  (align tag elements bound-fn))
+  [document tag elements bound-fn]
+  (align document tag elements bound-fn))
 
-(defn composite-layout [layout-tag elements bounds-fn]
+(defn- composite-layout [document layout-tag elements bounds-fn]
   (reduce (fn [elements layout-tag]
-            (layout-nodes layout-tag elements bounds-fn))
+            (layout-nodes document layout-tag elements bounds-fn))
           elements (->> layout-tag :attrs :layouts (map syntax/dali->ixml))))
 
 (defmethod layout-nodes :layout
-  [tag elements bound-fn]
-  (composite-layout tag elements bound-fn))
+  [document tag elements bound-fn]
+  (composite-layout document tag elements bound-fn))
 
 (defn- apply-selector-layout [document layout-tag bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
         elements     (en/select document selector)
-        new-elements (layout-nodes layout-tag elements bounds-fn)]
+        new-elements (layout-nodes document layout-tag elements bounds-fn)]
     (patch-elements document new-elements)))
 
 (defn- nested-layout? [node]
@@ -268,13 +277,13 @@
   (and (-> node :tag layout-tags)
        (-> node :attrs :select)))
 
-(defn apply-nested-layouts [doc bounds-fn]
+(defn- apply-nested-layouts [document bounds-fn]
   (utils/transform-zipper-backwards
-   (-> doc utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
+   (-> document utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
    (fn [zipper]
      (let [node (zip/node zipper)]
        (if (nested-layout? node)
-         (let [new-elements (layout-nodes node (:content node) bounds-fn)]
+         (let [new-elements (layout-nodes document node (:content node) bounds-fn)]
            (-> node
                layout-node->group-node
                (assoc :content (vec new-elements))))
