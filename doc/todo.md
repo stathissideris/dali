@@ -8,7 +8,8 @@
   the layout code. Also anything else that would affect dimensions is
   not taken into account (like font properties).
 
-##Features
+## Features
 
 * Bounds calculation caching
 * Native calculation of "easy" bounds
+* Embedded CSS

@@ -243,7 +243,7 @@
   (let [[a1 a2] (straight-anchors start-element end-element bounds-fn)
         p1      (bounds->anchor-point a1 (bounds-fn start-element))
         p2      (bounds->anchor-point a2 (bounds-fn end-element))]
-    {:tag :polyline :attrs {:class :connector :dali/content [p1 p2]}}))
+    {:tag :polyline :attrs {:class :connector :dali/content [p1 p2] :dali/path :append}}))
 
 (defn- corner-connector [start-element end-element connection-type bounds-fn])
 
@@ -316,26 +316,35 @@
 (def layout-selector
   [layout-tags])
 
-(def has-selector [(en/attr? :select)])
+(def remove-node (en/substitute []))
+
+(defn- has-content? [tag]
+  (some? (not-empty (:content tag))))
+
+(def selector-layout-selector
+  [(en/pred
+    #(and (not (has-content? %))
+          (layout-tags (:tag %))))])
+
+(defn- nested-layout? [node]
+  (and (-> node :tag layout-tags)
+       (has-content? node)))
+
+(defn- append? [element]
+  (= :append (some-> element :attrs :dali/path)))
 
 (defn- get-selector-layouts [document]
-  (en/select document has-selector))
+  (en/select document selector-layout-selector))
 
 (defn- layout-node->group-node [node]
   (-> node
       (assoc :tag :g)
       (update :attrs select-keys [:id :class :dali/path])))
 
-(def remove-node (en/substitute []))
-
 (defn- remove-selector-layouts [document]
   (-> [document]
-      (en/transform has-selector remove-node)
-      ;;(en/transform layout-selector layout-node->group-node)
+      (en/transform selector-layout-selector remove-node)
       first))
-
-(defn- append? [element]
-  (= :append (some-> element :attrs :dali/path)))
 
 (defn- patch-elements [document new-elements]
   (reduce (fn [doc e]
@@ -349,14 +358,6 @@
         elements     (en/select document selector)
         new-elements (layout-nodes document layout-tag elements bounds-fn)]
     (patch-elements document new-elements)))
-
-(defn- nested-layout? [node]
-  (and (-> node :tag layout-tags)
-       (-> node :attrs :select not)))
-
-(defn- selector-layout? [node]
-  (and (-> node :tag layout-tags)
-       (-> node :attrs :select)))
 
 (defn- apply-nested-layouts [document bounds-fn]
   (utils/transform-zipper-backwards
