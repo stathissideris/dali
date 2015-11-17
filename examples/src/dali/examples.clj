@@ -297,7 +297,9 @@
 
    {:filename "connect1.svg"
     :document
-    [:page {:stroke :black :fill :none}
+    [:page {:stroke :black :fill :none :marker-end "url(#curvy)"}
+     [:defs
+      (prefab/curvy-arrow-end :curvy)]
      [:align {:axis :center}
       [:rect {:id :c} [200 70] [120 150]]
       [:text "center"]]
@@ -311,7 +313,7 @@
       [:text "b"]]
 
      [:align {:axis :center}
-      [:rect {:id :d} [230 240] [50 50]]
+      [:rect {:id :d} [450 350] [50 50]]
       [:text "d"]]
      
      [:connect {:from :a :to :c}]
