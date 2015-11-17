@@ -293,7 +293,30 @@
        [:circle {:stroke :none :fill "url(#stripes)" :opacity 0.2} [x1 y] r]
        [:circle {:stroke :none :fill "url(#stripes2)" :opacity 0.2} [x2 y] r]
        [:circle {:stroke {:paint :gray :width 3} :fill :none} [x1 y] r]
-       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])}])
+       [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])}
+
+   {:filename "connect1.svg"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:align {:axis :center}
+      [:rect {:id :c} [200 70] [120 150]]
+      [:text "center"]]
+
+     [:align {:axis :center}
+      [:rect {:id :a} [20 20] [100 100]]
+      [:text "a"]]
+
+     [:align {:axis :center}
+      [:rect {:id :b} [440 70] [50 50]]
+      [:text "b"]]
+
+     [:align {:axis :center}
+      [:rect {:id :d} [230 240] [50 50]]
+      [:text "d"]]
+     
+     [:connect {:from :a :to :c}]
+     [:connect {:from :c :to :b}]
+     [:connect {:from :d :to :c}]]}])
 
 (defn render-example [dir filename document]
   (-> document

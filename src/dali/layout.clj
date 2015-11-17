@@ -10,6 +10,10 @@
             [net.cgrand.enlive-html :as en]
             [retrograde :as retro]))
 
+(def -- :--)
+(def |- :|-)
+(def -| :-|)
+
 (def anchors #{:top-left :top :top-right :left :right :bottom-left :bottom :bottom-right :center})
 
 (def direction->default-anchor
@@ -168,25 +172,27 @@
 (defn- align-center [{{:keys [relative-to axis]} :attrs} elements bounds-fn]
   (when (number? relative-to)
     (utils/exception ":relative-to cannot be a number when :axis is :center"))
-  (let [bounds     (map bounds-fn elements)
-        rel-bounds (if (= :first relative-to) (first bounds) (last bounds))
-        pos        (bounds->anchor-point :center rel-bounds)]
+  (let [relative-to (or relative-to :first)
+        bounds      (map bounds-fn elements)
+        rel-bounds  (if (= :first relative-to) (first bounds) (last bounds))
+        pos         (bounds->anchor-point :center rel-bounds)]
    (map (fn [e b]
           (place-by-anchor e :center pos b)) elements bounds)))
 
 (defn align [_ {{:keys [relative-to axis]} :attrs :as tag} elements bounds-fn]
   (assert (or (= :first relative-to)
               (= :last relative-to)
-              (number? relative-to)) ":relative-to can either be a number or :first or :last")
+              (number? relative-to)
+              (nil? relative-to)) ":relative-to can either be a number or :first or :last")
   (assert (align-axes axis)
           (str ":axis has to be one of " (string/join ", " align-axes)))
   (if (= :center axis)
     (align-center tag elements bounds-fn)
     (let [guide     (if (number? relative-to)
                       relative-to
-                      (guide-from-element (if (= :first relative-to)
-                                            (first elements)
-                                            (last elements)) axis bounds-fn))
+                      (guide-from-element (if (= :last relative-to)
+                                            (last elements)
+                                            (first elements)) axis bounds-fn))
           anchor    (condp = axis
                       :left     :top-left
                       :right    :top-right
@@ -206,10 +212,106 @@
            elements positions bounds))))
 
 
-;;;;;;;;;;;;;;;; layout infrastructure ;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;; connect ;;;;;;;;;;;;;;;;
+
+(defn- straight-anchors [element1 element2 bounds-fn]
+  (let [bounds1 (bounds-fn element1)
+        bounds2 (bounds-fn element2)]
+    (->>
+     (for [[anchor1 anchor2] [[:left :right]
+                              [:right :left]
+                              [:top :bottom]
+                              [:bottom :top]]]
+       [(geom/distance-squared
+         (bounds->anchor-point anchor1 bounds1)
+         (bounds->anchor-point anchor2 bounds2)) [anchor1 anchor2]])
+     (sort-by first)
+     first
+     second)))
+
+(defn- corner-anchor [element intersection bounds-fn]
+  (let [bounds (bounds-fn element)]
+    (->>
+     (for [a [:top :bottom :left :right]]
+       (geom/distance-squared
+        intersection
+        (bounds->anchor-point a bounds)))
+     sort
+     first)))
+
+(defn- straight-connector [start-element end-element bounds-fn]
+  (let [[a1 a2] (straight-anchors start-element end-element bounds-fn)
+        p1      (bounds->anchor-point a1 (bounds-fn start-element))
+        p2      (bounds->anchor-point a2 (bounds-fn end-element))]
+    {:tag :polyline :attrs {:class :connector :dali/content [p1 p2]}}))
+
+(defn- corner-connector [start-element end-element connection-type bounds-fn])
+
+(defn- connect [document tag elements bounds-fn]
+  (let [;; content         (-> tag :attrs :dali/content)
+        ;; connection-type (if (= 2 (count content)) :-- (second content))
+        ;; 
+        make-selector   (fn [x] (if (keyword? x) [(->> x name (str "#") keyword)] x))
+
+        ;; start-selector  (make-selector (first content))
+        ;; end-selector    (make-selector (last content))
+
+        connection-type (or (-> tag :attrs :type) :--)
+        start-selector  (make-selector (-> tag :attrs :from))
+        end-selector    (make-selector (-> tag :attrs :to))
+
+        start-element   (first (en/select document start-selector))
+        end-element     (first (en/select document end-selector))
+
+        check-element   (fn [x name]
+                          (when-not x
+                            (throw (utils/exception
+                                    (format
+                                     "Cannot find %s element using selector '%s' referred to by connector '%s'"
+                                     name
+                                     (pr-str x)
+                                     (pr-str tag))))))]
+    (check-element start-element "start")
+    (check-element end-element "end")
+    (if (= :-- connection-type)
+      [(straight-connector start-element end-element bounds-fn)]
+      [(corner-connector start-element end-element connection-type bounds-fn)])))
+
+
+;;;;;;;;;;;;;;;; extensibility ;;;;;;;;;;;;;;;;
 
 (def layout-tags ;;TODO make this mutable so that it's extensible
-  #{:layout :stack :distribute :align})
+  #{:layout :stack :distribute :align :connect})
+
+(defmulti layout-nodes (fn [_ tag _ _] (:tag tag)))
+
+(defmethod layout-nodes :stack
+  [document tag elements bound-fn]
+  (stack document tag elements bound-fn))
+
+(defmethod layout-nodes :distribute
+  [document tag elements bound-fn]
+  (distribute document tag elements bound-fn))
+
+(defmethod layout-nodes :align
+  [document tag elements bound-fn]
+  (align document tag elements bound-fn))
+
+(defmethod layout-nodes :connect
+  [document tag elements bound-fn]
+  (connect document tag elements bound-fn))
+
+(defn- composite-layout [document layout-tag elements bounds-fn]
+  (reduce (fn [elements layout-tag]
+            (layout-nodes document layout-tag elements bounds-fn))
+          elements (->> layout-tag :attrs :layouts (map syntax/dali->ixml))))
+
+(defmethod layout-nodes :layout
+  [document tag elements bound-fn]
+  (composite-layout document tag elements bound-fn))
+
+
+;;;;;;;;;;;;;;;; layout infrastructure ;;;;;;;;;;;;;;;;
 
 (def layout-selector
   [layout-tags])
@@ -232,36 +334,15 @@
       ;;(en/transform layout-selector layout-node->group-node)
       first))
 
+(defn- append? [element]
+  (= :append (some-> element :attrs :dali/path)))
+
 (defn- patch-elements [document new-elements]
   (reduce (fn [doc e]
-            (let [path (-> e :attrs :dali/path)]
-              (if (= :append path)
-                (update doc :content conj e)
-                (assoc-in-tree doc (-> e :attrs :dali/path) e))))
+            (if (append? e)
+              (update doc :content conj e)
+              (assoc-in-tree doc (-> e :attrs :dali/path) e)))
           document new-elements))
-
-(defmulti layout-nodes (fn [_ tag _ _] (:tag tag)))
-
-(defmethod layout-nodes :stack
-  [document tag elements bound-fn]
-  (stack document tag elements bound-fn))
-
-(defmethod layout-nodes :distribute
-  [document tag elements bound-fn]
-  (distribute document tag elements bound-fn))
-
-(defmethod layout-nodes :align
-  [document tag elements bound-fn]
-  (align document tag elements bound-fn))
-
-(defn- composite-layout [document layout-tag elements bounds-fn]
-  (reduce (fn [elements layout-tag]
-            (layout-nodes document layout-tag elements bounds-fn))
-          elements (->> layout-tag :attrs :layouts (map syntax/dali->ixml))))
-
-(defmethod layout-nodes :layout
-  [document tag elements bound-fn]
-  (composite-layout document tag elements bound-fn))
 
 (defn- apply-selector-layout [document layout-tag bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
@@ -286,7 +367,7 @@
          (let [new-elements (layout-nodes document node (:content node) bounds-fn)]
            (-> node
                layout-node->group-node
-               (assoc :content (vec new-elements))))
+               (assoc :content (vec (filter (complement append?) new-elements)))))
          node)))))
 
 ;;enlive expects id and class to be strings, otherwise id or
