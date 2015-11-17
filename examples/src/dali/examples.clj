@@ -306,19 +306,35 @@
 
      [:align {:axis :center}
       [:rect {:id :a} [20 20] [100 100]]
-      [:text "a"]]
+      [:text "A"]]
 
      [:align {:axis :center}
       [:rect {:id :b} [440 70] [50 50]]
-      [:text "b"]]
+      [:text "B"]]
 
      [:align {:axis :center}
-      [:rect {:id :d} [450 350] [50 50]]
-      [:text "d"]]
+      [:rect {:id :d} [20 350] [50 50]]
+      [:text "D"]]
+
+     [:align {:axis :center}
+      [:rect {:id :e} [440 230] [50 50]]
+      [:text "E"]]
+
+     [:align {:axis :center}
+      [:rect {:id :f} [500 70] [50 50]]
+      [:text "F"]]
+
+     [:align {:axis :center}
+      [:rect {:id :g} [350 300] [50 50]]
+      [:text "G"]]
      
      [:connect {:from :a :to :c}]
      [:connect {:from :c :to :b}]
-     [:connect {:from :d :to :c}]]}])
+     [:connect {:from :d :to :c}]
+     [:connect {:from :c :to :e :type :-|}]
+     [:connect {:from :e :to :f :type :-|}]
+     [:connect {:from :e :to :g :type :|-}]
+     [:connect {:from :e :to :g :type :-|}]]}])
 
 (defn render-example [dir filename document]
   (-> document

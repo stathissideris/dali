@@ -222,30 +222,51 @@
                               [:right :left]
                               [:top :bottom]
                               [:bottom :top]]]
-       [(geom/distance-squared
+       [[anchor1 anchor2]
+        (geom/distance-squared
          (bounds->anchor-point anchor1 bounds1)
-         (bounds->anchor-point anchor2 bounds2)) [anchor1 anchor2]])
-     (sort-by first)
-     first
-     second)))
+         (bounds->anchor-point anchor2 bounds2))])
+     (sort-by second)
+     first    ;;get the shortest distance
+     first))) ;;return the anchor pair
 
-(defn- corner-anchor [element intersection bounds-fn]
-  (let [bounds (bounds-fn element)]
-    (->>
-     (for [a [:top :bottom :left :right]]
-       (geom/distance-squared
-        intersection
-        (bounds->anchor-point a bounds)))
-     sort
-     first)))
+(defn- corner-anchor [bounds intersection]
+  (->>
+   (for [a [:top :bottom :left :right]]
+     [a (geom/distance-squared
+         intersection
+         (bounds->anchor-point a bounds))])
+   (sort-by second)
+   first   ;;get the shortest distance
+   first)) ;;return the anchor
 
+;;TODO refactor so that you pass bounds, not elements?
 (defn- straight-connector [start-element end-element bounds-fn]
   (let [[a1 a2] (straight-anchors start-element end-element bounds-fn)
         p1      (bounds->anchor-point a1 (bounds-fn start-element))
         p2      (bounds->anchor-point a2 (bounds-fn end-element))]
-    {:tag :polyline :attrs {:class :connector :dali/content [p1 p2] :dali/path :append}}))
+    {:tag :polyline
+     :attrs {:class :connector
+             :dali/content [p1 p2]
+             :dali/path :append}}))
 
-(defn- corner-connector [start-element end-element connection-type bounds-fn])
+;;TODO refactor so that you pass bounds, not elements?
+(defn- corner-connector [start-element end-element connection-type bounds-fn]
+  (let [bounds1      (bounds-fn start-element)
+        bounds2      (bounds-fn end-element)
+        [cx1 cy1]    (bounds->anchor-point :center bounds1)
+        [cx2 cy2]    (bounds->anchor-point :center bounds2)
+        intersection (if (= :|- connection-type)
+                       [cx1 cy2]
+                       [cx2 cy1])
+        p1           (-> (corner-anchor bounds1 intersection)
+                         (bounds->anchor-point bounds1))
+        p2           (-> (corner-anchor bounds2 intersection)
+                         (bounds->anchor-point bounds2))]
+    {:tag :polyline
+     :attrs {:class :connector
+             :dali/content [p1 intersection p2]
+             :dali/path :append}}))
 
 (defn- connect [document tag elements bounds-fn]
   (let [;; content         (-> tag :attrs :dali/content)
