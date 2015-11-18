@@ -273,6 +273,9 @@
                                                                dali-node->ixml-node
                                                                zip/node))))
 
+(defn css [css-string]
+  [:style {:type "text/css"} (str "<![CDATA[" css-string "]]>")])
+
 (comment
   (spit-svg
    (dali->hiccup

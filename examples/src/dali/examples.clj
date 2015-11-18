@@ -299,13 +299,14 @@
     :document
     [:page {:stroke :black :fill :none :marker-end "url(#curvy)"}
      [:defs
-      (prefab/curvy-arrow-end :curvy)]
+      (prefab/curvy-arrow-end :curvy)
+      (s/css (str ".grey {fill: lightgrey;}"))]
      [:align {:axis :center}
       [:rect {:id :c} [200 70] [120 150]]
       [:text "center"]]
 
      [:align {:axis :center}
-      [:rect {:id :a} [20 20] [100 100]]
+      [:rect {:id :a :class :grey} [20 20] [100 100]]
       [:text "A"]]
 
      [:align {:axis :center}
