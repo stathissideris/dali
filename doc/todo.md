@@ -12,6 +12,8 @@
 
 ## Features
 
+* Pass style map to :connect
 * Bounds calculation caching
 * Native calculation of "easy" bounds
 * Embedded CSS
+* Smart markers that are sensitive to colour etc (how??)

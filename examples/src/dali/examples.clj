@@ -329,8 +329,8 @@
       [:text "G"]]
      
      [:connect {:from :a :to :c}]
-     [:connect {:from :c :to :b}]
-     [:connect {:from :d :to :c}]
+     [:connect {:from :c :to :b :stroke :green :stroke-width 2.5}]
+     [:connect {:from :d :to :c :class :myclass}]
      [:connect {:from :c :to :e :type :-|}]
      [:connect {:from :e :to :f :type :-|}]
      [:connect {:from :e :to :g :type :|-}]

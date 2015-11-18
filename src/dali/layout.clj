@@ -240,18 +240,23 @@
    first   ;;get the shortest distance
    first)) ;;return the anchor
 
+(defn- connector [attrs points]
+  {:tag   :polyline
+   :attrs (merge
+           {:class :connector
+            :dali/content points
+            :dali/path :append}
+           attrs)})
+
 ;;TODO refactor so that you pass bounds, not elements?
-(defn- straight-connector [start-element end-element bounds-fn]
+(defn- straight-connector [start-element end-element attrs bounds-fn]
   (let [[a1 a2] (straight-anchors start-element end-element bounds-fn)
         p1      (bounds->anchor-point a1 (bounds-fn start-element))
         p2      (bounds->anchor-point a2 (bounds-fn end-element))]
-    {:tag :polyline
-     :attrs {:class :connector
-             :dali/content [p1 p2]
-             :dali/path :append}}))
+    (connector attrs [p1 p2])))
 
 ;;TODO refactor so that you pass bounds, not elements?
-(defn- corner-connector [start-element end-element connection-type bounds-fn]
+(defn- corner-connector [start-element end-element attrs connection-type bounds-fn]
   (let [bounds1      (bounds-fn start-element)
         bounds2      (bounds-fn end-element)
         [cx1 cy1]    (bounds->anchor-point :center bounds1)
@@ -263,19 +268,10 @@
                          (bounds->anchor-point bounds1))
         p2           (-> (corner-anchor bounds2 intersection)
                          (bounds->anchor-point bounds2))]
-    {:tag :polyline
-     :attrs {:class :connector
-             :dali/content [p1 intersection p2]
-             :dali/path :append}}))
+    (connector attrs [p1 intersection p2])))
 
 (defn- connect [document tag elements bounds-fn]
-  (let [;; content         (-> tag :attrs :dali/content)
-        ;; connection-type (if (= 2 (count content)) :-- (second content))
-        ;; 
-        make-selector   (fn [x] (if (keyword? x) [(->> x name (str "#") keyword)] x))
-
-        ;; start-selector  (make-selector (first content))
-        ;; end-selector    (make-selector (last content))
+  (let [make-selector   (fn [x] (if (keyword? x) [(->> x name (str "#") keyword)] x))
 
         connection-type (or (-> tag :attrs :type) :--)
         start-selector  (make-selector (-> tag :attrs :from))
@@ -291,12 +287,13 @@
                                      "Cannot find %s element using selector '%s' referred to by connector '%s'"
                                      name
                                      (pr-str x)
-                                     (pr-str tag))))))]
+                                     (pr-str tag))))))
+        attrs           (dissoc (:attrs tag) :from :to :type)]
     (check-element start-element "start")
     (check-element end-element "end")
     (if (= :-- connection-type)
-      [(straight-connector start-element end-element bounds-fn)]
-      [(corner-connector start-element end-element connection-type bounds-fn)])))
+      [(straight-connector start-element end-element attrs bounds-fn)]
+      [(corner-connector start-element end-element attrs connection-type bounds-fn)])))
 
 
 ;;;;;;;;;;;;;;;; extensibility ;;;;;;;;;;;;;;;;
