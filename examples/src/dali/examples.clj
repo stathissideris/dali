@@ -300,7 +300,10 @@
     [:page {:stroke :black :fill :none :marker-end "url(#curvy)"}
      [:defs
       (prefab/curvy-arrow-end :curvy)
-      (s/css (str ".grey {fill: lightgrey;}"))]
+      (s/css (str ".grey {fill: lightgrey;}\n"
+                  "rect {fill: white;}\n"
+                  "rect:hover {fill: orange;}\n"
+                  "text{fill: black; stroke: none;}\n"))]
      [:align {:axis :center}
       [:rect {:id :c} [200 70] [120 150]]
       [:text "center"]]
