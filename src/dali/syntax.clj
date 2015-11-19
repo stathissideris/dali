@@ -1,8 +1,9 @@
 (ns dali.syntax
-  (:require [clojure.java.io :as java-io]
-            [clojure.pprint :refer [cl-format]]
-            [clojure.string :as string]
-            [clojure.zip :as zip]
+  (:require [clojure
+             [pprint :refer [cl-format]]
+             [string :as string]
+             [zip :as zip]]
+            [clojure.java.io :as java-io]
             [dali.utils :as utils]))
 
 (def attr-key-lookup
