@@ -8,6 +8,9 @@
              [geom :as geom]
              [utils :as utils]]))
 
+(defn dali-content [node]
+  (some-> node :attrs :dali/content))
+
 (def attr-key-lookup
   (-> "attr-key-lookup.edn" java-io/resource slurp read-string))
 
@@ -118,7 +121,7 @@
 (def
   convertors
   {:page
-   (fn svg-tranform [_ _ _ content]
+   (fn svg-tranform [{:keys [content]} _]
      {:tag :svg
       :attrs
       {:xmlns "http://www.w3.org/2000/svg"
@@ -126,45 +129,50 @@
        :xmlns:xlink "http://www.w3.org/1999/xlink"}
       :content content})
    :use
-   (fn use-tranform [_ _ [ref [x y]] _]
-     (if (and ref x y)
-       {:tag :use :attrs {:xlink:href (str "#" (name ref)) :x x :y y}}
-       {:tag :use}))
+   (fn use-tranform [node _]
+     (let [[ref [x y]] (dali-content node)]
+       (if (and ref x y)
+         {:tag :use :attrs {:xlink:href (str "#" (name ref)) :x x :y y}}
+         {:tag :use})))
    :line
-   (fn line-tranform [_ _ [[x1 y1] [x2 y2]] _]
-     {:tag :line :attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2}})
+   (fn line-tranform [node _]
+     (let [[[x1 y1] [x2 y2]] (dali-content node)]
+       {:tag :line :attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2}}))
    :circle
-   (fn circle-tranform [_ _ [[cx cy] r] _]
-     {:tag :circle :attrs {:cx cx :cy cy :r r}})
+   (fn circle-tranform [node _]
+     (let [[[cx cy] r] (dali-content node)]
+       {:tag :circle :attrs {:cx cx :cy cy :r r}}))
    :ellipse
-   (fn ellipse-tranform [_ _ [[cx cy] rx ry] _]
-     {:tag :ellipse :attrs {:cx cx :cy cy :rx rx :ry ry}})
+   (fn ellipse-tranform [node _]
+     (let [[[cx cy] rx ry] (dali-content node)]
+       {:tag :ellipse :attrs {:cx cx :cy cy :rx rx :ry ry}}))
    :rect
-   (fn rect-tranform [_ _ [[x y] [w h] rounded] _]
-     (if-not rounded
-       {:tag :rect :attrs {:x x :y y :width w :height h}}
-       (if (vector? rounded)
-         {:tag :rect
-          :attrs {:x x :y y
-                  :width w :height h
-                  :rx (first rounded) :ry (second rounded)}}
-         {:tag :rect
-          :attrs {:x x :y y
-                  :width w :height h
-                  :rx rounded :ry rounded}})))
+   (fn rect-tranform [node _]
+     (let [[[x y] [w h] rounded] (dali-content node)]
+       (if-not rounded
+         {:tag :rect :attrs {:x x :y y :width w :height h}}
+         (if (vector? rounded)
+           {:tag :rect
+            :attrs {:x x :y y
+                    :width w :height h
+                    :rx (first rounded) :ry (second rounded)}}
+           {:tag :rect
+            :attrs {:x x :y y
+                    :width w :height h
+                    :rx rounded :ry rounded}}))))
    :polyline
-   (fn polyline-tranform [_ _ points _]
-     (let [points (unwrap-seq points)]
+   (fn polyline-tranform [node _]
+     (let [points (-> node dali-content unwrap-seq)]
        {:tag :polyline
         :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}))
    :polygon
-   (fn polygon-transform [_ _ points _]
-     (let [points (unwrap-seq points)]
+   (fn polygon-transform [node _]
+     (let [points (-> node dali-content unwrap-seq)]
        {:tag :polygon
         :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}))
    :path
-   (fn path-transform [_ _ spec _]
-     {:tag :path :attrs {:d (convert-path-spec spec)}})})
+   (fn path-transform [node _]
+     {:tag :path :attrs {:d (convert-path-spec (dali-content node))}})})
 
 (def transform-attr-mapping
   {:matrix "matrix"
@@ -295,9 +303,8 @@
     node
     (let [original-attrs              attrs
           convert-fn                  (or (convertors tag)
-                                          (fn identity-convertor [_ _ _ _]
-                                            {:tag tag :attrs attrs :content content}))
-          {:keys [tag attrs content]} (convert-fn document tag (:dali/content attrs) content)
+                                          (fn identity-convertor [node _] node))
+          {:keys [tag attrs content]} (convert-fn node document)
           merged-attrs                (process-attr-map (merge attrs original-attrs))
           content                     (unwrap-seq content)]
       (merge
