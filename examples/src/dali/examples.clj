@@ -297,13 +297,15 @@
 
    {:filename "connect1.svg"
     :document
-    [:page {:stroke :black :fill :none :marker-end "url(#curvy)"}
+    [:page {:stroke :black :fill :none}
      [:defs
-      (prefab/curvy-arrow-end :curvy)
+      (prefab/sharp-arrow-end :sharp)
+      (prefab/triangle-arrow-end :triangle)
       (s/css (str ".grey {fill: lightgrey;}\n"
                   "rect {fill: white;}\n"
                   "rect:hover {fill: orange;}\n"
-                  "text{fill: black; stroke: none;}\n"))]
+                  "text {fill: black; stroke: none;}\n"
+                  ".connector {marker-end: url(#sharp);}"))]
      [:align {:axis :center}
       [:rect {:id :c} [200 70] [120 150]]
       [:text "center"]]
@@ -337,7 +339,7 @@
      [:connect {:from :d :to :c :class :myclass}]
      [:connect {:from :c :to :e :type :-|}]
      [:connect {:from :e :to :f :type :-|}]
-     [:connect {:from :e :to :g :type :|-}]
+     [:connect {:from :e :to :g :type :|- :marker-end "url(#triangle)" :class :foo}]
      [:connect {:from :e :to :g :type :-|}]]}])
 
 (defn render-example [dir filename document]

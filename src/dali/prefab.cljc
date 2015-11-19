@@ -24,7 +24,7 @@
   [id & [{:keys [width height style]}]]
   (let [w (float (/ (or width 8) 2))
         h (float (/ (or height 20) 2))]
-   [:marker {:id id :ref-x (- h 2.5) :ref-y 0 :orient :auto :style "overflow:visible;"}
+   [:marker {:id id :ref-x h :ref-y 0 :orient :auto :style "overflow:visible;"}
     [:path (merge {:fill :black :stroke :none} style)
      :M [0 0] :L [(- w) w] :L [h 0] :L [(- w) (- w)] :z]]))
 
@@ -32,7 +32,7 @@
   [id & [{:keys [width height style]}]]
   (let [w (float (/ (or width 8) 2))
         h (or height 11)]
-   [:marker {:id id :ref-x (- h 2.3) :ref-y 0 :orient :auto :style "overflow:visible;"}
+   [:marker {:id id :ref-x h :ref-y 0 :orient :auto :style "overflow:visible;"}
     [:path (merge {:fill :black :stroke :none} style)
      :M [0 w] :L [h 0] :L [0 (- w)] :z]]))
 
