@@ -13,6 +13,7 @@
 
 (defn run-tests []
   (t/run-tests
+   'dali.geom-test
    'dali.syntax-test
    'dali.layout-test
    'dali.utils-test

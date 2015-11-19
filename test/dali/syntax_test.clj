@@ -217,3 +217,25 @@
             :stroke :none,
             :fill :black},
            :content ["up"]}))))
+
+(deftest test-point-handling
+  (testing "set-last-point"
+    (is (= {:tag :line, :attrs {:dali/content [[0 0] [10 10]]}}
+           (set-last-point (dali->ixml [:line [0 0] [20 20]]) [10 10])))
+    (is (= {:tag :polyline, :attrs {:dali/content [[0 0] [20 20] [5 5]]}}
+           (set-last-point (dali->ixml [:polyline [0 0] [20 20] [30 30]]) [5 5]))))
+  (testing "set-first-point"
+    (is (= {:tag :line, :attrs {:dali/content [[10 10] [20 20]]}}
+           (set-first-point (dali->ixml [:line [0 0] [20 20]]) [10 10])))
+    (is (= {:tag :polyline, :attrs {:dali/content [[5 5] [20 20] [30 30]]}}
+           (set-first-point (dali->ixml [:polyline [0 0] [20 20] [30 30]]) [5 5]))))
+  (testing "last-point-angle"
+    (is (= -45.0 (last-point-angle (dali->ixml [:line [0 0] [20 20]]))))
+    (is (= -225.0 (last-point-angle (dali->ixml [:line [20 20] [0 0]]))))
+    (is (= -45.0 (last-point-angle (dali->ixml [:polyline [10 19] [0 0] [20 20]]))))
+    (is (= -225.0 (last-point-angle (dali->ixml [:polyline [10 -70] [20 20] [0 0]])))))
+  (testing "first-point-angle"
+    (is (= -45.0 (first-point-angle (dali->ixml [:line [20 20] [0 0]]))))
+    (is (= -225.0 (first-point-angle (dali->ixml [:line [0 0] [20 20]]))))
+    (is (= -45.0 (first-point-angle (dali->ixml [:polyline [0 0] [20 20] [10 19]]))))
+    (is (= -225.0 (first-point-angle (dali->ixml [:polyline [20 20] [0 0] [10 -70]]))))))

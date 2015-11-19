@@ -36,3 +36,12 @@
   (math/sqrt
    (+ (* (- x1 x2) (- x1 x2))
       (* (- y1 y2) (- y1 y2)))))
+
+(defn slope
+  [[x1 y1] [x2 y2]]
+  (/ (- y2 y1) (- x2 x1)))
+
+(defn angle
+  "SGV angle 0.0 is horizontal, hence the -90.0"
+  [[x1 y1] [x2 y2]]
+  (- (math/polar-angle (- x2 x1) (- y2 y1)) 90.0))

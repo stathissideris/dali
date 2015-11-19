@@ -4,10 +4,48 @@
              [string :as string]
              [zip :as zip]]
             [clojure.java.io :as java-io]
-            [dali.utils :as utils]))
+            [dali
+             [geom :as geom]
+             [utils :as utils]]))
 
 (def attr-key-lookup
   (-> "attr-key-lookup.edn" java-io/resource slurp read-string))
+
+(defmulti set-last-point (fn [e _] (:tag e)))
+(defmethod set-last-point :line
+  [e p]
+  (update-in e [:attrs :dali/content] #(assoc % 1 p)))
+(defmethod set-last-point :polyline
+  [e p]
+  (update-in e [:attrs :dali/content] #(assoc % (dec (count %)) p)))
+;;TODO for generic path
+
+(defmulti set-first-point (fn [e _] (:tag e)))
+(defmethod set-first-point :line
+  [e p]
+  (update-in e [:attrs :dali/content] #(assoc % 0 p)))
+(defmethod set-first-point :polyline
+  [e p]
+  (update-in e [:attrs :dali/content] #(assoc % 0 p)))
+;;TODO for generic path
+
+(defmulti last-point-angle (fn [e] (:tag e)))
+(defmethod last-point-angle :line
+  [e]
+  (->> e :attrs :dali/content (apply geom/angle)))
+(defmethod last-point-angle :polyline
+  [e]
+  (->> e :attrs :dali/content (take-last 2) (apply geom/angle)))
+;;TODO for generic path
+
+(defmulti first-point-angle (fn [e] (:tag e)))
+(defmethod first-point-angle :line
+  [e]
+  (->> e :attrs :dali/content reverse (apply geom/angle)))
+(defmethod first-point-angle :polyline
+  [e]
+  (->> e :attrs :dali/content (take 2) (apply geom/angle)))
+;;TODO for generic path
 
 (def map-path-command
   {:move-to :M ;;:M [x y]
