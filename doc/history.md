@@ -1,5 +1,8 @@
 # Version history
+
 ## 0.7.0
+
+### Features
 
 * Prismatic schema to validate dali documents (error reporting needs work).
 * Make transform syntax consistent: instead of, `[[:translate [10 20]] [:scale [20]]]` you now say `[:translate [10 20] :scale [20]]`.
@@ -10,3 +13,4 @@
 * Stack layout `:position` attribute is now optional (position of first element is used if not passed explicitly).
 * Automatic page calculation based on contents (applied during `resolve-layout`).
 * `drop-shadow` prefab.
+* Syntax for embedded CSS

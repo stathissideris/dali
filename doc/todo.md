@@ -7,13 +7,12 @@
 * Transforms in the parents of elements are not taken into account by
   the layout code. Also anything else that would affect dimensions is
   not taken into account (like font properties).
-* Fix and test all markers so that their points don't overshoot the
-  end of the line.
 
 ## Features
 
-* Pass style map to :connect
+* Smart markers that are sensitive to colour etc (how??). There are 2
+  pain points: Inheritance of fill and/or stroke from the parent path,
+  and the fact that either the arrow point overshoots the end of the
+  path, or the path shows on either side of triangular markers.
 * Bounds calculation caching
 * Native calculation of "easy" bounds
-* Embedded CSS
-* Smart markers that are sensitive to colour etc (how??)
