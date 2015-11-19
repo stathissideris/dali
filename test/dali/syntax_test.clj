@@ -134,6 +134,7 @@
                   :fill "darkorange"
                   :cx 30 :cy 30 :r 20}}
          (ixml-node->xml-node
+          {} ;;nil document
           {:tag :circle
            :attrs {:stroke :indigo
                    :stroke-width 4
@@ -154,6 +155,7 @@
              :fill :darkorange
              :dali/content [[30 30] 20]}}]}
          (ixml-node->xml-node
+          {} ;;nil document
           {:tag :page,
            :attrs {:width 60 :height 60}
            :content
@@ -170,6 +172,7 @@
            :fill "mediumslateblue"
            :transform "translate(10.0 10.0)"}}
          (ixml-node->xml-node
+          {} ;;nil document
           {:tag :rect
            :attrs
            {:fill :mediumslateblue
