@@ -1,12 +1,8 @@
 (ns dev
-  (:require [clojure.tools.namespace.repl :refer [clear refresh-all]]
-            [net.cgrand.enlive-html :as html]
+  (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]
             [clojure.test :as t]
             [dali.examples :as examples]))
-
-(defn refresh []
-  (clojure.tools.namespace.repl/refresh))
 
 (defn load-print []
   (require '[print :refer [pprint-analyze]]))
