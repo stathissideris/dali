@@ -70,10 +70,6 @@
    (defn atan2 [x y]
      (.atan2 js/Math x y)))
 
-(defn polar-angle
-  [x y]
-  (radians->degrees (atan2 x y)))
-
 #?(:clj
    (defn sqrt
      [x]
@@ -83,6 +79,19 @@
    (defn sqrt
      [x]
      (.sqrt js/Math x)))
+
+(defn polar-angle
+  [[x y]]
+  (radians->degrees (atan2 y x)))
+
+(defn cartesian-to-polar
+  [[x y]]
+  [(sqrt (+ (* x x) (* y y))) (polar-angle [x y])])
+
+(defn polar-to-cartesian
+  [[r theta]]
+  [(* r (cos theta))
+   (* r (sin theta))])
 
 (defn minus
   "Makes all the numbers of a seq negative and returns it as a vector"
