@@ -29,9 +29,12 @@
      :M [0 0] :L [(- w) w] :L [h 0] :L [(- w) (- w)] :z]]))
 
 (defn triangle-arrow-end
-  [id & [{:keys [width height style]}]]
-  (let [w (or width 8)
-        h (or height 11)]
+  [id & [{:keys [width height style scale]}]]
+  (let [w     (or width 8)
+        h     (or height 11)
+        scale (or scale 1)
+        w     (* scale w)
+        h     (* scale h)]
    [:symbol {:id id :dali/marker-tip [h (/ w 2)] :dali/marker-base [0 (/ w 2)]}
     [:path (merge {:fill :black :stroke :none} style)
      :M [0 0] :L [h (/ w 2)] :L [0 w] :z]]))

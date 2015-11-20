@@ -119,10 +119,10 @@
 
    {:filename "markers1.svg"
     :document
-    [:page {:width 220 :height 90 :stroke {:width 2 :paint :black}}
+    [:page {:width 250 :height 90 :stroke {:width 2 :paint :black}}
      [:defs
       (prefab/sharp-arrow-end :sharp)
-      (prefab/triangle-arrow-end :triangle)
+      (prefab/triangle-arrow-end :triangle {:scale 2})
       (prefab/curvy-arrow-end :curvy)
       (prefab/dot-end :dot)
       (prefab/sharp-arrow-end :very-sharp {:height 32})]
@@ -141,6 +141,46 @@
      [:polyline
       {:fill :none :marker-end "url(#very-sharp)"}
       [170 80] [210 30]]]}
+
+   {:filename "markers2-dali.svg"
+    :document
+    (let [make-arrows
+          (fn [translate marker]
+            [:g {:transform [:translate translate]}
+             [:polyline
+              {:fill :none :dali/marker-end marker}
+              [80 80] [120 30]]
+             [:polyline
+              {:fill :none :dali/marker-end marker}
+              [80 80] [60 30]]
+             [:polyline
+              {:fill :none :dali/marker-end marker}
+              [80 80] [80 130]]
+             [:polyline
+              {:fill :none :dali/marker-end marker}
+              [80 80] [20 80]]])]
+     [:page {:width 220 :height 150 :stroke {:width 2 :paint :black}} ;;TODO page bounds calc blows up with dali markers
+      [:defs
+       (prefab/sharp-arrow-end :sharp)
+       (prefab/triangle-arrow-end :triangle)
+       (prefab/curvy-arrow-end :curvy)
+       (prefab/dot-end :dot)
+       (prefab/sharp-arrow-end :very-sharp {:height 32})]
+      [:polyline
+       {:fill :none :marker-end "url(#sharp)"}
+       [50 80] [90 30]]
+
+      (make-arrows [0 0] :triangle)
+      
+      [:polyline
+       {:fill :none :marker-end "url(#curvy)"}
+       [110 80] [150 30]]
+      [:polyline
+       {:fill :none :marker-end "url(#dot)"}
+       [140 80] [180 30]]
+      [:polyline
+       {:fill :none :marker-end "url(#very-sharp)"}
+       [170 80] [210 30]]])}
 
    {:filename "drop-shadow.svg"
     :document
