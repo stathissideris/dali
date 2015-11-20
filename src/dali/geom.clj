@@ -7,14 +7,12 @@
   [(+ x1 x2) (+ y1 y2)])
 
 (defn v-
-  "Subtract the second vector from the first."
-  [[x1 y1] [x2 y2]]
-  [(- x1 x2) (- y1 y2)])
-
-(defn v-neg
-  "Negate vector."
-  [[x y]]
-  [(- x) (- y)])
+  "Subtract the second vector from the first or negate a
+  vector (single arity)."
+  ([[x y]]
+   [(- x) (- y)])
+  ([[x1 y1] [x2 y2]]
+   [(- x1 x2) (- y1 y2)]))
 
 (defn v-scale
   "Scale vector."
@@ -44,3 +42,11 @@
 (defn angle
   [[x1 y1] [x2 y2]]
   (math/polar-angle [(- x2 x1) (- y2 y1)]))
+
+(defn ->svg-angle
+  [x]
+  (- x))
+
+(defn ->standard-angle
+  [x]
+  (- x))

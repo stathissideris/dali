@@ -84,11 +84,11 @@
   [[x y]]
   (radians->degrees (atan2 y x)))
 
-(defn cartesian-to-polar
+(defn cartesian->polar
   [[x y]]
   [(sqrt (+ (* x x) (* y y))) (polar-angle [x y])])
 
-(defn polar-to-cartesian
+(defn polar->cartesian
   [[r theta]]
   [(* r (cos theta))
    (* r (sin theta))])

@@ -130,7 +130,7 @@
       {:fill :none :marker-end "url(#sharp)"}
       [50 80] [90 30]]
      [:polyline
-      {:fill :none :marker-end "url(#triangle)"}
+      {:fill :none :dali/marker-end :triangle}
       [80 80] [120 30]]
      [:polyline
       {:fill :none :marker-end "url(#curvy)"}

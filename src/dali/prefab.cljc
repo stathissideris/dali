@@ -30,11 +30,11 @@
 
 (defn triangle-arrow-end
   [id & [{:keys [width height style]}]]
-  (let [w (float (/ (or width 8) 2))
+  (let [w (or width 8)
         h (or height 11)]
-   [:marker {:id id :ref-x h :ref-y 0 :orient :auto :style "overflow:visible;"}
+   [:symbol {:id id :dali/marker-tip [h (/ w 2)] :dali/marker-base [0 (/ w 2)]}
     [:path (merge {:fill :black :stroke :none} style)
-     :M [0 w] :L [h 0] :L [0 (- w)] :z]]))
+     :M [0 0] :L [h (/ w 2)] :L [0 w] :z]]))
 
 (defn curvy-arrow-end
   [id & [{:keys [width height style]}]]

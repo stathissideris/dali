@@ -1,12 +1,14 @@
 (ns dali.syntax
-  (:require [clojure
+  (:require [clojure.java.io :as java-io]
+            [clojure
              [pprint :refer [cl-format]]
              [string :as string]
              [zip :as zip]]
-            [clojure.java.io :as java-io]
             [dali
              [geom :as geom]
-             [utils :as utils]]))
+             [utils :as utils]]
+            [dali.math :as math]
+            [net.cgrand.enlive-html :as en]))
 
 (defn dali-content [node]
   (some-> node :attrs :dali/content))
@@ -14,22 +16,25 @@
 (def attr-key-lookup
   (-> "attr-key-lookup.edn" java-io/resource slurp read-string))
 
+(defn- update-in-content [e fun]
+  (update-in e [:attrs :dali/content] fun))
+
 (defmulti set-last-point (fn [e _] (:tag e)))
 (defmethod set-last-point :line
   [e p]
-  (update-in e [:attrs :dali/content] #(assoc % 1 p)))
+  (update-in-content e #(assoc % 1 p)))
 (defmethod set-last-point :polyline
   [e p]
-  (update-in e [:attrs :dali/content] #(assoc % (dec (count %)) p)))
+  (update-in-content e #(assoc % (dec (count %)) p)))
 ;;TODO for generic path
 
 (defmulti set-first-point (fn [e _] (:tag e)))
 (defmethod set-first-point :line
   [e p]
-  (update-in e [:attrs :dali/content] #(assoc % 0 p)))
+  (update-in-content e #(assoc % 0 p)))
 (defmethod set-first-point :polyline
   [e p]
-  (update-in e [:attrs :dali/content] #(assoc % 0 p)))
+  (update-in-content e #(assoc % 0 p)))
 ;;TODO for generic path
 
 (defmulti last-point-angle (fn [e] (:tag e)))
@@ -116,7 +121,32 @@
   (when coll
     (if (seq? (first coll)) (first coll) coll)))
 
-(defn- add-dali-marker [document element {:keys [location marker]}])
+(defn- has-dali-marker? [{:keys [attrs]}]
+  (or (:dali/marker-end attrs)
+      (:dali/marker-start attrs)))
+
+(defn- add-dali-marker [document node {:keys [location marker]}]
+  (let [marker-node    (first (en/select document [(utils/to-enlive-id-selector marker)]))
+        _              (utils/assert-req marker-node)
+        tip            (some-> marker-node :attrs :dali/marker-tip)
+        _              (utils/assert-req tip)
+        base           (some-> marker-node :attrs :dali/marker-base)
+        _              (utils/assert-req base)
+        height         (math/abs (- (first tip) (first base)))
+        last-point     (-> node :attrs :dali/content last)
+        a              (last-point-angle node)
+        new-last-point (geom/v- last-point (math/polar->cartesian [height a]))]
+    ;;(utils/prn-names tip base height last-point a new-last-point)
+    {:tag :g
+     :content
+     [(-> node
+          (update :attrs dissoc :dali/marker-end :dali/market-start)
+          (set-last-point new-last-point))
+      {:tag :use
+       :attrs {:xlink:href (utils/to-iri-id marker)
+               :transform [[:translate new-last-point]
+                           [:rotate [a]]
+                           [:translate (geom/v- base)]]}}]}))
 
 (def
   convertors
@@ -161,10 +191,13 @@
                     :width w :height h
                     :rx rounded :ry rounded}}))))
    :polyline
-   (fn polyline-tranform [node _]
-     (let [points (-> node dali-content unwrap-seq)]
-       {:tag :polyline
-        :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}))
+   (fn polyline-tranform [node document]
+     (let [points (-> node dali-content unwrap-seq)
+           result {:tag :polyline
+                   :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}]
+       (if (has-dali-marker? node)
+         (add-dali-marker document node {:marker (-> node :attrs :dali/marker-end)})
+         result)))
    :polygon
    (fn polygon-transform [node _]
      (let [points (-> node dali-content unwrap-seq)]
@@ -242,8 +275,8 @@
                 (process-attr-value k v)))) {} m)
     (dissoc m :dali/content)))
 
-(defn dali-tag? [element]
-  (and (vector? element) (keyword? (first element))))
+(defn dali-tag? [node]
+  (and (vector? node) (keyword? (first node))))
 
 (defn normalize-hiccup-node
   "Makes all the elements look like [tag {...} content], even if the

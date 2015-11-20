@@ -46,6 +46,16 @@
 (defn exception [& msg]
   (Exception. (apply str msg)))
 
+(defmacro assert-req [x]
+  `(when (nil? ~x) (throw (dali.utils/exception "Required var '" ~(str x) "' is nil"))))
+
+(defmacro prn-names [& args]
+  `(do
+     ~@(for [x args]
+         `(do
+           (print ~(str x " = "))
+           (prn ~x)))))
+
 ;;TODO fix, does not play well with tools.namespace
 ;; #?(:clj
 ;;    (defn exception [& msg]
@@ -107,3 +117,12 @@
 (defn safe-update-in [m [k & ks] f & args]
   (if-not (apply get-in m [(cons k ks)])
     m (apply update-in m (cons k ks) f args)))
+
+(defn to-enlive-class-selector [x]
+  (->> x name (str ".") keyword))
+
+(defn to-enlive-id-selector [x]
+  (->> x name (str "#") keyword))
+
+(defn to-iri-id [x]
+  (->> x name (str "#")))
