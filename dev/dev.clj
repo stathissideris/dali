@@ -46,6 +46,9 @@
            (when-not (empty? attrs) {:attrs attrs})
            (when-not (empty? content) {:content content}))))
 
+(defmacro equals-assertion [x]
+  `(is (= ~(eval x) ~x)))
+
 (defn generate-attr-lookup-map
   "Loads all the attribute names from the SVG documentation, extracts
   the ones that are camelcase and produces the mapping of the
