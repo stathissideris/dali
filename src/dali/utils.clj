@@ -53,8 +53,8 @@
   `(do
      ~@(for [x args]
          `(do
-           (print ~(str x " = "))
-           (prn ~x)))))
+            (print ~(str x " = "))
+            (prn ~x)))))
 
 ;;TODO fix, does not play well with tools.namespace
 ;; #?(:clj
