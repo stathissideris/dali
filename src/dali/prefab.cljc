@@ -47,18 +47,26 @@
       :M [0 (- w2)] :L [h 0] :L [0 w2] :z]]))
 
 (defn curvy-arrow-end
-  [id & [{:keys [width height style]}]]
-  (let [w (float (/ (or width 10) 2))
-        h (or height 10)]
-   [:marker {:id id :ref-x (- h 2.3) :ref-y 0 :orient :auto :style "overflow:visible;"}
-    [:path (merge {:fill :black :stroke :none} style)
-     :M [-0.78996659 -4.0017078] :L [10.13591 0.01601414] :L [-0.78996719 4.0337352]
-     :c [1.74549835,-2.3720609] [1.73544075,-5.6174519] [0,-8.035443] :z]]))
+  [id & [{:keys [width height style scale]}]]
+  (let [w     (or width 8)
+        h     (or height 11)
+        scale (or scale 1)
+        w     (if width w (* scale w))
+        h     (if height h (* scale h))
+        w2    (/ w 2)]
+    [:symbol {:id id :class [:dali-marker :curvy-arrow-end]
+              :dali/marker-tip [h 0] :style "overflow:visible;"}
+     [:path (merge {:fill :black :stroke :none} style)
+      :m [(* -0.15 h) (- w2)]
+      :l [(* 1.15 h) w2]
+      :l [(* -1.15 h) w2]
+      :c [(* 0.2 h) (* -0.3 w)] [(* 0.2 h) (* -0.7 w)] [0,(- w)] :z]]))
 
 (defn dot-end
   [id & [{:keys [radius]}]]
-  (let [radius (or radius 2.2)]
-   [:marker {:id id :ref-x 0 :ref-y 0 :orient :auto :style "overflow:visible;"}
+  (let [radius (or radius 3)]
+    [:symbol {:id id :class [:dali-marker :dot]
+              :dali/marker-tip [0 0] :style "overflow:visible;"}
     [:circle [0 0] radius]]))
 
 (defn drop-shadow

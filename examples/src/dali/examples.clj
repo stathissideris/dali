@@ -129,8 +129,8 @@
      [:line {:stroke :lightgrey} [50 30] [230 30]]
      [:polyline {:fill :none :dali/marker-end :sharp} [50 80] [90 30]]
      [:polyline {:fill :none :dali/marker-end :triangle} [80 80] [120 30]]
-     [:polyline {:fill :none :marker-end "url(#curvy)"} [110 80] [150 30]]
-     [:polyline {:fill :none :marker-end "url(#dot)"} [140 80] [180 30]]
+     [:polyline {:fill :none :marker-end :curvy} [110 80] [150 30]]
+     [:polyline {:fill :none :marker-end :dot} [140 80] [180 30]]
      [:polyline {:fill :none :dali/marker-end :very-sharp} [170 80] [210 30]]]}
 
    {:filename "markers2-dali.svg"
@@ -178,10 +178,13 @@
       [:defs
        (prefab/triangle-arrow-end :triangle)
        (prefab/sharp-arrow-end :sharp)
-       (prefab/curvy-arrow-end :curvy)]
+       (prefab/curvy-arrow-end :curvy)
+       (prefab/dot-end :dot)]
 
       (arrow-column 0 :triangle)
       (arrow-column 150 :sharp)
+      (arrow-column 300 :curvy)
+      (arrow-column 450 :dot)
       
       [:polyline {:dali/marker-end :triangle :fill :none}
        (map #(vector %1 %2) (range 10 210 20) (cycle [680 700]))]])}
