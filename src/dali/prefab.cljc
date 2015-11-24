@@ -19,7 +19,7 @@
       (conj pattern
             [:rect {:fill fill2 :stroke :none} [0 width] [10 width2]]))))
 
-(defn sharp-arrow-end
+(defn sharp-arrow-marker
   [id & [{:keys [width height style scale]}]]
   (let [w     (or width 8)
         h     (or height 11)
@@ -33,7 +33,7 @@
      [:path (merge {:fill :black :stroke :none} style)
       :M [0 0] :L [(- h3) w2] :L [(* 2 h3) 0] :L [(- h3) (- w2)] :z]]))
 
-(defn triangle-arrow-end
+(defn triangle-arrow-marker
   [id & [{:keys [width height style scale]}]]
   (let [w     (or width 8)
         h     (or height 11)
@@ -46,7 +46,7 @@
      [:path (merge {:fill :black :stroke :none} style)
       :M [0 (- w2)] :L [h 0] :L [0 w2] :z]]))
 
-(defn curvy-arrow-end
+(defn curvy-arrow-marker
   [id & [{:keys [width height style scale]}]]
   (let [w     (or width 8)
         h     (or height 11)
@@ -62,14 +62,14 @@
       :l [(* -1.15 h) w2]
       :c [(* 0.2 h) (* -0.3 w)] [(* 0.2 h) (* -0.7 w)] [0,(- w)] :z]]))
 
-(defn dot-end
+(defn dot-marker
   [id & [{:keys [radius]}]]
   (let [radius (or radius 3)]
     [:symbol {:id id :class [:dali-marker :dot]
               :dali/marker-tip [0 0] :style "overflow:visible;"}
     [:circle [0 0] radius]]))
 
-(defn drop-shadow
+(defn drop-shadow-effect
   [id & [{:keys [color offset radius opacity filter-padding]}]]
   (let [offset              (or offset [5 5])
         color               (or color "#000000")

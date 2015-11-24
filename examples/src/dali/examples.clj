@@ -121,11 +121,11 @@
     :document
     [:page {:stroke {:width 2 :paint :black}}
      [:defs
-      (prefab/sharp-arrow-end :sharp {:scale 2})
-      (prefab/triangle-arrow-end :triangle {:scale 2})
-      (prefab/curvy-arrow-end :curvy)
-      (prefab/dot-end :dot)
-      (prefab/sharp-arrow-end :very-sharp {:width 16 :height 36})]
+      (prefab/sharp-arrow-marker :sharp {:scale 2})
+      (prefab/triangle-arrow-marker :triangle {:scale 2})
+      (prefab/curvy-arrow-marker :curvy)
+      (prefab/dot-marker :dot)
+      (prefab/sharp-arrow-marker :very-sharp {:width 16 :height 36})]
      [:line {:stroke :lightgrey} [50 30] [230 30]]
      [:polyline {:fill :none :dali/marker-end :sharp} [50 80] [90 30]]
      [:polyline {:fill :none :dali/marker-end :triangle} [80 80] [120 30]]
@@ -176,10 +176,10 @@
              (make-start-arrows [x 520] marker :line)])]
      [:page {:stroke {:width 2 :paint :black}}
       [:defs
-       (prefab/triangle-arrow-end :triangle)
-       (prefab/sharp-arrow-end :sharp)
-       (prefab/curvy-arrow-end :curvy)
-       (prefab/dot-end :dot)]
+       (prefab/triangle-arrow-marker :triangle)
+       (prefab/sharp-arrow-marker :sharp)
+       (prefab/curvy-arrow-marker :curvy)
+       (prefab/dot-marker :dot)]
 
       (arrow-column 0 :triangle)
       (arrow-column 150 :sharp)
@@ -193,7 +193,7 @@
     :document
     [:page {:width 200 :height 200}
      [:defs
-      (prefab/drop-shadow :ds {:opacity 0.8 :offset [10 10] :radius 10})
+      (prefab/drop-shadow-effect :ds {:opacity 0.8 :offset [10 10] :radius 10})
       (prefab/stripe-pattern :stripes {:angle -30 :fill :pink})]
      [:rect {:fill "url(#stripes)"} [0 0] [200 200]]
      [:circle {:fill :green :filter "url(#ds)"} [100 100] 75]]}
@@ -346,9 +346,9 @@
     :document
     [:page {:stroke :black :fill :none}
      [:defs
-      (prefab/sharp-arrow-end :sharp)
-      (prefab/sharp-arrow-end :big-sharp {:scale 2 :style {:fill :green}})
-      (prefab/triangle-arrow-end :triangle)
+      (prefab/sharp-arrow-marker :sharp)
+      (prefab/sharp-arrow-marker :big-sharp {:scale 2 :style {:fill :green}})
+      (prefab/triangle-arrow-marker :triangle)
       (s/css (str ".grey {fill: lightgrey;}\n"
                   "rect {fill: white;}\n"
                   "rect:hover {fill: orange;}\n"
