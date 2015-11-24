@@ -238,13 +238,14 @@
            (set-first-point (dali->ixml [:line [0 0] [20 20]]) [10 10])))
     (is (= {:tag :polyline, :attrs {:dali/content [[5 5] [20 20] [30 30]]}}
            (set-first-point (dali->ixml [:polyline [0 0] [20 20] [30 30]]) [5 5]))))
+  ;;the angles here are in conventional degrees, not SVG degrees
   (testing "last-point-angle"
-    (is (= -45.0 (last-point-angle (dali->ixml [:line [0 0] [20 20]]))))
-    (is (= -225.0 (last-point-angle (dali->ixml [:line [20 20] [0 0]]))))
-    (is (= -45.0 (last-point-angle (dali->ixml [:polyline [10 19] [0 0] [20 20]]))))
-    (is (= -225.0 (last-point-angle (dali->ixml [:polyline [10 -70] [20 20] [0 0]])))))
+    (is (= 45.0 (last-point-angle (dali->ixml [:line [0 0] [20 20]]))))
+    (is (= -135.0 (last-point-angle (dali->ixml [:line [20 20] [0 0]]))))
+    (is (= 45.0 (last-point-angle (dali->ixml [:polyline [10 19] [0 0] [20 20]]))))
+    (is (= -135.0 (last-point-angle (dali->ixml [:polyline [10 -70] [20 20] [0 0]])))))
   (testing "first-point-angle"
-    (is (= -45.0 (first-point-angle (dali->ixml [:line [20 20] [0 0]]))))
-    (is (= -225.0 (first-point-angle (dali->ixml [:line [0 0] [20 20]]))))
-    (is (= -45.0 (first-point-angle (dali->ixml [:polyline [0 0] [20 20] [10 19]]))))
-    (is (= -225.0 (first-point-angle (dali->ixml [:polyline [20 20] [0 0] [10 -70]]))))))
+    (is (= 45.0 (first-point-angle (dali->ixml [:line [20 20] [0 0]]))))
+    (is (= -135.0 (first-point-angle (dali->ixml [:line [0 0] [20 20]]))))
+    (is (= -135.0 (first-point-angle (dali->ixml [:polyline [0 0] [20 20] [10 19]]))))
+    (is (= 45.0 (first-point-angle (dali->ixml [:polyline [20 20] [0 0] [10 -70]]))))))

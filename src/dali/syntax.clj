@@ -49,7 +49,7 @@
 (defmulti first-point-angle (fn [e] (:tag e)))
 (defmethod first-point-angle :line
   [e]
-  (->> e :attrs :dali/content (apply geom/angle)))
+  (->> e :attrs :dali/content reverse (apply geom/angle)))
 (defmethod first-point-angle :polyline
   [e]
   (->> e :attrs :dali/content (take 2) reverse (apply geom/angle)))
