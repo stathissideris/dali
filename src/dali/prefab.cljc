@@ -20,13 +20,18 @@
             [:rect {:fill fill2 :stroke :none} [0 width] [10 width2]]))))
 
 (defn sharp-arrow-end
-  ;;based on  Arrow1Lend in Inkscape
-  [id & [{:keys [width height style]}]]
-  (let [w (float (/ (or width 8) 2))
-        h (float (/ (or height 20) 2))]
-   [:marker {:id id :ref-x h :ref-y 0 :orient :auto :style "overflow:visible;"}
-    [:path (merge {:fill :black :stroke :none} style)
-     :M [0 0] :L [(- w) w] :L [h 0] :L [(- w) (- w)] :z]]))
+  [id & [{:keys [width height style scale]}]]
+  (let [w     (or width 8)
+        h     (or height 11)
+        scale (or scale 1)
+        w     (if width w (* scale w))
+        h     (if height h (* scale h))
+        w2    (float (/ w 2))
+        h3    (float (/ h 3))]
+    [:symbol {:id id :class [:dali-marker :sharp-arrow-end]
+              :dali/marker-tip [(* 2 h3) 0] :style "overflow:visible;"}
+     [:path (merge {:fill :black :stroke :none} style)
+      :M [0 0] :L [(- h3) w2] :L [(* 2 h3) 0] :L [(- h3) (- w2)] :z]]))
 
 (defn triangle-arrow-end
   [id & [{:keys [width height style scale]}]]

@@ -121,16 +121,17 @@
     :document
     [:page {:stroke {:width 2 :paint :black}}
      [:defs
-      (prefab/sharp-arrow-end :sharp)
+      (prefab/sharp-arrow-end :sharp {:scale 2})
       (prefab/triangle-arrow-end :triangle {:scale 2})
       (prefab/curvy-arrow-end :curvy)
       (prefab/dot-end :dot)
-      (prefab/sharp-arrow-end :very-sharp {:height 32})]
-     [:polyline {:fill :none :marker-end "url(#sharp)"} [50 80] [90 30]]
+      (prefab/sharp-arrow-end :very-sharp {:width 16 :height 36})]
+     [:line {:stroke :lightgrey} [50 30] [230 30]]
+     [:polyline {:fill :none :dali/marker-end :sharp} [50 80] [90 30]]
      [:polyline {:fill :none :dali/marker-end :triangle} [80 80] [120 30]]
      [:polyline {:fill :none :marker-end "url(#curvy)"} [110 80] [150 30]]
      [:polyline {:fill :none :marker-end "url(#dot)"} [140 80] [180 30]]
-     [:polyline {:fill :none :marker-end "url(#very-sharp)"} [170 80] [210 30]]]}
+     [:polyline {:fill :none :dali/marker-end :very-sharp} [170 80] [210 30]]]}
 
    {:filename "markers2-dali.svg"
     :document
@@ -163,34 +164,25 @@
                [:polyline attrs [95 60] [120 30]]
                [:polyline attrs [72.5 60] [60 30]]
                [:polyline attrs [80 100] [80 130]]
-               [:polyline attrs [60 80] [20 80]]]))]
+               [:polyline attrs [60 80] [20 80]]]))
+
+          arrow-column
+          (fn [x marker]
+            [:g
+             (make-end-arrows [x 0] marker)
+             (make-start-arrows [x 130] marker)
+             (make-both-arrows [x 260] marker marker)
+             (make-end-arrows [x 390] marker :line)
+             (make-start-arrows [x 520] marker :line)])]
      [:page {:stroke {:width 2 :paint :black}}
       [:defs
-       (prefab/sharp-arrow-end :sharp)
        (prefab/triangle-arrow-end :triangle)
-       (prefab/curvy-arrow-end :curvy)
-       (prefab/dot-end :dot)
-       (prefab/sharp-arrow-end :very-sharp {:height 32})]
+       (prefab/sharp-arrow-end :sharp)
+       (prefab/curvy-arrow-end :curvy)]
 
-      (make-end-arrows [0 0] :triangle)
-      (make-start-arrows [0 130] :triangle)
-      (make-both-arrows [0 260] :triangle :triangle)
-      (make-end-arrows [0 390] :triangle :line)
-      (make-start-arrows [0 520] :triangle :line)
+      (arrow-column 0 :triangle)
+      (arrow-column 150 :sharp)
       
-      [:polyline
-       {:fill :none :marker-end "url(#curvy)"}
-       [110 80] [150 30]]
-      [:polyline
-       {:fill :none :marker-end "url(#dot)"}
-       [140 80] [180 30]]
-      [:polyline
-       {:fill :none :marker-end "url(#very-sharp)"}
-       [170 80] [210 30]]
-      [:polyline
-       {:fill :none :marker-end "url(#sharp)"}
-       [200 80] [240 30]]
-
       [:polyline {:dali/marker-end :triangle :fill :none}
        (map #(vector %1 %2) (range 10 210 20) (cycle [680 700]))]])}
 
