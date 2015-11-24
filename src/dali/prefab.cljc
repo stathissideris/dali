@@ -20,7 +20,7 @@
             [:rect {:fill fill2 :stroke :none} [0 width] [10 width2]]))))
 
 (defn sharp-arrow-marker
-  [id & [{:keys [width height style scale]}]]
+  [id & [{:keys [width height attrs scale]}]]
   (let [w     (or width 8)
         h     (or height 11)
         scale (or scale 1)
@@ -30,12 +30,11 @@
         h3    (float (/ h 3))]
     [:symbol (merge
               {:id id :class [:dali-marker :sharp-arrow-end]
-               :dali/marker-tip [(* 2 h3) 0] :style "overflow:visible;"
-               :fill :black :stroke :none} style)
+               :dali/marker-tip [(* 2 h3) 0] :style "overflow:visible;"} attrs)
      [:path :M [0 0] :L [(- h3) w2] :L [(* 2 h3) 0] :L [(- h3) (- w2)] :z]]))
 
 (defn triangle-arrow-marker
-  [id & [{:keys [width height style scale]}]]
+  [id & [{:keys [width height attrs scale]}]]
   (let [w     (or width 8)
         h     (or height 11)
         scale (or scale 1)
@@ -44,12 +43,11 @@
         w2    (/ w 2)]
     [:symbol (merge
               {:id id :class [:dali-marker :triangle-arrow-end]
-               :dali/marker-tip [h 0] :style "overflow:visible;"
-               :fill :black :stroke :none} style)
+               :dali/marker-tip [h 0] :style "overflow:visible;"} attrs)
      [:path :M [0 (- w2)] :L [h 0] :L [0 w2] :z]]))
 
 (defn curvy-arrow-marker
-  [id & [{:keys [width height style scale]}]]
+  [id & [{:keys [width height attrs scale]}]]
   (let [w     (or width 8)
         h     (or height 11)
         scale (or scale 1)
@@ -58,8 +56,7 @@
         w2    (/ w 2)]
     [:symbol (merge
               {:id id :class [:dali-marker :curvy-arrow-end]
-               :dali/marker-tip [h 0] :style "overflow:visible;"
-               :fill :black :stroke :none} style)
+               :dali/marker-tip [h 0] :style "overflow:visible;"} attrs)
      [:path
       :m [(* -0.15 h) (- w2)]
       :l [(* 1.15 h) w2]
@@ -67,12 +64,11 @@
       :c [(* 0.2 h) (* -0.3 w)] [(* 0.2 h) (* -0.7 w)] [0,(- w)] :z]]))
 
 (defn dot-marker
-  [id & [{:keys [radius style]}]]
+  [id & [{:keys [radius attrs]}]]
   (let [radius (or radius 4)]
     [:symbol (merge
               {:id id :class [:dali-marker :dot]
-               :dali/marker-tip [0 0] :style "overflow:visible;"
-               :fill :black :stroke :none} style)
+               :dali/marker-tip [0 0] :style "overflow:visible;"} attrs)
     [:circle [0 0] radius]]))
 
 (defn drop-shadow-effect

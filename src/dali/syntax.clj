@@ -126,7 +126,9 @@
       (:dali/marker-start attrs)))
 
 (defn- add-dali-marker [node document {:keys [location marker]}]
-  (let [marker-node    (first (en/select document [(utils/to-enlive-id-selector marker)]))
+  (let [marker-id      (if (keyword? marker) marker (:id marker))
+        marker-attrs   (if (keyword? marker) {} (dissoc marker :id :xlink:href))
+        marker-node    (first (en/select document [(utils/to-enlive-id-selector marker-id)]))
         _              (utils/assert-req marker-node)
         tip            (some-> marker-node :attrs :dali/marker-tip)
         _              (utils/assert-req tip)
@@ -137,7 +139,8 @@
         a              (if (= location :end)
                          (last-point-angle node)
                          (first-point-angle node))
-        new-base-point (geom/v- base-point (math/polar->cartesian [height a]))]
+        new-base-point (geom/v- base-point (math/polar->cartesian [height a]))
+        conj-or-concat (fn [a b] (if (sequential? b) (vec (concat a b)) (conj a b)))]
     ;;(utils/prn-names tip base height base-point a new-base-point)
     [(as-> node x
        (update x :attrs dissoc :dali/marker-end :dali/marker-start) ;;important, otherwise infinite recursion
@@ -145,10 +148,13 @@
          (set-last-point x new-base-point)
          (set-first-point x new-base-point)))
      {:tag :use
-      :attrs {:xlink:href (utils/to-iri-id marker)
-              :class     [:marker (utils/keyword-concat :marker "-" location)]
-              :transform [[:translate new-base-point]
-                          [:rotate [a]]]}}]))
+      :attrs (merge-with
+              conj-or-concat
+              {:xlink:href (utils/to-iri-id marker-id)
+               :class     [:marker (utils/keyword-concat :marker "-" location)]
+               :transform [[:translate new-base-point]
+                           [:rotate [a]]]}
+              marker-attrs)}]))
 
 (defn- add-dali-markers [{:keys [attrs] :as original-node} document]
   (let [end? (some? (:dali/marker-end attrs))

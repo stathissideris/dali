@@ -119,19 +119,20 @@
 
    {:filename "markers1.svg"
     :document
-    [:page {:stroke {:width 2 :paint :black}}
+    [:page
      [:defs
+      (s/css (str "polyline {stroke: black; stroke-width: 2;}"))
       (prefab/sharp-arrow-marker :sharp {:scale 2})
       (prefab/triangle-arrow-marker :triangle {:scale 2})
       (prefab/curvy-arrow-marker :curvy {:scale 2})
       (prefab/dot-marker :dot {:radius 6})
       (prefab/sharp-arrow-marker :very-sharp {:width 16 :height 36})]
      [:line {:stroke :lightgrey} [50 30] [230 30]]
-     [:polyline {:fill :none :dali/marker-end :sharp} [50 80] [90 30]]
-     [:polyline {:fill :none :dali/marker-end :triangle} [80 80] [120 30]]
-     [:polyline {:fill :none :dali/marker-end :curvy} [110 80] [150 30]]
-     [:polyline {:fill :none :dali/marker-end :dot} [140 80] [180 30]]
-     [:polyline {:fill :none :dali/marker-end :very-sharp} [170 80] [210 30]]]}
+     [:polyline {:dali/marker-end {:id :sharp :fill :red}} [50 80] [90 30]]
+     [:polyline {:dali/marker-end :triangle} [80 80] [120 30]]
+     [:polyline {:dali/marker-end :curvy} [110 80] [150 30]]
+     [:polyline {:dali/marker-end :dot} [140 80] [180 30]]
+     [:polyline {:dali/marker-end :very-sharp} [170 80] [210 30]]]}
 
    {:filename "markers2-dali.svg"
     :document
@@ -174,8 +175,10 @@
              (make-both-arrows [x 260] marker marker)
              (make-end-arrows [x 390] marker :line)
              (make-start-arrows [x 520] marker :line)])]
-     [:page {:stroke {:width 2 :paint :black}}
+     [:page
       [:defs
+       (s/css (str "polyline {stroke: black; stroke-width: 2;}\n"
+                   "line {stroke: black; stroke-width: 2;}"))
        (prefab/triangle-arrow-marker :triangle)
        (prefab/sharp-arrow-marker :sharp)
        (prefab/curvy-arrow-marker :curvy)
@@ -346,8 +349,9 @@
     :document
     [:page {:stroke :black :fill :none}
      [:defs
+      (s/css (str ".marker {fill: black; stroke: none;}"))
       (prefab/sharp-arrow-marker :sharp)
-      (prefab/sharp-arrow-marker :big-sharp {:scale 2 :style {:fill :green}})
+      (prefab/sharp-arrow-marker :big-sharp {:scale 2})
       (prefab/triangle-arrow-marker :triangle)
       (s/css (str ".grey {fill: lightgrey;}\n"
                   "rect {fill: white;}\n"
@@ -382,7 +386,11 @@
       [:text "G"]]
      
      [:connect {:from :a :to :c :dali/marker-end :sharp}]
-     [:connect {:from :c :to :b :stroke :green :stroke-width 2.5 :dali/marker-end :big-sharp}]
+
+     ;; :fill :green doesn't work because CSS wins
+     [:connect {:from :c :to :b :stroke :green :stroke-width 2.5
+                :dali/marker-end {:id :big-sharp :style "fill: green;"}}]
+
      [:connect {:from :d :to :c :class :myclass :dali/marker-end :sharp}]
      [:connect {:from :c :to :e :type :-| :dali/marker-end :sharp}]
      [:connect {:from :e :to :f :type :-| :dali/marker-end :sharp}]
