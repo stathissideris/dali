@@ -123,14 +123,14 @@
      [:defs
       (prefab/sharp-arrow-marker :sharp {:scale 2})
       (prefab/triangle-arrow-marker :triangle {:scale 2})
-      (prefab/curvy-arrow-marker :curvy)
-      (prefab/dot-marker :dot)
+      (prefab/curvy-arrow-marker :curvy {:scale 2})
+      (prefab/dot-marker :dot {:radius 6})
       (prefab/sharp-arrow-marker :very-sharp {:width 16 :height 36})]
      [:line {:stroke :lightgrey} [50 30] [230 30]]
      [:polyline {:fill :none :dali/marker-end :sharp} [50 80] [90 30]]
      [:polyline {:fill :none :dali/marker-end :triangle} [80 80] [120 30]]
-     [:polyline {:fill :none :marker-end :curvy} [110 80] [150 30]]
-     [:polyline {:fill :none :marker-end :dot} [140 80] [180 30]]
+     [:polyline {:fill :none :dali/marker-end :curvy} [110 80] [150 30]]
+     [:polyline {:fill :none :dali/marker-end :dot} [140 80] [180 30]]
      [:polyline {:fill :none :dali/marker-end :very-sharp} [170 80] [210 30]]]}
 
    {:filename "markers2-dali.svg"
