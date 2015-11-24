@@ -349,14 +349,14 @@
     :document
     [:page {:stroke :black :fill :none}
      [:defs
-      (s/css (str ".marker {fill: black; stroke: none;}"))
-      (prefab/sharp-arrow-marker :sharp)
-      (prefab/sharp-arrow-marker :big-sharp {:scale 2})
-      (prefab/triangle-arrow-marker :triangle)
-      (s/css (str ".grey {fill: lightgrey;}\n"
+      (s/css (str ".marker {fill: black; stroke: none;}"
+                  ".grey {fill: lightgrey;}\n"
                   "rect {fill: white;}\n"
                   "rect:hover {fill: orange;}\n"
-                  "text {fill: black; stroke: none;}"))]
+                  "text {fill: black; stroke: none;}"))
+      (prefab/sharp-arrow-marker :sharp)
+      (prefab/sharp-arrow-marker :big-sharp {:scale 2})
+      (prefab/triangle-arrow-marker :triangle)]
      [:align {:axis :center}
       [:rect {:id :c} [200 70] [120 150]]
       [:text "center"]]

@@ -29,7 +29,7 @@
         w2    (float (/ w 2))
         h3    (float (/ h 3))]
     [:symbol (merge
-              {:id id :class [:dali-marker :sharp-arrow-end]
+              {:id id :class [:marker-def :sharp-arrow-marker]
                :dali/marker-tip [(* 2 h3) 0] :style "overflow:visible;"} attrs)
      [:path :M [0 0] :L [(- h3) w2] :L [(* 2 h3) 0] :L [(- h3) (- w2)] :z]]))
 
@@ -42,7 +42,7 @@
         h     (if height h (* scale h))
         w2    (/ w 2)]
     [:symbol (merge
-              {:id id :class [:dali-marker :triangle-arrow-end]
+              {:id id :class [:marker-def :triangle-arrow-marker]
                :dali/marker-tip [h 0] :style "overflow:visible;"} attrs)
      [:path :M [0 (- w2)] :L [h 0] :L [0 w2] :z]]))
 
@@ -55,7 +55,7 @@
         h     (if height h (* scale h))
         w2    (/ w 2)]
     [:symbol (merge
-              {:id id :class [:dali-marker :curvy-arrow-end]
+              {:id id :class [:marker-def :curvy-arrow-marker]
                :dali/marker-tip [h 0] :style "overflow:visible;"} attrs)
      [:path
       :m [(* -0.15 h) (- w2)]
@@ -67,7 +67,7 @@
   [id & [{:keys [radius attrs]}]]
   (let [radius (or radius 4)]
     [:symbol (merge
-              {:id id :class [:dali-marker :dot]
+              {:id id :class [:marker-def :dot-marker]
                :dali/marker-tip [0 0] :style "overflow:visible;"} attrs)
     [:circle [0 0] radius]]))
 
