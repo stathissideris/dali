@@ -344,12 +344,12 @@
     [:page {:stroke :black :fill :none}
      [:defs
       (prefab/sharp-arrow-end :sharp)
+      (prefab/sharp-arrow-end :big-sharp {:scale 2 :style {:fill :green}})
       (prefab/triangle-arrow-end :triangle)
       (s/css (str ".grey {fill: lightgrey;}\n"
                   "rect {fill: white;}\n"
                   "rect:hover {fill: orange;}\n"
-                  "text {fill: black; stroke: none;}\n"
-                  ".connector {marker-end: url(#sharp);}"))]
+                  "text {fill: black; stroke: none;}"))]
      [:align {:axis :center}
       [:rect {:id :c} [200 70] [120 150]]
       [:text "center"]]
@@ -378,13 +378,13 @@
       [:rect {:id :g} [350 300] [50 50]]
       [:text "G"]]
      
-     [:connect {:from :a :to :c}]
-     [:connect {:from :c :to :b :stroke :green :stroke-width 2.5}]
-     [:connect {:from :d :to :c :class :myclass}]
-     [:connect {:from :c :to :e :type :-|}]
-     [:connect {:from :e :to :f :type :-|}]
-     [:connect {:from :e :to :g :type :|- :dali/marker-end :triangle :class :foo}]
-     [:connect {:from :e :to :g :type :-|}]]}])
+     [:connect {:from :a :to :c :dali/marker-end :sharp}]
+     [:connect {:from :c :to :b :stroke :green :stroke-width 2.5 :dali/marker-end :big-sharp}]
+     [:connect {:from :d :to :c :class :myclass :dali/marker-end :sharp}]
+     [:connect {:from :c :to :e :type :-| :dali/marker-end :sharp}]
+     [:connect {:from :e :to :f :type :-| :dali/marker-end :sharp}]
+     [:connect {:from :e :to :g :type :|- :class :foo :dali/marker-end :triangle}]
+     [:connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]}])
 
 (defn render-example [dir filename document]
   (-> document
