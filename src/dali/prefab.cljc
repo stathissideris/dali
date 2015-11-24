@@ -33,11 +33,13 @@
   (let [w     (or width 8)
         h     (or height 11)
         scale (or scale 1)
-        w     (* scale w)
-        h     (* scale h)]
-   [:symbol {:id id :dali/marker-tip [h (/ w 2)] :dali/marker-base [0 (/ w 2)]}
-    [:path (merge {:fill :black :stroke :none} style)
-     :M [0 0] :L [h (/ w 2)] :L [0 w] :z]]))
+        w     (if width w (* scale w))
+        h     (if height h (* scale h))
+        w2    (/ w 2)]
+    [:symbol {:id id :class [:dali-marker :triangle-arrow-end]
+              :dali/marker-tip [h 0] :style "overflow:visible;"}
+     [:path (merge {:fill :black :stroke :none} style)
+      :M [0 (- w2)] :L [h 0] :L [0 w2] :z]]))
 
 (defn curvy-arrow-end
   [id & [{:keys [width height style]}]]

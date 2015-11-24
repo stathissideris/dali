@@ -130,9 +130,7 @@
         _              (utils/assert-req marker-node)
         tip            (some-> marker-node :attrs :dali/marker-tip)
         _              (utils/assert-req tip)
-        base           (some-> marker-node :attrs :dali/marker-base)
-        _              (utils/assert-req base)
-        height         (math/abs (- (first tip) (first base)))
+        height         (first tip)
         base-point     (if (= location :end)
                          (-> node :attrs :dali/content last)
                          (-> node :attrs :dali/content first))
@@ -150,8 +148,7 @@
       :attrs {:xlink:href (utils/to-iri-id marker)
               :class     [:marker (utils/keyword-concat :marker "-" location)]
               :transform [[:translate new-base-point]
-                          [:rotate [a]]
-                          [:translate (geom/v- base)]]}}]))
+                          [:rotate [a]]]}}]))
 
 (defn- add-dali-markers [{:keys [attrs] :as original-node} document]
   (let [end? (some? (:dali/marker-end attrs))
