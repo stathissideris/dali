@@ -189,7 +189,10 @@
        [170 80] [210 30]]
       [:polyline
        {:fill :none :marker-end "url(#sharp)"}
-       [200 80] [240 30]]])}
+       [200 80] [240 30]]
+
+      [:polyline {:dali/marker-end :triangle :fill :none}
+       (map #(vector %1 %2) (range 10 210 20) (cycle [680 700]))]])}
 
    {:filename "drop-shadow.svg"
     :document
