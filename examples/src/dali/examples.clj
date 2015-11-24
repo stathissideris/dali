@@ -135,13 +135,16 @@
    {:filename "markers2-dali.svg"
     :document
     (let [make-end-arrows
-          (fn [translate marker]
-            (let [attrs {:fill :none :dali/marker-end marker}]
-              [:g {:transform [:translate translate]}
-               [:polyline attrs [80 80] [120 30]]
-               [:polyline attrs [80 80] [60 30]]
-               [:polyline attrs [80 80] [80 130]]
-               [:polyline attrs [80 80] [20 80]]]))
+          (fn make-end-arrows
+            ([translate marker]
+             (make-end-arrows translate marker :polyline))
+            ([translate marker tag]
+             (let [attrs {:fill :none :dali/marker-end marker}]
+               [:g {:transform [:translate translate]}
+                [tag attrs [80 80] [120 30]]
+                [tag attrs [80 80] [60 30]]
+                [tag attrs [80 80] [80 130]]
+                [tag attrs [80 80] [20 80]]])))
           make-start-arrows
           (fn [translate marker]
             (let [attrs {:fill :none :dali/marker-start marker}]
@@ -169,6 +172,7 @@
       (make-end-arrows [0 0] :triangle)
       (make-start-arrows [0 130] :triangle)
       (make-both-arrows [0 260] :triangle :triangle)
+      (make-end-arrows [0 390] :triangle :line)
       
       [:polyline
        {:fill :none :marker-end "url(#curvy)"}

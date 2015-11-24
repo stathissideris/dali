@@ -272,9 +272,13 @@
          {:tag :use :attrs (calc-attrs {:xlink:href (str "#" (name ref)) :x x :y y} attrs)}
          {:tag :use :attrs (calc-attrs attrs)})))
    :line
-   (fn line-tranform [{:keys [attrs] :as node} _]
+   (fn line-tranform [{:keys [attrs] :as node} document]
      (let [[[x1 y1] [x2 y2]] (dali-content node)]
-       {:tag :line :attrs (calc-attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2} attrs)}))
+       (as-> node x
+         (add-dali-markers x document)
+         (if (= :g (:tag x))
+           x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
+           {:tag :line :attrs (calc-attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2} attrs)}))))
    :circle
    (fn circle-tranform [{:keys [attrs] :as node} _]
      (let [[[cx cy] r] (dali-content node)]
@@ -295,15 +299,14 @@
             :attrs (calc-attrs {:x x :y y :width w :height h :rx rounded :ry rounded} attrs)}))))
    :polyline
    (fn polyline-tranform [{:keys [attrs] :as node} document]
-     (let [process-attrs #(assoc % :attrs (calc-attrs {:points (string/join
-                                                                " "
-                                                                (map (fn [[x y]] (str x "," y))
-                                                                     (-> % dali-content unwrap-seq)))} attrs))]
-       (as-> node x
-         (add-dali-markers x document)
-         (if (= :g (:tag x))
-           x ;;it's nested, leave return it so that it's processed deeper by the zipper
-           (process-attrs x)))))
+     (as-> node x
+       (add-dali-markers x document)
+       (if (= :g (:tag x))
+         x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
+         (assoc x :attrs (calc-attrs {:points (string/join
+                                               " "
+                                               (map (fn [[x y]] (str x "," y))
+                                                    (-> x dali-content unwrap-seq)))} attrs)))))
    :polygon
    (fn polygon-transform [{:keys [attrs] :as node} _]
      (let [points (-> node dali-content unwrap-seq)]
