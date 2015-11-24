@@ -158,7 +158,7 @@
                [:polyline attrs [72.5 60] [60 30]]
                [:polyline attrs [80 100] [80 130]]
                [:polyline attrs [60 80] [20 80]]]))]
-     [:page {:width 250 :height 400 :stroke {:width 2 :paint :black}} ;;TODO page bounds calc blows up with dali markers
+     [:page {:stroke {:width 2 :paint :black}}
       [:defs
        (prefab/sharp-arrow-end :sharp)
        (prefab/triangle-arrow-end :triangle)
