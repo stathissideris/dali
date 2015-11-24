@@ -126,3 +126,9 @@
 
 (defn to-iri-id [x]
   (->> x name (str "#")))
+
+(defn keyword-ns [k]
+  (->> k str (re-find #":(.+?)/") second))
+
+(defn keyword-concat [& args]
+  (->> args (map name) (apply str) keyword))

@@ -1,16 +1,17 @@
 (ns dali.batik
   (:require [clojure.java.io :as io]
-            [clojure.walk :as walk]
-            [dali.syntax :as s]
-            [dali.dom :as dom])
-  (:import [java.nio.charset StandardCharsets]
-           [java.io ByteArrayInputStream]
-           [java.awt.geom PathIterator AffineTransform]
-           [org.apache.batik.transcoder.image PNGTranscoder]
-           [org.apache.batik.transcoder
-            TranscoderInput TranscoderOutput]
+            [clojure.string :as string]
+            [dali
+             [dom :as dom]
+             [syntax :as s]])
+  (:import [java.awt.geom AffineTransform PathIterator]
+           java.io.ByteArrayInputStream
+           java.nio.charset.StandardCharsets
+           [org.apache.batik.bridge BridgeContext GVTBuilder UserAgentAdapter]
            [org.apache.batik.dom.svg SAXSVGDocumentFactory SVGDOMImplementation]
-           [org.apache.batik.bridge UserAgentAdapter BridgeContext GVTBuilder DocumentLoader]))
+           [org.apache.batik.transcoder TranscoderInput TranscoderOutput]
+           [org.apache.batik.gvt RootGraphicsNode CompositeGraphicsNode TextNode ShapeNode]
+           org.apache.batik.transcoder.image.PNGTranscoder))
 
 ;;Batik - calculating bounds of cubic spline
 ;;http://stackoverflow.com/questions/10610355/batik-calculating-bounds-of-cubic-spline?rq=1
@@ -24,11 +25,12 @@
   (rehearse-bounds [this element]))
 
 (defn- to-rect [rect]
-  [:rect
-   [(.getX rect)
-    (.getY rect)]
-   [(.getWidth rect)
-    (.getHeight rect)]])
+  (when rect
+    [:rect
+     [(.getX rect)
+      (.getY rect)]
+     [(.getWidth rect)
+      (.getHeight rect)]]))
 
 (defmacro maybe [call]
   `(try ~call (catch Exception ~'e nil)))
@@ -46,17 +48,23 @@
    :transformed-sensitive (to-rect (.getTransformedSensitiveBounds node id-transform))})
 
 (defn- transformed-geometry-bounds [node]
-  (to-rect (.getTransformedGeometryBounds node id-transform)))
+  (when node
+    (to-rect (.getTransformedGeometryBounds node id-transform))))
 
 (defn- rehearse-bounds-impl [this dom element]
-  ;;(>pprint (-> element s/ixml->xml))
-  (let [element (->> element
+  (let [dom-element (->> element
                      s/ixml->xml
                      (dom/xml->dom-element dom))]
-    (dom/add-to-svg dom element)
-    ;;(>pprint (all-bounds (gvt-node this element)))
-    (let [bbox (->> element (gvt-node this) transformed-geometry-bounds)]
-      (dom/remove-from-svg dom element)
+    (when-not (dom/add-to-svg! dom dom-element)
+      (throw (ex-info "Failed to add element to DOM" {:element element})))
+    (def tt this)
+    (let [gvt  (gvt-node this dom-element)
+          _    (when-not gvt
+                 (>pprint element)
+                 (throw (ex-info "Cannot find GVT node for element - try setting the page size manually if it isn't set already"
+                                             {:element element})))
+          bbox (transformed-geometry-bounds gvt)]
+      (dom/remove-from-svg dom dom-element)
       bbox)))
 
 (defrecord BatikContextRecord [bridge gvt dom]
@@ -70,17 +78,17 @@
 
 (defn context
   ([]
-     (context nil))
+   (context nil))
   ([dom & {:keys [dynamic?]}]
-     (let [dom (or dom
-                   (-> (SVGDOMImplementation/getDOMImplementation)
-                       (.createDocument SVGDOMImplementation/SVG_NAMESPACE_URI "svg" nil)))
-           bridge (BridgeContext. (UserAgentAdapter.))]
-       (.setDynamic bridge (or dynamic? true))
-       (map->BatikContextRecord
-        {:dom dom
-         :bridge bridge
-         :gvt (.build (GVTBuilder.) bridge dom)}))))
+   (let [dom (or dom
+                 (-> (SVGDOMImplementation/getDOMImplementation)
+                     (.createDocument SVGDOMImplementation/SVG_NAMESPACE_URI "svg" nil)))
+         bridge (BridgeContext. (UserAgentAdapter.))]
+     (.setDynamic bridge (or dynamic? true))
+     (map->BatikContextRecord
+      {:dom    dom
+       :bridge bridge
+       :gvt    (.build (GVTBuilder.) bridge dom)}))))
 
 (defn parse-svg-uri [uri]
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
@@ -139,6 +147,37 @@
                :Q
                :C
                :Z)) segments)))))
+
+
+;;use this on the :gvt part of the record
+(defprotocol BatikNode
+  (info [this]))
+
+(defn- class-name [x] (-> x .getClass .getName (string/replace "org.apache.batik.gvt." "")))
+
+(extend-protocol BatikNode
+  nil
+  (info [this] nil)
+  RootGraphicsNode
+  (info [this]
+    {:class (class-name this)
+     :children (map info (.getChildren this))})
+  CompositeGraphicsNode
+  (info [this]
+    {:class (class-name this)
+     :children (map info (.getChildren this))})
+  ShapeNode
+  (info [this]
+    {:class (class-name this)
+     :shape (class-name (.getShape this))})
+  TextNode
+  (info [this]
+    {:class (class-name this)
+     :text (.getText this)})
+  Object
+  (info [this] (class-name this)))
+
+
 
 (comment
   (let [ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg"))

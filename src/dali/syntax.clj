@@ -49,10 +49,10 @@
 (defmulti first-point-angle (fn [e] (:tag e)))
 (defmethod first-point-angle :line
   [e]
-  (->> e :attrs :dali/content reverse (apply geom/angle)))
+  (->> e :attrs :dali/content (apply geom/angle)))
 (defmethod first-point-angle :polyline
   [e]
-  (->> e :attrs :dali/content (take 2) (apply geom/angle)))
+  (->> e :attrs :dali/content (take 2) reverse (apply geom/angle)))
 ;;TODO for generic path
 
 (def map-path-command
@@ -125,7 +125,7 @@
   (or (:dali/marker-end attrs)
       (:dali/marker-start attrs)))
 
-(defn- add-dali-marker [document node {:keys [location marker]}]
+(defn- add-dali-marker [node document {:keys [location marker]}]
   (let [marker-node    (first (en/select document [(utils/to-enlive-id-selector marker)]))
         _              (utils/assert-req marker-node)
         tip            (some-> marker-node :attrs :dali/marker-tip)
@@ -133,79 +133,47 @@
         base           (some-> marker-node :attrs :dali/marker-base)
         _              (utils/assert-req base)
         height         (math/abs (- (first tip) (first base)))
-        last-point     (-> node :attrs :dali/content last)
-        a              (last-point-angle node)
-        new-last-point (geom/v- last-point (math/polar->cartesian [height a]))]
-    ;;(utils/prn-names tip base height last-point a new-last-point)
-    {:tag :g
-     :content
-     [(-> node
-          (update :attrs dissoc :dali/marker-end :dali/market-start)
-          (set-last-point new-last-point))
-      {:tag :use
-       :attrs {:xlink:href (utils/to-iri-id marker)
-               :transform [[:translate new-last-point]
-                           [:rotate [a]]
-                           [:translate (geom/v- base)]]}}]}))
+        base-point     (if (= location :end)
+                         (-> node :attrs :dali/content last)
+                         (-> node :attrs :dali/content first))
+        a              (if (= location :end)
+                         (last-point-angle node)
+                         (first-point-angle node))
+        new-base-point (geom/v- base-point (math/polar->cartesian [height a]))]
+    ;;(utils/prn-names tip base height base-point a new-base-point)
+    [(as-> node x
+       (update x :attrs dissoc :dali/marker-end :dali/marker-start) ;;important, otherwise infinite recursion
+       (if (= location :end)
+         (set-last-point x new-base-point)
+         (set-first-point x new-base-point)))
+     {:tag :use
+      :attrs {:xlink:href (utils/to-iri-id marker)
+              :class     [:marker (utils/keyword-concat :marker "-" location)]
+              :transform [[:translate new-base-point]
+                          [:rotate [a]]
+                          [:translate (geom/v- base)]]}}]))
 
-(def
-  convertors
-  {:page
-   (fn svg-tranform [{:keys [content]} _]
-     {:tag :svg
-      :attrs
-      {:xmlns "http://www.w3.org/2000/svg"
-       :version "1.2"
-       :xmlns:xlink "http://www.w3.org/1999/xlink"}
-      :content content})
-   :use
-   (fn use-tranform [node _]
-     (let [[ref [x y]] (dali-content node)]
-       (if (and ref x y)
-         {:tag :use :attrs {:xlink:href (str "#" (name ref)) :x x :y y}}
-         {:tag :use})))
-   :line
-   (fn line-tranform [node _]
-     (let [[[x1 y1] [x2 y2]] (dali-content node)]
-       {:tag :line :attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2}}))
-   :circle
-   (fn circle-tranform [node _]
-     (let [[[cx cy] r] (dali-content node)]
-       {:tag :circle :attrs {:cx cx :cy cy :r r}}))
-   :ellipse
-   (fn ellipse-tranform [node _]
-     (let [[[cx cy] rx ry] (dali-content node)]
-       {:tag :ellipse :attrs {:cx cx :cy cy :rx rx :ry ry}}))
-   :rect
-   (fn rect-tranform [node _]
-     (let [[[x y] [w h] rounded] (dali-content node)]
-       (if-not rounded
-         {:tag :rect :attrs {:x x :y y :width w :height h}}
-         (if (vector? rounded)
-           {:tag :rect
-            :attrs {:x x :y y
-                    :width w :height h
-                    :rx (first rounded) :ry (second rounded)}}
-           {:tag :rect
-            :attrs {:x x :y y
-                    :width w :height h
-                    :rx rounded :ry rounded}}))))
-   :polyline
-   (fn polyline-tranform [node document]
-     (let [points (-> node dali-content unwrap-seq)
-           result {:tag :polyline
-                   :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}]
-       (if (has-dali-marker? node)
-         (add-dali-marker document node {:marker (-> node :attrs :dali/marker-end)})
-         result)))
-   :polygon
-   (fn polygon-transform [node _]
-     (let [points (-> node dali-content unwrap-seq)]
-       {:tag :polygon
-        :attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))}}))
-   :path
-   (fn path-transform [node _]
-     {:tag :path :attrs {:d (convert-path-spec (dali-content node))}})})
+(defn- add-dali-markers [{:keys [attrs] :as original-node} document]
+  (let [end? (some? (:dali/marker-end attrs))
+        start? (some? (:dali/marker-start attrs))
+        
+        [node marker-end]
+        (if-not end?
+          [original-node nil]
+          (add-dali-marker original-node document
+                           {:location :end
+                            :marker (:dali/marker-end attrs)}))
+        [node marker-start]
+        (if-not start?
+          [node nil]
+          (add-dali-marker node document
+                           {:location :start
+                            :marker (:dali/marker-start attrs)}))]
+    (if (or end? start?)
+      {:tag :g
+       :content
+       (vec (remove nil? [node marker-start marker-end]))}
+      original-node)))
 
 (def transform-attr-mapping
   {:matrix "matrix"
@@ -234,6 +202,8 @@
      (process-transform-attr v)
    (and (sequential? v) (every? number? v))
      (string/join " " v)
+   (and (sequential? v) (every? (some-fn keyword? string?) v))
+     (string/join " " (map name v))
    (keyword? v)
      (name v)
    :else
@@ -248,9 +218,6 @@
      (fn [m k v] (assoc m (make-key k) v))
      {} m)))
 
-(defn add-transform [node transform]
-  (update-in node [:attrs :transform] conj transform))
-
 (defn- process-attr-map
   "Unwraps nested attribute maps (mainly for :stroke and :fill).
 
@@ -264,6 +231,11 @@
   (as-> m m
     (reduce-kv
      (fn [m k v]
+       (if (= "dali" (utils/keyword-ns k))
+         m
+         (assoc m k v))) {} m)
+    (reduce-kv
+     (fn [m k v]
        (if (map? v)
          (merge m (process-nested-attr-map k v))
          (assoc m k v))) {} m)
@@ -275,17 +247,77 @@
                 (process-attr-value k v)))) {} m)
     (dissoc m :dali/content)))
 
-(defn dali-tag? [node]
-  (and (vector? node) (keyword? (first node))))
+(defn- calc-attrs
+  ([user-attrs]
+   (process-attr-map user-attrs))
+  ([dali-args user-attrs]
+   (merge dali-args (process-attr-map user-attrs))))
 
-(defn normalize-hiccup-node
-  "Makes all the elements look like [tag {...} content], even if the
-  attrs were skipped or the content was nil. Deprecated, will be
-  phased out."
-  [[tag sec & r]]
-  (let [attrs (if (map? sec) sec {})
-        content (if (seq? (first r)) (first r) r)]
-    [tag attrs content]))
+(def
+  ixml->xml-convertors
+  {:page
+   (fn svg-tranform [{:keys [attrs content]} _]
+     {:tag :svg
+      :attrs
+      (calc-attrs
+       {:xmlns "http://www.w3.org/2000/svg"
+        :version "1.2"
+        :xmlns:xlink "http://www.w3.org/1999/xlink"}
+       attrs)
+      :content content})
+   :use
+   (fn use-tranform [{:keys [attrs] :as node} _]
+     (let [[ref [x y]] (dali-content node)]
+       (if (and ref x y)
+         {:tag :use :attrs (calc-attrs {:xlink:href (str "#" (name ref)) :x x :y y} attrs)}
+         {:tag :use :attrs (calc-attrs attrs)})))
+   :line
+   (fn line-tranform [{:keys [attrs] :as node} _]
+     (let [[[x1 y1] [x2 y2]] (dali-content node)]
+       {:tag :line :attrs (calc-attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2} attrs)}))
+   :circle
+   (fn circle-tranform [{:keys [attrs] :as node} _]
+     (let [[[cx cy] r] (dali-content node)]
+       {:tag :circle :attrs (calc-attrs {:cx cx :cy cy :r r} attrs)}))
+   :ellipse
+   (fn ellipse-tranform [{:keys [attrs] :as node} _]
+     (let [[[cx cy] rx ry] (dali-content node)]
+       {:tag :ellipse :attrs (calc-attrs {:cx cx :cy cy :rx rx :ry ry} attrs)}))
+   :rect
+   (fn rect-tranform [{:keys [attrs] :as node} _]
+     (let [[[x y] [w h] rounded] (dali-content node)]
+       (if-not rounded
+         {:tag :rect :attrs (calc-attrs {:x x, :y y, :width w, :height h} attrs)}
+         (if (vector? rounded)
+           {:tag :rect
+            :attrs (calc-attrs {:x x :y y :width w :height h :rx (first rounded) :ry (second rounded)} attrs)}
+           {:tag :rect
+            :attrs (calc-attrs {:x x :y y :width w :height h :rx rounded :ry rounded} attrs)}))))
+   :polyline
+   (fn polyline-tranform [{:keys [attrs] :as node} document]
+     (let [process-attrs #(assoc % :attrs (calc-attrs {:points (string/join
+                                                                " "
+                                                                (map (fn [[x y]] (str x "," y))
+                                                                     (-> % dali-content unwrap-seq)))} attrs))]
+       (as-> node x
+         (add-dali-markers x document)
+         (if (= :g (:tag x))
+           x ;;it's nested, leave return it so that it's processed deeper by the zipper
+           (process-attrs x)))))
+   :polygon
+   (fn polygon-transform [{:keys [attrs] :as node} _]
+     (let [points (-> node dali-content unwrap-seq)]
+       {:tag :polygon
+        :attrs (calc-attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))} attrs)}))
+   :path
+   (fn path-transform [{:keys [attrs] :as node} _]
+     {:tag :path :attrs (calc-attrs {:d (convert-path-spec (dali-content node))} attrs)})})
+
+(defn add-transform [node transform]
+  (update-in node [:attrs :transform] conj transform))
+
+(defn- dali-tag? [node]
+  (and (vector? node) (keyword? (first node))))
 
 (defn- attrs->ixml [attrs]
   (if (and attrs (:transform attrs) (not (string? (:transform attrs))))
@@ -335,14 +367,14 @@
   (if (string? node)
     node
     (let [original-attrs              attrs
-          convert-fn                  (or (convertors tag)
-                                          (fn identity-convertor [node _] node))
+          convert-fn                  (or (ixml->xml-convertors tag)
+                                          (fn identity-convertor [node _]
+                                            (update node :attrs calc-attrs)))
           {:keys [tag attrs content]} (convert-fn node document)
-          merged-attrs                (process-attr-map (merge attrs original-attrs))
           content                     (unwrap-seq content)]
       (merge
        {:tag tag}
-       (when-not (empty? merged-attrs) {:attrs merged-attrs})
+       (when-not (empty? attrs) {:attrs attrs})
        (when-not (empty? content) {:content content})))))
 
 (defn ixml->xml [document]

@@ -162,14 +162,16 @@
   (and (-> doc :attrs :width)
        (-> doc :attrs :height)))
 
-(defn- resolve-page-dimensions [doc bounds-fn] ;;TODO round dimensions
-  (let [[_ [x y] [w h]] (bounds-fn {:tag :g :content (:content doc)})]
-    (-> doc
-        (assoc-in [:attrs :width] (+ x w 10)) ;;TODO make less hardcoded
-        (assoc-in [:attrs :height] (+ y h 10)))))
+(defn- page-dimensions-100
+  "See https://www.w3.org/Graphics/SVG/WG/wiki/Intrinsic_Sizing"
+  [doc bounds-fn]
+  (-> doc
+      (assoc-in [:attrs :width] "100%")
+      (assoc-in [:attrs :height] "100%")))
 
 (defn resolve-layout
   ([doc]
+   (when (nil? doc) (throw (utils/exception "Cannot resolve layout of nil document")))
    (resolve-layout (batik/context) doc))
   ([ctx doc]
    (let [bounds-fn        #(batik/rehearse-bounds ctx %)
@@ -184,5 +186,5 @@
                                   doc selector-layouts)
          doc              (if (has-page-dimensions? doc)
                             doc
-                            (resolve-page-dimensions doc bounds-fn))]
+                            (page-dimensions-100 doc bounds-fn))]
      (-> doc de-index-tree))))

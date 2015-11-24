@@ -219,6 +219,12 @@
             :font-size 20,
             :stroke :none,
             :fill :black},
+           :content ["up"]})))
+  (is (= {:tag :text, :attrs {:class "a b"}, :content ["up"]}
+         (ixml->xml
+          {:tag :text
+           :attrs
+           {:class [:a :b]}
            :content ["up"]}))))
 
 (deftest test-point-handling
