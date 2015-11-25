@@ -333,6 +333,14 @@
 (defn- flatten-1 [coll]
   (mapcat (fn [x] (if (seq? x) x [x])) coll))
 
+(defn- replace-empty-coords [document]
+  (utils/transform-zipper
+   (utils/generic-zipper document)
+   #(let [node (zip/node %)] (if (= :_ node) [0 0] node))))
+
+(def dali-content-coords-tags
+  #{:use :line :circle :ellipse :rect :polyline :polygon :path})
+
 (defn dali-node->ixml-node ;;TODO find out why this gets called with nodes that are already XML
   [node]
   (if-not (dali-tag? node)
@@ -354,19 +362,15 @@
                          {:tag tag}
                          (when attrs {:attrs attrs})
                          (when content {:content (vec content)}))]
-      (if (= :path tag)
-        (update-in xml-node [:attrs :dali/content] (comp vec split-params-by-keyword))
-        xml-node))))
-
-(defn- replace-empty-coords [document]
-  (utils/transform-zipper
-   (utils/generic-zipper document)
-   #(let [node (zip/node %)] (if (= :_ node) [0 0] node))))
+      (cond-> xml-node
+        (= :path tag)
+          (update-in [:attrs :dali/content] (comp vec split-params-by-keyword))
+        (dali-content-coords-tags tag)
+          (update-in [:attrs :dali/content] replace-empty-coords)))))
 
 (defn dali->ixml [document]
-  (let [document (replace-empty-coords document)]
-    (utils/transform-zipper (utils/ixml-zipper document)
-                            (comp dali-node->ixml-node zip/node))))
+  (utils/transform-zipper (utils/ixml-zipper document)
+                          (comp dali-node->ixml-node zip/node)))
 
 (defn ixml-node->xml-node
   [document {:keys [tag attrs content] :as node}]

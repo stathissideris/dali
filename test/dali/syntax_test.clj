@@ -14,22 +14,22 @@
            :dali/content [[30 30] 20]}))))
 
 (deftest test-node->xml
-  (is (= {:tag :polyline}
-         (dali-node->ixml-node [:polyline])))
-  (is (= {:tag :polyline
+  (is (= {:tag :test}
+         (dali-node->ixml-node [:test])))
+  (is (= {:tag :test
           :content [[:foo]]}
-         (dali-node->ixml-node [:polyline [:foo]])))
-  (is (= {:tag :polyline
+         (dali-node->ixml-node [:test [:foo]])))
+  (is (= {:tag :test
           :content [[:foo] [:bar]]}
-         (dali-node->ixml-node [:polyline [:foo] [:bar]])))
-  (is (= {:tag :polyline
+         (dali-node->ixml-node [:test [:foo] [:bar]])))
+  (is (= {:tag :test
           :attrs {:foo :bar}
           :content [[:foo]]}
-         (dali-node->ixml-node [:polyline {:foo :bar} [:foo]])))
-  (is (= {:tag :polyline
+         (dali-node->ixml-node [:test {:foo :bar} [:foo]])))
+  (is (= {:tag :test
           :attrs {:foo :bar}
           :content [[:foo] [:bar]]}
-         (dali-node->ixml-node [:polyline {:foo :bar} [:foo] [:bar]])))
+         (dali-node->ixml-node [:test {:foo :bar} [:foo] [:bar]])))
   (is (= {:tag :rect
           :attrs {:transform [[:rotate [10 60 20]] [:skew-x [30]]]
                   :dali/content [[50 10] [20 20]]}}
@@ -70,18 +70,17 @@
            :M [110 80] :C [140 10] [165 10] [195 80] :S [250 150] [280 80]]))))
 
 (deftest test-dali->ixml
-  (is (= {:tag :polyline, :content [{:tag :foo}]}
-         (dali->ixml [:polyline [:foo]])))
-  (is (= {:tag :polyline, :content [{:tag :foo} {:tag :bar}]}
-         (dali->ixml [:polyline [:foo] [:bar]])))
-  (is (= {:tag :polyline, :attrs {:foo :bar}, :content [{:tag :foo}]}
-         (dali->ixml [:polyline {:foo :bar} [:foo]])))
-  (is (= {:tag :polyline, :attrs {:dali/content [[1 2] [3 4]]}}
+  (is (= {:tag :test, :content [{:tag :foo}]}
+         (dali->ixml [:test [:foo]])))
+  (is (= {:tag :test :content [{:tag :foo} {:tag :bar}]}
+         (dali->ixml [:test [:foo] [:bar]])))
+  (is (= {:tag :test :attrs {:foo :bar}, :content [{:tag :foo}]}
+         (dali->ixml [:test {:foo :bar} [:foo]])))
+  (is (= {:tag :polyline :attrs {:dali/content [[1 2] [3 4]]}}
          (dali->ixml [:polyline [1 2] [3 4]])))
-  (is (= {:tag :polyline, :attrs {:foo :bar, :dali/content [[1 2] [3 4]]}}
-         (dali->ixml [:polyline {:foo :bar} [1 2] [3 4]]))))
-
-(deftest test-dali->ixml
+  (is (= {:tag :polyline :attrs {:foo :bar :dali/content [[1 2] [3 4]]}}
+         (dali->ixml [:polyline {:foo :bar} [1 2] [3 4]])))
+  
   (is (= {:tag :page,
           :attrs {:width 60, :height 60},
           :content
