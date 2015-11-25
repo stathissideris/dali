@@ -2,6 +2,7 @@
   (:require [dali
              [geom :as geom]
              [utils :as utils]]
+            [dali.layout :as layout]
             [dali.layout.utils :refer [bounds->anchor-point]]
             [net.cgrand.enlive-html :as en]))
 
@@ -61,7 +62,8 @@
                          (bounds->anchor-point bounds2))]
     (connector attrs [p1 intersection p2])))
 
-(defn connect [document tag elements bounds-fn]
+(defmethod layout/layout-nodes :connect
+  [document tag elements bounds-fn]
   (let [make-selector   (fn [x] (if (keyword? x) [(->> x name (str "#") keyword)] x))
 
         connection-type (or (-> tag :attrs :type) :--)

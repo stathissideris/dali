@@ -6,11 +6,6 @@
              [batik :as batik]
              [syntax :as syntax]
              [utils :as utils]]
-            [dali.layout
-             [align :as align]
-             [connect :as connect]
-             [distribute :as distribute]
-             [stack :as stack]]
             [net.cgrand.enlive-html :as en]))
 
 (defn- tree-path [path]
@@ -52,34 +47,15 @@
 ;;;;;;;;;;;;;;;; extensibility ;;;;;;;;;;;;;;;;
 
 (def layout-tags ;;TODO make this mutable so that it's extensible
-  #{:layout :stack :distribute :align :connect})
+  #{:layout :stack :distribute :align :connect :matrix})
 
 (defmulti layout-nodes (fn [_ tag _ _] (:tag tag)))
 
-(defmethod layout-nodes :stack
-  [document tag elements bound-fn]
-  (stack/stack document tag elements bound-fn))
-
-(defmethod layout-nodes :distribute
-  [document tag elements bound-fn]
-  (distribute/distribute document tag elements bound-fn))
-
-(defmethod layout-nodes :align
-  [document tag elements bound-fn]
-  (align/align document tag elements bound-fn))
-
-(defmethod layout-nodes :connect
-  [document tag elements bound-fn]
-  (connect/connect document tag elements bound-fn))
-
-(defn- composite-layout [document layout-tag elements bounds-fn]
+(defmethod layout-nodes :layout
+  [document tag elements bounds-fn]
   (reduce (fn [elements layout-tag]
             (layout-nodes document layout-tag elements bounds-fn))
-          elements (->> layout-tag :attrs :layouts (map syntax/dali->ixml))))
-
-(defmethod layout-nodes :layout
-  [document tag elements bound-fn]
-  (composite-layout document tag elements bound-fn))
+          elements (->> tag :attrs :layouts (map syntax/dali->ixml))))
 
 
 ;;;;;;;;;;;;;;;; layout infrastructure ;;;;;;;;;;;;;;;;

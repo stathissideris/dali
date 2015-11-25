@@ -1,5 +1,6 @@
 (ns dali.layout.stack
-  (:require [dali.layout.utils :refer [place-by-anchor]]
+  (:require [dali.layout :as layout]
+            [dali.layout.utils :refer [place-by-anchor]]
             [retrograde :as retro]))
 
 (def direction->default-anchor
@@ -8,7 +9,8 @@
    :right :left
    :left :right})
 
-(defn stack [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
+(defmethod layout/layout-nodes :stack
+  [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
   (let [gap         (or gap 0)
         direction   (or direction :down)
         anchor      (or anchor (direction->default-anchor direction))

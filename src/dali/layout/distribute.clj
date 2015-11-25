@@ -1,7 +1,9 @@
 (ns dali.layout.distribute
-  (:require [dali.layout.utils :refer [place-by-anchor]]))
+  (:require [dali.layout :as layout]
+            [dali.layout.utils :refer [place-by-anchor]]))
 
-(defn distribute [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
+(defmethod layout/layout-nodes :distribute
+  [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
   (let [direction (or direction :right)
         anchor (or anchor :center)
         vertical? (or (= direction :down) (= direction :up))]

@@ -1,5 +1,6 @@
 (ns dali.layout.align
   (:require [clojure.string :as string]
+            [dali.layout :as layout]
             [dali.layout.utils :refer [bounds->anchor-point place-by-anchor]]
             [dali.utils :as utils]))
 
@@ -26,7 +27,8 @@
    (map (fn [e b]
           (place-by-anchor e :center pos b)) elements bounds)))
 
-(defn align [_ {{:keys [relative-to axis]} :attrs :as tag} elements bounds-fn]
+(defmethod layout/layout-nodes :align
+  [_ {{:keys [relative-to axis]} :attrs :as tag} elements bounds-fn]
   (assert (or (= :first relative-to)
               (= :last relative-to)
               (number? relative-to)
