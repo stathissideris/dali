@@ -256,68 +256,82 @@
   ([dali-args user-attrs]
    (merge dali-args (process-attr-map user-attrs))))
 
-(def
-  ixml->xml-convertors
-  {:page
-   (fn svg-tranform [{:keys [attrs content]} _]
-     {:tag :svg
-      :attrs
-      (calc-attrs
-       {:xmlns "http://www.w3.org/2000/svg"
-        :version "1.2"
-        :xmlns:xlink "http://www.w3.org/1999/xlink"}
-       attrs)
-      :content content})
-   :use
-   (fn use-tranform [{:keys [attrs] :as node} _]
-     (let [[ref [x y]] (dali-content node)]
-       (if (and ref x y)
-         {:tag :use :attrs (calc-attrs {:xlink:href (str "#" (name ref)) :x x :y y} attrs)}
-         {:tag :use :attrs (calc-attrs attrs)})))
-   :line
-   (fn line-tranform [{:keys [attrs] :as node} document]
-     (let [[[x1 y1] [x2 y2]] (dali-content node)]
-       (as-> node x
-         (add-dali-markers x document)
-         (if (= :g (:tag x))
-           x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
-           {:tag :line :attrs (calc-attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2} attrs)}))))
-   :circle
-   (fn circle-tranform [{:keys [attrs] :as node} _]
-     (let [[[cx cy] r] (dali-content node)]
-       {:tag :circle :attrs (calc-attrs {:cx cx :cy cy :r r} attrs)}))
-   :ellipse
-   (fn ellipse-tranform [{:keys [attrs] :as node} _]
-     (let [[[cx cy] rx ry] (dali-content node)]
-       {:tag :ellipse :attrs (calc-attrs {:cx cx :cy cy :rx rx :ry ry} attrs)}))
-   :rect
-   (fn rect-tranform [{:keys [attrs] :as node} _]
-     (let [[[x y] [w h] rounded] (dali-content node)]
-       (if-not rounded
-         {:tag :rect :attrs (calc-attrs {:x x, :y y, :width w, :height h} attrs)}
-         (if (vector? rounded)
-           {:tag :rect
-            :attrs (calc-attrs {:x x :y y :width w :height h :rx (first rounded) :ry (second rounded)} attrs)}
-           {:tag :rect
-            :attrs (calc-attrs {:x x :y y :width w :height h :rx rounded :ry rounded} attrs)}))))
-   :polyline
-   (fn polyline-tranform [{:keys [attrs] :as node} document]
-     (as-> node x
-       (add-dali-markers x document)
-       (if (= :g (:tag x))
-         x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
-         (assoc x :attrs (calc-attrs {:points (string/join
-                                               " "
-                                               (map (fn [[x y]] (str x "," y))
-                                                    (-> x dali-content unwrap-seq)))} attrs)))))
-   :polygon
-   (fn polygon-transform [{:keys [attrs] :as node} _]
-     (let [points (-> node dali-content unwrap-seq)]
-       {:tag :polygon
-        :attrs (calc-attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))} attrs)}))
-   :path
-   (fn path-transform [{:keys [attrs] :as node} _]
-     {:tag :path :attrs (calc-attrs {:d (convert-path-spec (dali-content node))} attrs)})})
+(defmulti ixml-tag->xml :tag)
+
+(defmethod ixml-tag->xml :page
+  [{:keys [attrs content]} _]
+  {:tag :svg
+   :attrs
+   (calc-attrs
+    {:xmlns "http://www.w3.org/2000/svg"
+     :version "1.2"
+     :xmlns:xlink "http://www.w3.org/1999/xlink"}
+    attrs)
+   :content content})
+
+(defmethod ixml-tag->xml :use
+  [{:keys [attrs] :as node} _]
+  (let [[ref [x y]] (dali-content node)]
+    (if (and ref x y)
+      {:tag :use :attrs (calc-attrs {:xlink:href (str "#" (name ref)) :x x :y y} attrs)}
+      {:tag :use :attrs (calc-attrs attrs)})))
+
+(defmethod ixml-tag->xml :line
+  [{:keys [attrs] :as node} document]
+  (let [[[x1 y1] [x2 y2]] (dali-content node)]
+    (as-> node x
+      (add-dali-markers x document)
+      (if (= :g (:tag x))
+        x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
+        {:tag :line :attrs (calc-attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2} attrs)}))))
+
+(defmethod ixml-tag->xml :circle
+  [{:keys [attrs] :as node} _]
+  (let [[[cx cy] r] (dali-content node)]
+    {:tag :circle :attrs (calc-attrs {:cx cx :cy cy :r r} attrs)}))
+
+(defmethod ixml-tag->xml :ellipse
+  [{:keys [attrs] :as node} _]
+  (let [[[cx cy] rx ry] (dali-content node)]
+    {:tag :ellipse :attrs (calc-attrs {:cx cx :cy cy :rx rx :ry ry} attrs)}))
+
+(defmethod ixml-tag->xml :rect
+  [{:keys [attrs] :as node} _]
+  (let [[[x y] [w h] rounded] (dali-content node)]
+    (if-not rounded
+      {:tag :rect :attrs (calc-attrs {:x x, :y y, :width w, :height h} attrs)}
+      (if (vector? rounded)
+        {:tag :rect
+         :attrs (calc-attrs {:x x :y y :width w :height h :rx (first rounded) :ry (second rounded)} attrs)}
+        {:tag :rect
+         :attrs (calc-attrs {:x x :y y :width w :height h :rx rounded :ry rounded} attrs)}))))
+
+(defmethod ixml-tag->xml :polyline
+  [{:keys [attrs] :as node} document]
+  (as-> node x
+    (add-dali-markers x document)
+    (if (= :g (:tag x))
+      x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
+      (assoc x :attrs (calc-attrs {:points (string/join
+                                            " "
+                                            (map (fn [[x y]] (str x "," y))
+                                                 (-> x dali-content unwrap-seq)))} attrs)))))
+
+(defmethod ixml-tag->xml :polygon
+  [{:keys [attrs] :as node} _]
+  (let [points (-> node dali-content unwrap-seq)]
+    {:tag :polygon
+     :attrs (calc-attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))} attrs)}))
+
+(defmethod ixml-tag->xml :path
+  [{:keys [attrs] :as node} _]
+  {:tag :path :attrs (calc-attrs {:d (convert-path-spec (dali-content node))} attrs)})
+
+(defmethod ixml-tag->xml :default
+  [{:keys [attrs] :as node} _]
+  (update node :attrs calc-attrs))
+
+
 
 (defn add-transform [node transform]
   (update-in node [:attrs :transform] conj transform))
@@ -376,11 +390,7 @@
   [document {:keys [tag attrs content] :as node}]
   (if (string? node)
     node
-    (let [original-attrs              attrs
-          convert-fn                  (or (ixml->xml-convertors tag)
-                                          (fn identity-convertor [node _]
-                                            (update node :attrs calc-attrs)))
-          {:keys [tag attrs content]} (convert-fn node document)
+    (let [{:keys [tag attrs content]} (ixml-tag->xml node document)
           content                     (unwrap-seq content)]
       (merge
        {:tag tag}
