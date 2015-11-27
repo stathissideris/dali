@@ -19,4 +19,14 @@
   refer to other elements or attributes of elements (such as anchors)
   so that you can draw paths that start/end at anchors. Will require
   multiple passes for layout resolution, is this a good idea?
-* `[:matrix]` layout (see TikZ)
+* A solution for multi-line text
+* A solution for a box that will scale and position itself to include
+  another element, e.g. text.
+* When it comes to positioning and/or scaling for layouts, allow the
+  user to define a grid to snap to for positions, and, more
+  importantly, a number of acceptable "stops" for scaling to minimise
+  visual noise.
+
+## Things that should be possible
+
+* https://medium.com/the-year-of-the-looking-glass/what-kind-of-design-work-should-i-do-15726d81904f#.ayafjt7zi
