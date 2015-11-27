@@ -401,22 +401,32 @@
     :document
     [:page
      [:defs
-      (s/css (str "rect {fill: none; stroke: black;}\n"))]
-     [:matrix {:position [100 100] :columns 4}
+      (s/css (str "polyline {fill: none; stroke: black;}\n"
+                  "rect {fill: none; stroke: black;}\n"))
+      (prefab/sharp-arrow-marker :sharp)]
+     [:matrix {:position [100 100] :columns 4 :row-padding 5 :column-padding 20}
       [:rect :_ [50 50]]
-      [:rect :_ [50 70]]
-      [:rect :_ [70 50]]
+      [:rect {:id :c} :_ [50 70]]
+      [:rect {:id :b} :_ [70 50]]
       [:rect :_ [30 30]]
 
-      [:rect :_ [30 90]]
-      [:rect :_ [30 30]]
-      [:rect :_ [50 50]]
+      [:rect {:id :e} :_ [30 90]]
+      [:rect {:id :d} :_ [30 30]]
+      [:rect {:id :a} :_ [50 50]]
       [:rect :_ [70 50]]
 
       [:rect :_ [100 100]]
       [:rect :_ [90 30]]
       [:rect :_ [50 50]]
-      [:rect :_ [20 50]]]]}])
+      [:rect :_ [20 50]]]
+
+     [:connect {:from :a :to :b :dali/marker-end :sharp}]
+     [:connect {:from :b :to :c :dali/marker-end :sharp}]
+     [:connect {:from :c :to :d :dali/marker-end :sharp}]
+     [:connect {:from :d :to :e :dali/marker-end :sharp}]
+
+     [:matrix {:columns 5 :padding 10 :position [50 400]}
+      (take 25 (repeat [:rect :_ [20 20]]))]]}])
 
 (defn render-example [dir filename document]
   (-> document
