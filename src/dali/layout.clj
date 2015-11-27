@@ -58,8 +58,11 @@
 
 ;;;;;;;;;;;;;;;; extensibility ;;;;;;;;;;;;;;;;
 
-(def layout-tags ;;TODO make this mutable so that it's extensible
-  #{:layout :stack :distribute :align :connect :matrix})
+(def layout-tags
+  (atom #{:layout :stack :distribute :align :connect :matrix}))
+
+(defn register-layout-tag [tag]
+  (swap! layout-tags conj tag))
 
 (defmulti layout-nodes (fn [_ tag _ _] (:tag tag)))
 
@@ -72,28 +75,21 @@
 
 ;;;;;;;;;;;;;;;; layout infrastructure ;;;;;;;;;;;;;;;;
 
-(def layout-selector
-  [layout-tags])
-
 (def remove-node (en/substitute []))
 
 (defn- has-content? [tag]
   (some? (not-empty (:content tag))))
 
-(def selector-layout-selector
+(defn selector-layout-selector []
   [(en/pred
     #(and (not (has-content? %))
-          (layout-tags (:tag %))))])
-
-(defn- nested-layout? [node]
-  (and (-> node :tag layout-tags)
-       (has-content? node)))
+          (@layout-tags (:tag %))))])
 
 (defn- append? [element]
   (= :append (some-> element :attrs :dali/path)))
 
 (defn- get-selector-layouts [document]
-  (en/select document selector-layout-selector))
+  (en/select document (selector-layout-selector)))
 
 (defn- layout-node->group-node [node]
   (-> node
@@ -102,7 +98,7 @@
 
 (defn- remove-selector-layouts [document]
   (-> [document]
-      (en/transform selector-layout-selector remove-node)
+      (en/transform (selector-layout-selector) remove-node)
       first))
 
 (defn- patch-elements [document new-elements]
@@ -119,16 +115,20 @@
     (patch-elements document new-elements)))
 
 (defn- apply-nested-layouts [document bounds-fn]
-  (utils/transform-zipper-backwards
-   (-> document utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
-   (fn [zipper]
-     (let [node (zip/node zipper)]
-       (if (nested-layout? node)
-         (let [new-elements (layout-nodes document node (:content node) bounds-fn)]
-           (-> node
-               layout-node->group-node
-               (assoc :content (vec (filter (complement append?) new-elements)))))
-         node)))))
+  (let [tags           @layout-tags
+        nested-layout? (fn [node]
+                         (and (tags (-> node :tag))
+                              (has-content? node)))]
+   (utils/transform-zipper-backwards
+    (-> document utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
+    (fn [zipper]
+      (let [node (zip/node zipper)]
+        (if (nested-layout? node)
+          (let [new-elements (layout-nodes document node (:content node) bounds-fn)]
+            (-> node
+                layout-node->group-node
+                (assoc :content (vec (filter (complement append?) new-elements)))))
+          node))))))
 
 ;;enlive expects id and class to be strings, otherwise id or
 ;;class-based selectors fail with exceptions. This doesn't seem to be
