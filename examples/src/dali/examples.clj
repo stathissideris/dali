@@ -395,7 +395,28 @@
      [:connect {:from :c :to :e :type :-| :dali/marker-end :sharp}]
      [:connect {:from :e :to :f :type :-| :dali/marker-end :sharp}]
      [:connect {:from :e :to :g :type :|- :class :foo :dali/marker-end :triangle}]
-     [:connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]}])
+     [:connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]}
+
+   {:filename "matrix1.svg"
+    :document
+    [:page
+     [:defs
+      (s/css (str "rect {fill: none; stroke: black;}\n"))]
+     [:matrix {:position [100 100] :columns 4}
+      [:rect :_ [50 50]]
+      [:rect :_ [50 70]]
+      [:rect :_ [70 50]]
+      [:rect :_ [30 30]]
+
+      [:rect :_ [30 90]]
+      [:rect :_ [30 30]]
+      [:rect :_ [50 50]]
+      [:rect :_ [70 50]]
+
+      [:rect :_ [100 100]]
+      [:rect :_ [90 30]]
+      [:rect :_ [50 50]]
+      [:rect :_ [20 50]]]]}])
 
 (defn render-example [dir filename document]
   (-> document

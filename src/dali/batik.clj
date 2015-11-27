@@ -38,12 +38,12 @@
 (def id-transform (AffineTransform.))
 
 (defn all-bounds [node]
-  {:normal (maybe (to-rect (.getBounds node)))
-   :geometry (maybe (to-rect (.getGeometryBounds node)))
-   :primitive (maybe (to-rect (.getPrimitiveBounds node)))
-   :sensitive (maybe (to-rect (.getSensitiveBounds node)))
-   :transformed (to-rect (.getTransformedBounds node id-transform))
-   :transformed-geometry (to-rect (.getTransformedGeometryBounds node id-transform))
+  {:normal                (maybe (to-rect (.getBounds node)))
+   :geometry              (maybe (to-rect (.getGeometryBounds node)))
+   :primitive             (maybe (to-rect (.getPrimitiveBounds node)))
+   :sensitive             (maybe (to-rect (.getSensitiveBounds node)))
+   :transformed           (to-rect (.getTransformedBounds node id-transform))
+   :transformed-geometry  (to-rect (.getTransformedGeometryBounds node id-transform))
    :transformed-primitive (to-rect (.getTransformedPrimitiveBounds node id-transform))
    :transformed-sensitive (to-rect (.getTransformedSensitiveBounds node id-transform))})
 
@@ -57,12 +57,10 @@
                      (dom/xml->dom-element dom))]
     (when-not (dom/add-to-svg! dom dom-element)
       (throw (ex-info "Failed to add element to DOM" {:element element})))
-    (def tt this)
     (let [gvt  (gvt-node this dom-element)
           _    (when-not gvt
-                 (>pprint element)
                  (throw (ex-info "Cannot find GVT node for element - try setting the page size manually if it isn't set already"
-                                             {:element element})))
+                                 {:element element})))
           bbox (transformed-geometry-bounds gvt)]
       (dom/remove-from-svg dom dom-element)
       bbox)))
