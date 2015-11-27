@@ -43,6 +43,18 @@
            (update x :attrs dissoc :dali/path)
            (if (empty? (:attrs x)) (dissoc x :attrs) x)))))))
 
+(defn- z-index [element]
+  (or (some-> element :attrs :dali/z-index) 0))
+
+(defn- apply-z-order [document]
+  (utils/transform-zipper
+   (utils/ixml-zipper document)
+   (fn [z]
+     (let [node (zip/node z)]
+       (if (string? node)
+         node
+         (update node :content #(sort-by z-index %)))))))
+
 
 ;;;;;;;;;;;;;;;; extensibility ;;;;;;;;;;;;;;;;
 
@@ -163,4 +175,4 @@
          doc              (if (has-page-dimensions? doc)
                             doc
                             (page-dimensions-100 doc bounds-fn))]
-     (-> doc de-index-tree))))
+     (-> doc apply-z-order de-index-tree))))

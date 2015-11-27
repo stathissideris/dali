@@ -426,7 +426,20 @@
      [:connect {:from :d :to :e :dali/marker-end :sharp}]
 
      [:matrix {:columns 5 :padding 10 :position [50 400]}
-      (take 25 (repeat [:rect :_ [20 20]]))]]}])
+      (take 25 (repeat [:rect :_ [20 20]]))]]}
+
+   {:filename "send-to-bottom.svg"
+    :document
+    [:page
+     [:defs
+      (s/css (str "polyline {fill: none; stroke: black;}\n"
+                  "circle {fill: lightgreen; stroke: black;}\n"
+                  "rect {fill: green; stroke: black;}\n"))
+      (prefab/sharp-arrow-marker :sharp)]
+     [:stack {:id :st :direction :down :position [100 50]}
+      [:circle :_ 50]
+      [:circle :_ 50]]
+     [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}])
 
 (defn render-example [dir filename document]
   (-> document
