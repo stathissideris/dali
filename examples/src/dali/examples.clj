@@ -358,7 +358,7 @@
       (prefab/sharp-arrow-marker :big-sharp {:scale 2})
       (prefab/triangle-arrow-marker :triangle)]
      [:align {:axis :center}
-      [:rect {:id :c} [200 70] [120 150]]
+      [:rect {:id :c :transform [:translate [0 -20]]} [200 70] [120 150]]
       [:text "center"]]
 
      [:align {:axis :center}
@@ -366,7 +366,7 @@
       [:text "A"]]
 
      [:align {:axis :center}
-      [:rect {:id :b} [440 70] [50 50]]
+      [:rect {:id :b :transform [:translate [0 -20]]} [440 70] [50 50]]
       [:text "B"]]
 
      [:align {:axis :center}
