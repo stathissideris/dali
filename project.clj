@@ -12,11 +12,13 @@
                  [prismatic/schema "1.0.3"]
                  [org.clojure/clojurescript "1.7.145"]
                  [xerces/xerces "2.4.0"]
-                 [org.apache.xmlgraphics/batik-transcoder "1.7"
+                 [org.apache.xmlgraphics/batik-transcoder "1.8"
                   :exclusions [[xerces/xercesImpl]
                                [batik/batik-script]
                                #_[fop]]]
-                 [org.apache.xmlgraphics/batik-codec "1.7"]
+                 [org.apache.xmlgraphics/batik-codec "1.8"]
+                 [org.apache.xmlgraphics/batik-anim "1.8"]
+                 [org.apache.xmlgraphics/xmlgraphics-commons "2.0.1"]
                  [retrograde "0.10"]]
 
   :plugins [[lein-cljsbuild "1.1.1-SNAPSHOT" :exclusions [org.clojure/clojure]]
