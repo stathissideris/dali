@@ -129,7 +129,12 @@
   (let [marker-id      (if (keyword? marker) marker (:id marker))
         marker-attrs   (if (keyword? marker) {} (dissoc marker :id :xlink:href))
         marker-node    (first (en/select document [(utils/to-enlive-id-selector marker-id)]))
-        _              (utils/assert-req marker-node)
+        _              (when-not marker-node
+                         (throw (ex-info "Marker node not found"
+                                         {:node     node
+                                          :document document
+                                          :location location
+                                          :marker   marker})))
         tip            (some-> marker-node :attrs :dali/marker-tip)
         _              (utils/assert-req tip)
         height         (first tip)
