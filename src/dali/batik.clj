@@ -8,9 +8,10 @@
            java.io.ByteArrayInputStream
            java.nio.charset.StandardCharsets
            [org.apache.batik.bridge BridgeContext GVTBuilder UserAgentAdapter]
-           [org.apache.batik.dom.svg SAXSVGDocumentFactory SVGDOMImplementation]
+           [org.apache.batik.anim.dom SAXSVGDocumentFactory SVGDOMImplementation]
            [org.apache.batik.transcoder TranscoderInput TranscoderOutput]
-           [org.apache.batik.gvt RootGraphicsNode CompositeGraphicsNode TextNode ShapeNode]
+           [org.apache.batik.bridge TextNode]
+           [org.apache.batik.gvt RootGraphicsNode CompositeGraphicsNode ShapeNode]
            org.apache.batik.transcoder.image.PNGTranscoder))
 
 ;;Batik - calculating bounds of cubic spline
