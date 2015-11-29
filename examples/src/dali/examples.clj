@@ -454,8 +454,12 @@
 
 (defn render-examples [dir documents]
   (doseq [{:keys [filename document]} documents]
-    (println (format "Rendering example \"%s\"" filename))
-    (render-example dir filename document)))
+    (print (format "Rendering example \"%s\"" filename))
+    (try
+      (render-example dir filename document)
+      (println)
+      (catch Exception e
+        (println " <- FAILED:" (-> e .getClass .getName) (.getMessage e))))))
 
 (comment ;;TODO
 
