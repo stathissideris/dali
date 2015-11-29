@@ -319,7 +319,7 @@
        "tests alignment with :relative-to :first"]]]}
    {:filename "composite-layout.svg"
     :document
-    [:page {:width 200 :height 120}
+    [:page
      [:layout {:layouts [[:stack {:direction :right}]
                          [:align {:relative-to :first :axis :bottom}]]}
       [:rect {:fill :mediumslateblue :stroke-width 20} [10 80] [50 20]]

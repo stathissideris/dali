@@ -205,26 +205,42 @@
               :stroke-width 4
               :fill :darkorange
               :dali/content [[30 30] 20]}}]})))
-  (is (= {:tag :text
-          :attrs {:font-family "Georgia"
-                  :font-size 20
-                  :stroke "none"
-                  :fill "black"}
-          :content ["up"]}
+  (is (= {:tag :svg
+          :attrs
+          {:xmlns "http://www.w3.org/2000/svg"
+           :version "1.2"
+           :xmlns:xlink "http://www.w3.org/1999/xlink"}
+          :content
+          [{:tag :text
+             :attrs {:font-family "Georgia"
+                     :font-size 20
+                     :stroke "none"
+                     :fill "black"}
+             :content ["up"]}]}
          (ixml->xml
-          {:tag :text,
-           :attrs
-           {:font-family "Georgia",
-            :font-size 20,
-            :stroke :none,
-            :fill :black},
-           :content ["up"]})))
-  (is (= {:tag :text, :attrs {:class "a b"}, :content ["up"]}
+          {:tag :page
+           :content
+           [{:tag :text,
+              :attrs
+              {:font-family "Georgia",
+               :font-size 20,
+               :stroke :none,
+               :fill :black},
+              :content ["up"]}]})))
+  (is (= {:tag :svg
+          :attrs
+          {:xmlns "http://www.w3.org/2000/svg"
+           :version "1.2"
+           :xmlns:xlink "http://www.w3.org/1999/xlink"}
+          :content
+          [{:tag :text, :attrs {:class "a b"}, :content ["up"]}]}
          (ixml->xml
-          {:tag :text
-           :attrs
-           {:class [:a :b]}
-           :content ["up"]}))))
+          {:tag :page
+           :content
+           [{:tag :text
+              :attrs
+              {:class [:a :b]}
+              :content ["up"]}]}))))
 
 (deftest test-point-handling
   (testing "set-last-point"

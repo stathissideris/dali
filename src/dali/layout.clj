@@ -91,44 +91,66 @@
 (defn- get-selector-layouts [document]
   (en/select document (selector-layout-selector)))
 
-(defn- layout-node->group-node [node]
+(defn- layout-node->group-node [node elements]
   (-> node
       (assoc :tag :g)
-      (update :attrs select-keys [:id :class :dali/path])))
+      (update :attrs select-keys [:id :class :dali/path])
+      (assoc :content (vec (filter (complement append?) elements)))))
 
 (defn- remove-selector-layouts [document]
   (-> [document]
       (en/transform (selector-layout-selector) remove-node)
       first))
 
-(defn- patch-elements [document new-elements]
+(defn- patch-elements [document ctx new-elements]
   (reduce (fn [doc e]
             (if (append? e)
-              (update doc :content conj e)
-              (assoc-in-tree doc (-> e :attrs :dali/path) e)))
+              (do
+                (batik/append-node! ctx e document)
+                (update doc :content conj e))
+              (do
+                (batik/replace-node! ctx (-> e :attrs :dali/path) e document)
+                (assoc-in-tree doc (-> e :attrs :dali/path) e))))
           document new-elements))
 
-(defn- apply-selector-layout [document layout-tag bounds-fn]
+(defn- apply-selector-layout [document layout-tag ctx bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
         elements     (en/select document selector)
         new-elements (layout-nodes document layout-tag elements bounds-fn)]
-    (patch-elements document new-elements)))
+    (patch-elements document ctx new-elements)))
 
-(defn- apply-nested-layouts [document bounds-fn]
-  (let [tags           @layout-tags
-        nested-layout? (fn [node]
-                         (and (tags (-> node :tag))
-                              (has-content? node)))]
+(defn- apply-composite-layout [node document ctx bounds-fn]
+  (do
+    (layout-node->group-node
+     node
+     (first
+      (reduce (fn [[elements doc] layout-tag]
+                (let [new-elements (layout-nodes document layout-tag elements bounds-fn)]
+                  [new-elements
+                   (patch-elements document ctx new-elements)]))
+              [(:content node) document] (->> node :attrs :layouts (map syntax/dali->ixml)))))))
+
+(defn- apply-nested-layouts [document ctx bounds-fn]
+  (let [tags              @layout-tags
+        nested-layout?    (fn [node]
+                            (and (tags (-> node :tag))
+                                 (has-content? node)))
+        composite-layout? (fn [{:keys [tag]}] (= :layout tag))]
    (utils/transform-zipper-backwards
     (-> document utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
     (fn [zipper]
       (let [node (zip/node zipper)]
-        (if (nested-layout? node)
-          (let [new-elements (layout-nodes document node (:content node) bounds-fn)]
-            (-> node
-                layout-node->group-node
-                (assoc :content (vec (filter (complement append?) new-elements)))))
-          node))))))
+        (cond
+          (composite-layout? node)
+          (apply-composite-layout node document ctx bounds-fn)
+
+          (nested-layout? node)
+          (let [new-elements (layout-nodes document node (:content node) bounds-fn)
+                new-node     (layout-node->group-node node new-elements)]
+            (patch-elements document ctx [new-node])
+            new-node)
+
+          :else node))))))
 
 ;;enlive expects id and class to be strings, otherwise id or
 ;;class-based selectors fail with exceptions. This doesn't seem to be
@@ -152,7 +174,7 @@
 
 (defn- page-dimensions-100
   "See https://www.w3.org/Graphics/SVG/WG/wiki/Intrinsic_Sizing"
-  [doc bounds-fn]
+  [doc]
   (-> doc
       (assoc-in [:attrs :width] "100%")
       (assoc-in [:attrs :height] "100%")))
@@ -160,19 +182,20 @@
 (defn resolve-layout
   ([doc]
    (when (nil? doc) (throw (utils/exception "Cannot resolve layout of nil document")))
-   (resolve-layout (batik/context) doc))
+   ;;do this early because batik/context uses ixml->xml which needs enlive-friendly IDs
+   (let [doc (fix-id-and-class-for-enlive doc)]
+     (resolve-layout (batik/context (remove-selector-layouts doc)) doc)))
   ([ctx doc]
-   (let [bounds-fn        #(batik/rehearse-bounds ctx %)
+   (let [bounds-fn        #(batik/get-bounds ctx %)
          selector-layouts (get-selector-layouts doc)
          doc              (-> doc
                               remove-selector-layouts
-                              fix-id-and-class-for-enlive
                               index-tree
-                              (apply-nested-layouts bounds-fn))
+                              (apply-nested-layouts ctx bounds-fn))
          doc              (reduce (fn [doc layout]
-                                    (apply-selector-layout doc layout bounds-fn))
+                                    (apply-selector-layout doc layout ctx bounds-fn))
                                   doc selector-layouts)
          doc              (if (has-page-dimensions? doc)
                             doc
-                            (page-dimensions-100 doc bounds-fn))]
+                            (page-dimensions-100 doc))]
      (-> doc apply-z-order de-index-tree))))

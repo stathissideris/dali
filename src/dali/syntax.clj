@@ -402,7 +402,18 @@
        (when-not (empty? attrs) {:attrs attrs})
        (when-not (empty? content) {:content content})))))
 
+(defn ixml-fragment->xml-node
+  "Convert an IXML fragment to an clojure.xml, using the context of
+  the passed document to resolve references for markers etc."
+  [document fragment]
+  (utils/transform-zipper
+   (utils/ixml-zipper fragment)
+   (comp (partial ixml-node->xml-node document) zip/node)))
+
 (defn ixml->xml [document]
+  (when-not (= :page (:tag document))
+    (throw (ex-info "ixml->xml is not applicable to dali fragments, use on whole documents only"
+                    {:fragment document})))
   (utils/transform-zipper
    (utils/ixml-zipper document)
    (comp (partial ixml-node->xml-node document) zip/node)))

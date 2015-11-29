@@ -23,7 +23,9 @@
 (defprotocol BatikContext
   (gvt-node [this dom-node])
   (gvt-node-by-id [this id])
-  (rehearse-bounds [this element]))
+  (replace-node! [this dali-path new-node document])
+  (append-node! [this new-node document])
+  (get-bounds [this element]))
 
 (defn- to-rect [rect]
   (when rect
@@ -52,19 +54,25 @@
   (when node
     (to-rect (.getTransformedGeometryBounds node id-transform))))
 
-(defn- rehearse-bounds-impl [this dom element]
-  (let [dom-element (->> element
-                     s/ixml->xml
-                     (dom/xml->dom-element dom))]
-    (when-not (dom/add-to-svg! dom dom-element)
-      (throw (ex-info "Failed to add element to DOM" {:element element})))
-    (let [gvt  (gvt-node this dom-element)
-          _    (when-not gvt
-                 (throw (ex-info "Cannot find GVT node for element - try setting the page size manually if it isn't set already"
-                                 {:element element})))
-          bbox (transformed-geometry-bounds gvt)]
-      (dom/remove-from-svg dom dom-element)
-      bbox)))
+(defn- get-bounds-impl [this dom element]
+  (let [dom-element (try (dom/get-node dom (-> element :attrs :dali/path))
+                         (catch Exception e
+                           (throw (ex-info "Could not get DOM element for dali node" {:dali-node element
+                                                                                      :dom (dom/->xml dom)}))))
+        _           (when-not dom-element
+                      (throw (ex-info "DOM element for dali node is nil" {:dali-node element
+                                                                          :dom (dom/->xml dom)})))
+        gvt         (gvt-node this dom-element)
+        _           (when-not gvt
+                      (throw (ex-info "Cannot find GVT node for dali node"
+                                      {:dali-node element
+                                       :dom-element (when dom-element (dom/->xml dom-element))})))]
+    (transformed-geometry-bounds gvt)))
+
+(defn- dali->dom [dali-node document dom]
+  (->> dali-node
+       (s/ixml-fragment->xml-node document)
+       (dom/xml->dom-element dom)))
 
 (defrecord BatikContextRecord [bridge gvt dom]
   BatikContext
@@ -72,18 +80,28 @@
     (.getGraphicsNode bridge dom-node))
   (gvt-node-by-id [this id]
     (gvt-node this (.getElementById dom id)))
-  (rehearse-bounds [this element]
-    (rehearse-bounds-impl this dom element)))
+  (replace-node! [this dali-path new-node document]
+    (dom/replace-node! dom dali-path (dali->dom new-node document dom)))
+  (append-node! [this new-node document]
+    (dom/add-to-svg! dom (dali->dom new-node document dom)))
+  (get-bounds [this element]
+    (get-bounds-impl this dom element)))
 
 (defn context
-  ([]
-   (context nil))
-  ([dom & {:keys [dynamic?]}]
+  ([doc]
+   (context doc nil))
+  ([doc dom & {:keys [dynamic?]}]
    (let [dom (or dom
                  (-> (SVGDOMImplementation/getDOMImplementation)
                      (.createDocument SVGDOMImplementation/SVG_NAMESPACE_URI "svg" nil)))
          bridge (BridgeContext. (UserAgentAdapter.))]
      (.setDynamic bridge (or dynamic? true))
+     (->> doc
+          s/ixml->xml
+          :content
+          (map #(dom/xml->dom-element dom %))
+          (map #(dom/add-to-svg! dom %))
+          doall)
      (map->BatikContextRecord
       {:dom    dom
        :bridge bridge
@@ -200,4 +218,4 @@
 (comment
   (do
     (def ctx (batik-context (parse-svg-uri "file:///s:/temp/svg.svg") :dynamic? true))
-    (rehearse-bounds ctx [:circle [10 20] 5])))
+    (get-bounds ctx [:circle [10 20] 5])))
