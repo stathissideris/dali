@@ -2,9 +2,9 @@
 
 ## Bugs
 
-* Transforms in the parents of elements are not taken into account by
-  the layout code. Also anything else that would affect dimensions is
-  not taken into account (like font properties).
+* Layouts are not applied in the order that they appear, nested
+  layouts are applied first, then selectors are applied. Change that
+  so that they are applied in document order.
 
 ## Features
 
@@ -30,3 +30,9 @@
 ## Things that should be possible
 
 * https://medium.com/the-year-of-the-looking-glass/what-kind-of-design-work-should-i-do-15726d81904f#.ayafjt7zi
+
+# Done
+
+* Transforms in the parents of elements are not taken into account by
+  the layout code. Also anything else that would affect dimensions is
+  not taken into account (like font properties).

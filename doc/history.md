@@ -19,3 +19,4 @@
   that either the arrow point overshoots the end of the path, or the
   path shows on either side of triangular markers.
 * Matrix layout (similar to a grid, but with row/column dimensions that depend on the contents)
+* z-index via the `dali/z-index` attribute
