@@ -20,6 +20,8 @@
   (rest (re-find #"(.+)\:(.+)" k)))
 
 (defn set-attr! [element k v]
+  (when-not k (throw (ex-info "Cannot set attribute with nil key" {})))
+  (when-not v (throw (ex-info "Cannot set attribute with nil value" {})))
   (let [k (name k)]
     (if (has-namespace? k)
       (let [[ns k] (namespace-name k)]
@@ -73,12 +75,16 @@
     (.createCDATASection dom data)))
 
 (defn xml->dom-element [dom element]
+  (when-not element
+    (throw (ex-info "Cannot convert nil xml element to DOM")))
   (let [{:keys [tag attrs content]} element
         e (create-element dom (name tag))]
     (do
       (when attrs
         (doseq [[k v] attrs]
           (when-not (dali-attr? k)
+              (when-not k (throw (ex-info "Cannot set attribute with nil key" {:element element})))
+              (when-not v (throw (ex-info "Cannot set attribute with nil value" {:element element})))
             (set-attr! e k v))))
       (when content
         (if (string? (first content))

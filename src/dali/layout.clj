@@ -90,16 +90,40 @@
       (en/transform (selector-layout-selector) remove-node)
       first))
 
+;;enlive expects id and class to be strings, otherwise id or
+;;class-based selectors fail with exceptions. This doesn't seem to be
+;;a problem with other attributes.
+(defn- fix-id-and-class-for-enlive [doc]
+  (utils/transform-zipper
+   (utils/ixml-zipper doc)
+   (fn [zipper]
+     (let [node (zip/node zipper)]
+       (-> node
+           (utils/safe-update-in [:attrs :id] name)
+           (utils/safe-update-in
+            [:attrs :class]
+            (fn [c]
+              (cond (keyword? c)    (name c)
+                    (sequential? c) (string/join " " (map name c))
+                    :else           c))))))))
+
+(defn- set-dali-path [xml-node path]
+  (assoc-in xml-node [:attrs :dali/path] path))
+
+(defn- inc-path [path]
+  (update path (dec (count path)) inc))
+
 (defn- patch-elements [document ctx new-elements]
   (reduce (fn [doc e]
             (if (append? e)
               (do
                 (batik/append-node! ctx e document)
-                (update doc :content conj e))
+                (update doc :content conj
+                        (set-dali-path e (-> doc :content last :attrs :dali/path inc-path))))
               (do
                 (batik/replace-node! ctx (-> e :attrs :dali/path) e document)
                 (assoc-in-tree doc (-> e :attrs :dali/path) e))))
-          document new-elements))
+          document (map fix-id-and-class-for-enlive new-elements)))
 
 (defn- apply-selector-layout [document layout-tag ctx bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
@@ -138,22 +162,6 @@
             new-node)
 
           :else node))))))
-
-;;enlive expects id and class to be strings, otherwise id or
-;;class-based selectors fail with exceptions. This doesn't seem to be
-;;a problem with other attributes.
-(defn- fix-id-and-class-for-enlive [doc]
-  (utils/transform-zipper
-   (utils/ixml-zipper doc)
-   (fn [zipper]
-     (let [node (zip/node zipper)]
-       (-> node
-           (utils/safe-update-in [:attrs :id] name)
-           (utils/safe-update-in
-            [:attrs :class]
-            (fn [c]
-              (cond (keyword? c) (name c)
-                    (sequential? c) (string/join " " (map name c))))))))))
 
 (defn- has-page-dimensions? [doc]
   (and (-> doc :attrs :width)
