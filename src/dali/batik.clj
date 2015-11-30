@@ -54,6 +54,19 @@
   (when node
     (to-rect (.getTransformedGeometryBounds node id-transform))))
 
+(defn- get-parents [node]
+  (->> node
+       (iterate #(.getParent %))
+       (drop 1)
+       (take-while some?)
+       reverse))
+
+(defn- transformed-bounds [gvt id]
+  (let [parents    (get-parents gvt)
+        transforms (remove nil? (map #(when-let [t (.getTransform %)] (.clone t)) parents))
+        tr         (reduce (fn [a b] (.concatenate a b) a) transforms)]
+    (to-rect (.getTransformedGeometryBounds gvt tr))))
+
 (defn- get-bounds-impl [this dom element]
   (let [dom-element (try (dom/get-node dom (-> element :attrs :dali/path))
                          (catch Exception e
@@ -67,7 +80,7 @@
                       (throw (ex-info "Cannot find GVT node for dali node"
                                       {:dali-node element
                                        :dom-element (when dom-element (dom/->xml dom-element))})))]
-    (transformed-geometry-bounds gvt)))
+    (transformed-bounds gvt (-> element :attrs :id))))
 
 (defn- dali->dom [dali-node document dom]
   (->> dali-node
