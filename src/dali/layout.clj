@@ -2,6 +2,7 @@
   (:require [clojure
              [string :as string]
              [zip :as zip]]
+            [dali :as d]
             [dali
              [batik :as batik]
              [syntax :as syntax]
@@ -83,7 +84,7 @@
 (defn selector-layout-selector []
   [(en/pred
     #(and (not (has-content? %))
-          (@layout-tags (:tag %))))])
+          (d/layout-tag? (:tag %))))])
 
 (defn- append? [element]
   (= :append (some-> element :attrs :dali/path)))
