@@ -119,11 +119,11 @@
               (do
                 (batik/append-node! ctx e document)
                 (update doc :content conj
-                        (set-dali-path e (-> doc :content last :attrs :dali/path inc-path))))
+                        (set-dali-path e (-> doc :content last :attrs :dali/path inc-path)))) ;;keep it indexed
               (do
                 (batik/replace-node! ctx (-> e :attrs :dali/path) e document)
                 (assoc-in-tree doc (-> e :attrs :dali/path) e))))
-          document (map fix-id-and-class-for-enlive new-elements)))
+          document (map fix-id-and-class-for-enlive new-elements))) ;;fix them so enlive can find them
 
 (defn- apply-selector-layout [document layout-tag ctx bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
