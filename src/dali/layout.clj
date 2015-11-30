@@ -127,6 +127,9 @@
 
 (defn- apply-selector-layout [document layout-tag ctx bounds-fn]
   (let [selector     (get-in layout-tag [:attrs :select])
+        selector     (if (keyword? selector)
+                       [(utils/to-enlive-id-selector selector)]
+                       selector)
         elements     (en/select document selector)
         new-elements (layout-nodes document layout-tag elements bounds-fn)]
     (patch-elements document ctx new-elements)))
