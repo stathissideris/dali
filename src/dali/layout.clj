@@ -59,20 +59,7 @@
 
 ;;;;;;;;;;;;;;;; extensibility ;;;;;;;;;;;;;;;;
 
-(def layout-tags
-  (atom #{:layout :stack :distribute :align :connect :matrix}))
-
-(defn register-layout-tag [tag]
-  (swap! layout-tags conj tag))
-
 (defmulti layout-nodes (fn [_ tag _ _] (:tag tag)))
-
-(defmethod layout-nodes :layout
-  [document tag elements bounds-fn]
-  (reduce (fn [elements layout-tag]
-            (layout-nodes document layout-tag elements bounds-fn))
-          elements (->> tag :attrs :layouts (map syntax/dali->ixml))))
-
 
 ;;;;;;;;;;;;;;;; layout infrastructure ;;;;;;;;;;;;;;;;
 
@@ -132,9 +119,8 @@
               [(:content node) document] (->> node :attrs :layouts (map syntax/dali->ixml)))))))
 
 (defn- apply-nested-layouts [document ctx bounds-fn]
-  (let [tags              @layout-tags
-        nested-layout?    (fn [node]
-                            (and (tags (-> node :tag))
+  (let [nested-layout?    (fn [node]
+                            (and (d/layout-tag? (-> node :tag))
                                  (has-content? node)))
         composite-layout? (fn [{:keys [tag]}] (= :layout tag))]
    (utils/transform-zipper-backwards
