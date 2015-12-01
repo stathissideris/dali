@@ -88,7 +88,7 @@
               :width filter-padding-size
               :height filter-padding-size}
      [:feGaussianBlur {:in "SourceAlpha"
-                       :stdDeviation (/ radius 2) ;; http://dbaron.org/log/20110225-blur-radius
+                       :stdDeviation (float (/ radius 2)) ;; http://dbaron.org/log/20110225-blur-radius
                        :result :blur-out}]
      [:feOffset {:dx dx, :dy dy, :in :blur-out, :result :the-shadow}]
      [:feColorMatrix {:in :the-shadow, :result :color-out, :type :matrix
