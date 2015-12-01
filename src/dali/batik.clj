@@ -61,7 +61,7 @@
        (take-while some?)
        reverse))
 
-(defn- transformed-bounds [gvt id]
+(defn- transformed-bounds [gvt]
   (let [parents    (get-parents gvt)
         transforms (remove nil? (map #(when-let [t (.getTransform %)] (.clone t)) parents))
         tr         (reduce (fn [a b] (.concatenate a b) a) transforms)]
@@ -80,7 +80,7 @@
                       (throw (ex-info "Cannot find GVT node for dali node"
                                       {:dali-node element
                                        :dom-element (when dom-element (dom/->xml dom-element))})))]
-    (transformed-bounds gvt (-> element :attrs :id))))
+    (transformed-bounds gvt)))
 
 (defn- dali->dom [dali-node document dom]
   (->> dali-node
