@@ -5,6 +5,9 @@
 * Layouts are not applied in the order that they appear, nested
   layouts are applied first, then selectors are applied. Change that
   so that they are applied in document order.
+* Nested layouts are not affected by the transforms of parent elements
+  and this is surprising.
+* Dali markers are not displayed in Safari.
 
 ## Features
 
