@@ -1,13 +1,11 @@
 (ns dali.io
   (:refer-clojure :exclude [namespace])
   (:require [clojure.java.io :as io]
-            [net.cgrand.xml :as xml]
-            [net.cgrand.enlive-html :as en]
             [clojure.walk :as walk]
-            [clojure.xml :as cxml]
-            [clojure.string :as string]
-            [hiccup.core :as hiccup]
-            [hiccup.page]))
+            [dali
+             [layout :as layout]
+             [syntax :as syntax]]
+            [net.cgrand.enlive-html :as en]))
 
 (defn load-enlive-svg [filename]
   (en/xml-resource (io/file filename)))
@@ -102,5 +100,12 @@
   (spit
    filename
    (xml->svg-document-string xml)))
+
+(defn render-svg [doc filename]
+  (-> doc
+      syntax/dali->ixml
+      layout/resolve-layout
+      syntax/ixml->xml
+      (spit-svg filename)))
 
 #_(-> "resources/symbol.svg" load-enlive-svg extract-svg-content :content enlive->hiccup pprint)
