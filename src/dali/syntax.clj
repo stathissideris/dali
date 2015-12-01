@@ -178,9 +178,12 @@
                            {:location :start
                             :marker (:dali/marker-start attrs)}))]
     (if (or end? start?)
-      {:tag :g
-       :content
-       (vec (remove nil? [node marker-start marker-end]))}
+      (merge
+       {:tag :g
+        :content
+        (vec (remove nil? [node marker-start marker-end]))}
+       (if-let [a (:dali/marker-group-attrs attrs)]
+         {:attrs a}))
       original-node)))
 
 (def transform-attr-mapping
@@ -287,7 +290,7 @@
     (as-> node x
       (add-dali-markers x document)
       (if (= :g (:tag x))
-        x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
+        (update x :attrs calc-attrs) ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
         {:tag :line :attrs (calc-attrs {:x1 x1 :y1 y1 :x2 x2 :y2 y2} attrs)}))))
 
 (defmethod ixml-tag->xml :circle
@@ -316,7 +319,7 @@
   (as-> node x
     (add-dali-markers x document)
     (if (= :g (:tag x))
-      x ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
+      (update x :attrs calc-attrs) ;;it's been nested, leave it as it is so that it's processed deeper by the zipper
       (assoc x :attrs (calc-attrs {:points (string/join
                                             " "
                                             (map (fn [[x y]] (str x "," y))
