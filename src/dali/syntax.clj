@@ -430,6 +430,9 @@
 (defn css [css-string]
   [:style {:type "text/css"} (str "<![CDATA[" css-string "]]>")])
 
+(defn javascript [javascript-string]
+  [:script {:type "text/ecmascript"} (str "<![CDATA[" javascript-string "]]>")])
+
 (comment
   (spit-svg
    (dali->hiccup
