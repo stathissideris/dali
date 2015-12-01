@@ -105,11 +105,11 @@
     :document
     [:page {:width 200 :height 60 :stroke :none}
      [:distribute
-      {:position [10 20] :direction :right}
-      [:rect {:fill :mediumslateblue} :_ [50 20]]
-      [:rect {:fill :sandybrown} :_ [30 20]]
-      [:rect {:fill :green} :_ [40 20]]
-      [:rect {:fill :orange} :_ [20 20]]]
+      {:direction :right}
+      [:rect {:fill :mediumslateblue} [10 20] [50 20]]
+      [:rect {:fill :sandybrown} [0 20] [30 20]]
+      [:rect {:fill :green} [0 20] [40 20]]
+      [:rect {:fill :orange} [0 20] [20 20]]]
 
      ;;show centers
      [:g (map #(vector
