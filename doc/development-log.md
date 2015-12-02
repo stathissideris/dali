@@ -108,7 +108,7 @@ customization. It works (but not in Safari!), but it still felt like a
 huge amount of effort for something simple like arrowheads.
 
 Multi-line text is something important that still needs to be tackled,
-especially blocks of flowing text, as SVG have no viable solution for
+especially blocks of flowing text, as SVG has no viable solution for
 it.
 
 ### A glimmer of hope
@@ -138,9 +138,9 @@ from the equation, so far it has added a lot of complexity, obscurity
 and state in the middle of the system without offering much that I
 couldn't do by bringing my geometry up to speed. The two main things
 make me think that I won't be getting rid of Batik anytime soon is CSS
-parsing (does it even do that?) and text handling (which super-hard to
-replace unless I seriously go into the neverland of font unicorns and
-kerning fairies).
+parsing (does it even do that?) and text handling (which is super-hard
+to replace unless I seriously go into the neverland of font unicorns
+and kerning fairies).
 
 I also have to think what this all means for the
 Dali-in-the-browser-via-Clojurescript story, am I asking for too much?
