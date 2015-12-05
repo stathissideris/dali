@@ -29,6 +29,8 @@
   user to define a grid to snap to for positions, and, more
   importantly, a number of acceptable "stops" for scaling to minimise
   visual noise.
+* Use a custom [XMLReader](http://docs.oracle.com/javase/7/docs/api/org/xml/sax/XMLReader.html) for Batik's [TranscoderInput](https://xmlgraphics.apache.org/batik/javadoc/org/apache/batik/transcoder/TranscoderInput.html) to avoid having to covert the document into an SVG string before rasterization.
+* Allow setting width/height and/or DPI when rasterizing image (makes a huge differrence on retina screens - see how you can set DPI on inkscape). Also, see [here for code](http://www.programcreek.com/java-api-examples/index.php?api=org.apache.batik.transcoder.image.PNGTranscoder).
 
 ## Things that should be possible
 
