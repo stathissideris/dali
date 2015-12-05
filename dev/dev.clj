@@ -21,6 +21,9 @@
 (defn render-examples []
   (examples/render-examples "examples/output/" examples/examples))
 
+(defn render-examples-png []
+  (examples/render-examples-png "examples/output-png/" examples/examples))
+
 (defn render-fixtures []
   (examples/render-examples "examples/fixtures/" examples/examples))
 

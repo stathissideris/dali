@@ -1,5 +1,6 @@
 (ns dali.examples
   (:require [clojure.java.io :as java-io]
+            [clojure.string :as string]
             [clojure.zip :as zip]
             [dali.batik :as batik]
             [dali.io :as io]
@@ -10,14 +11,14 @@
             [dali.utils :as utils]))
 
 (def examples
-  [{:filename "hello-world.svg"
+  [{:filename "hello-world"
     :document
     [:page
      [:circle
       {:stroke :indigo :stroke-width 4 :fill :darkorange}
       [30 30] 20]]}
 
-   {:filename "zig-zag.svg"
+   {:filename "zig-zag"
     :document
     [:page {:stroke-width 2 :stroke :black :fill :none}
      [:polyline (map #(vector %1 %2) (range 10 210 20) (cycle [10 30]))]
@@ -25,7 +26,7 @@
      [:polyline (map #(vector %1 %2) (range 10 210 10) (cycle [100 100 120 120]))]]}
    
    ;;transform syntax demonstrated
-   {:filename "transform.svg"
+   {:filename "transform"
     :document
     [:page {:stroke :black :stroke-width 2 :fill :none}
      
@@ -36,14 +37,14 @@
      [:rect {:transform [:rotate [10 60 20] :skew-x [30]]}
       [50 10] [20 20]]]}
 
-   {:filename "dasharray.svg"
+   {:filename "dasharray"
     :document
     [:page {:width 120 :height 30 :stroke :black :stroke-width 2}
      [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
      [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]}
 
    ;;basic stacking
-   {:filename "stack1.svg"
+   {:filename "stack1"
     :document
     [:page {:width 200 :height 40 :stroke :none}
      [:stack
@@ -54,7 +55,7 @@
       [:rect {:fill :orange} :_ [20 20]]]]}
 
    ;;stacking with anchors
-   {:filename "stack2.svg"
+   {:filename "stack2"
     :document
     [:page {:width 200 :height 80 :stroke :none}
      [:stack
@@ -66,7 +67,7 @@
      [:circle {:fill :red} [10 40] 4]]}
 
    ;;stacking with other anchors
-   {:filename "stack3.svg"
+   {:filename "stack3"
     :document
     [:page {:width 310 :height 80 :stroke :none}
      [:stack
@@ -86,7 +87,7 @@
      [:circle {:fill :red} [170 10] 4]]}
 
    ;;stacking with different directions and gaps
-   {:filename "stack4.svg"
+   {:filename "stack4"
     :document
     (let [shapes (fn [s]
                    (list
@@ -101,7 +102,7 @@
        [:stack {:position [40 150] :gap 5 :direction :down} (shapes "down")]
        [:stack {:position [110 250] :gap 18 :direction :up} (shapes "up")]])}
 
-   {:filename "distribute1.svg"
+   {:filename "distribute1"
     :document
     [:page {:width 200 :height 60 :stroke :none}
      [:distribute
@@ -117,7 +118,7 @@
                 {:stroke {:paint :red :width 2}} [% 40] [% 50])
               (range 35 200 50))]]}
 
-   {:filename "markers1.svg"
+   {:filename "markers1"
     :document
     [:page
      [:defs
@@ -134,7 +135,7 @@
      [:polyline {:dali/marker-end :dot} [140 80] [180 30]]
      [:polyline {:dali/marker-end :very-sharp} [170 80] [210 30]]]}
 
-   {:filename "markers2-dali.svg"
+   {:filename "markers2-dali"
     :document
     (let [make-end-arrows
           (fn make-end-arrows
@@ -192,7 +193,7 @@
       [:polyline {:dali/marker-end :triangle :fill :none}
        (map #(vector %1 %2) (range 10 210 20) (cycle [680 700]))]])}
 
-   {:filename "drop-shadow.svg"
+   {:filename "drop-shadow"
     :document
     [:page {:width 200 :height 200}
      [:defs
@@ -201,7 +202,7 @@
      [:rect {:fill "url(#stripes)"} [0 0] [200 200]]
      [:circle {:fill :green :filter "url(#ds)"} [100 100] 75]]}
    
-   {:filename "graph1.svg"
+   {:filename "graph1"
     :document
     [:page {:width 260 :height 140}
      [:stack
@@ -209,7 +210,7 @@
       (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
            [10 30 22 56 90 59 23 12 44 50])]]}
 
-   {:filename "graph2.svg"
+   {:filename "graph2"
     :document
     [:page {:width 270 :height 140}
      [:stack
@@ -221,7 +222,7 @@
               [:text {:text-family "Verdana" :font-size 12} (str h)]])
            [10 30 22 56 90 59 23 12 44 50])]]}
 
-   {:filename "graph3.svg"
+   {:filename "graph3"
     :document
     [:page {:width 270 :height 150}
      [:stack
@@ -242,7 +243,7 @@
             [12 6 8]
             [44 22 18]
             [50 20 10]])]]}
-   {:filename "graph4.svg"
+   {:filename "graph4"
     :document
     [:page {:width 270 :height 150}
      [:stack {:position [10 140]
@@ -266,7 +267,7 @@
            [12 6 8]
            [44 22 18]
            [50 20 10]])]}
-   {:filename "align-test.svg"
+   {:filename "align-test"
     :document
     [:page {:width 350 :height 220}
      (map (fn [[guide axis]]
@@ -298,7 +299,7 @@
      [:align {:relative-to :first :axis :center}
       [:circle {:fill :none :stroke :gray :stroke-dasharray [5 5]} [215 170] 30]
       [:text {:text-family "Verdana" :font-size 12} "aligned!"]]]}
-   {:filename "align-test2.svg"
+   {:filename "align-test2"
     :document
     [:page {:width 120 :height 120}
      [:align {:relative-to :first :axis :center :select [:.label]}]
@@ -306,7 +307,7 @@
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
      [:circle {:class :label :fill :none :stroke :black} :_ 50]
      [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]}
-   {:filename "align-test3.svg"
+   {:filename "align-test3"
     :document
     [:page {:width 240 :height 140}
      [:stack {:direction :down :anchor :top-left :gap 10}
@@ -317,7 +318,7 @@
        [:rect {:fill :orange} [140 0] [20 40]]]
       [:text {:text-family "Helvetica" :font-size 14}
        "tests alignment with :relative-to :first"]]]}
-   {:filename "composite-layout.svg"
+   {:filename "composite-layout"
     :document
     [:page
      [:layout {:layouts [[:stack {:direction :right}]
@@ -327,7 +328,7 @@
       [:rect {:fill :green} :_ [40 10]]
       [:rect {:fill :orange} :_ [20 40]]]]}
 
-   {:filename "venn.svg"
+   {:filename "venn"
     :document
     (let [r 130
           y 200
@@ -345,7 +346,7 @@
        [:circle {:stroke {:paint :gray :width 3} :fill :none} [x1 y] r]
        [:circle {:stroke {:paint :gray :width 3} :fill :none} [x2 y] r]])}
 
-   {:filename "connect1.svg"
+   {:filename "connect1"
     :document
     [:page {:stroke :black :fill :none}
      [:defs
@@ -397,7 +398,7 @@
      [:connect {:from :e :to :g :type :|- :class :foo :dali/marker-end :triangle}]
      [:connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]}
 
-   {:filename "matrix1.svg"
+   {:filename "matrix1"
     :document
     [:page
      [:defs
@@ -428,7 +429,7 @@
      [:matrix {:columns 5 :padding 10 :position [50 400]}
       (take 25 (repeat [:rect :_ [20 20]]))]]}
 
-   {:filename "send-to-bottom.svg"
+   {:filename "send-to-bottom"
     :document
     [:page
      [:defs
@@ -449,14 +450,31 @@
       layout/resolve-layout
       s/ixml->xml
       ;;>pprint
-      (io/spit-svg (str dir filename))
-      ))
+      (io/spit-svg (str dir filename ".svg"))))
 
 (defn render-examples [dir documents]
   (doseq [{:keys [filename document]} documents]
-    (print (format "Rendering example \"%s\"" filename))
+    (print (format "Rendering example SVG \"%s\"" filename))
     (try
       (render-example dir filename document)
+      (println)
+      (catch Exception e
+        (println " <- FAILED:" (-> e .getClass .getName) (.getMessage e))))))
+
+(defn render-example-png [dir filename document]
+  (-> document
+      s/dali->ixml
+      layout/resolve-layout
+      s/ixml->xml
+      io/xml->svg-document-string
+      batik/parse-svg-string
+      (batik/render-document-to-png (str dir filename ".png"))))
+
+(defn render-examples-png [dir documents]
+  (doseq [{:keys [filename document]} documents]
+    (print (format "Rendering example PNG \"%s\"" filename))
+    (try
+      (render-example-png dir filename document)
       (println)
       (catch Exception e
         (println " <- FAILED:" (-> e .getClass .getName) (.getMessage e))))))
