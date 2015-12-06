@@ -109,13 +109,16 @@
       syntax/ixml->xml
       (spit-svg filename)))
 
-(defn render-png [doc filename]
-  (-> doc
-      syntax/dali->ixml
-      layout/resolve-layout
-      syntax/ixml->xml
-      xml->svg-document-string
-      batik/parse-svg-string
-      (batik/render-document-to-png filename)))
+(defn render-png
+  ([doc filename]
+   (render-png doc filename {}))
+  ([doc filename options]
+   (-> doc
+       syntax/dali->ixml
+       layout/resolve-layout
+       syntax/ixml->xml
+       xml->svg-document-string
+       batik/parse-svg-string
+       (batik/render-document-to-png filename options))))
 
 #_(-> "resources/symbol.svg" load-enlive-svg extract-svg-content :content enlive->hiccup pprint)

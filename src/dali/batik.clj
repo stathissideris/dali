@@ -16,7 +16,7 @@
            [org.apache.batik.bridge TextNode]
            [org.apache.batik.gvt RootGraphicsNode CompositeGraphicsNode ShapeNode]
            [org.apache.batik.gvt.renderer ConcreteImageRendererFactory]
-           [org.apache.batik.transcoder TranscoderInput TranscoderOutput]
+           [org.apache.batik.transcoder TranscoderInput TranscoderOutput SVGAbstractTranscoder]
            org.apache.batik.transcoder.image.PNGTranscoder))
 
 ;;Batik - calculating bounds of cubic spline
@@ -133,6 +133,12 @@
     (with-open [in (ByteArrayInputStream. (.getBytes s StandardCharsets/UTF_8))]
       (.createDocument factory "file:///fake.svg" in))))
 
+(def transcoder-keys
+  {:width      SVGAbstractTranscoder/KEY_WIDTH
+   :height     SVGAbstractTranscoder/KEY_HEIGHT
+   :max-width  SVGAbstractTranscoder/KEY_MAX_WIDTH
+   :max-height SVGAbstractTranscoder/KEY_MAX_HEIGHT})
+
 (defn- high-quality-png-transcoder []
   (proxy [PNGTranscoder] []
     (createRenderer []
@@ -154,28 +160,35 @@
         (.setRenderingHints renderer hints)
         renderer))))
 
-(defn render-document-to-png [svg-document png]
-  (with-open [out-stream (io/output-stream (io/file png))]
-    (let [in (TranscoderInput. svg-document)
-          out (TranscoderOutput. out-stream)]
-      (doto (high-quality-png-transcoder)
-        (.transcode in out)))))
+(defn- parse-double [x]
+  (when x
+    (try (Double/parseDouble x) (catch Exception _ nil))))
 
-(comment ;;alternative implementation taken from dali, half broken
- (defn render-document-to-png [svg-document png]
-   (let [renderer (-> (ConcreteImageRendererFactory.) .createStaticImageRenderer)
-         builder  (GVTBuilder.)
-         ctx      (BridgeContext. (UserAgentAdapter.))]
-     (.setDynamicState ctx BridgeContext/STATIC)
-     (let [root-node (.build builder ctx svg-document)
-           w         (-> ctx .getDocumentSize .getWidth)
-           h         (-> ctx .getDocumentSize .getHeight)]
-       (.setTree renderer root-node)
-       (doto renderer
-         (.updateOffScreen w h)
-         (.setTree root-node)
-         (.repaint (Rectangle. 0 0 w h)))
-       (ImageIO/write (.getOffScreen renderer) "png" (File. png))))))
+(defn- document-dimensions [doc]
+  (-> doc dom/->xml :content first :attrs
+      (select-keys [:width :height])
+      (update :width parse-double)
+      (update :height parse-double)))
+
+(defn render-document-to-png
+  ([svg-document filename]
+   (render-document-to-png svg-document filename {}))
+  ([svg-document filename {:keys [width scale] :as options}]
+   (let [{doc-width :width :as dimensions} (document-dimensions svg-document)]
+     (when (and scale (not doc-width))
+       (throw (ex-info "Cannot transcode to PNG - scale option requires document to have width attribute"
+                       {:doc-dims dimensions
+                        :options  options})))
+     (with-open [out-stream (io/output-stream (io/file filename))]
+       (let [in    (TranscoderInput. svg-document)
+             out   (TranscoderOutput. out-stream)
+             trans (high-quality-png-transcoder)]
+         (cond
+           scale
+           (.addTranscodingHint trans (:width transcoder-keys) (float (* scale doc-width)))
+           width
+           (.addTranscodingHint trans (:width transcoder-keys) (float width)))
+         (.transcode trans in out))))))
 
 (defn render-uri-to-png [uri png-filename]
   (render-document-to-png (parse-svg-uri uri) png-filename))

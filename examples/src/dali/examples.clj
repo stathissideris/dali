@@ -455,7 +455,7 @@
         (println " <- FAILED:" (-> e .getClass .getName) (.getMessage e))))))
 
 (defn render-example-png [dir filename document]
-  (io/render-png document (str dir filename ".png")))
+  (io/render-png document (str dir filename ".png") {:scale 2}))
 
 (defn render-examples-png [dir documents]
   (doseq [{:keys [filename document]} documents]

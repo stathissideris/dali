@@ -8,6 +8,15 @@
 * Nested layouts are not affected by the transforms of parent elements
   and this is surprising.
 * Dali markers are not displayed in Safari.
+* PNG transcoding of drop-shadow fails when the specified width is
+  double the original (200->400). dali fails by not rendering the
+  circle and drop shadow effect, batik's command-line transcoder
+  throws an exception:
+
+  `java -jar ../../../third-party/batik-1.8-bin/batik-rasterizer-1.8.jar -w 400 drop-shadow.svg`
+
+  Interestingly, width 399 in the command line works ok, and using
+  scale 1.9 in dali fixes it too.
 
 ## Features
 
