@@ -443,14 +443,7 @@
      [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}])
 
 (defn render-example [dir filename document]
-  (-> document
-      ;;schema/validate
-      s/dali->ixml
-      ;;utils/ixml-zipper utils/zipper-last (utils/dump-zipper zip/prev)
-      layout/resolve-layout
-      s/ixml->xml
-      ;;>pprint
-      (io/spit-svg (str dir filename ".svg"))))
+  (io/render-svg document (str dir filename ".svg")))
 
 (defn render-examples [dir documents]
   (doseq [{:keys [filename document]} documents]
@@ -462,13 +455,7 @@
         (println " <- FAILED:" (-> e .getClass .getName) (.getMessage e))))))
 
 (defn render-example-png [dir filename document]
-  (-> document
-      s/dali->ixml
-      layout/resolve-layout
-      s/ixml->xml
-      io/xml->svg-document-string
-      batik/parse-svg-string
-      (batik/render-document-to-png (str dir filename ".png"))))
+  (io/render-png document (str dir filename ".png")))
 
 (defn render-examples-png [dir documents]
   (doseq [{:keys [filename document]} documents]
@@ -478,20 +465,3 @@
       (println)
       (catch Exception e
         (println " <- FAILED:" (-> e .getClass .getName) (.getMessage e))))))
-
-(comment ;;TODO
-
- ;;render to png
- dali/ixml->xml
- ;;(spit-svg "/tmp/venn2.svg")
- io/xml->svg-document-string
- btk/parse-svg-string
-  
- (defn render-folder-to-png [from-folder to-folder]
-   (let [dir (io/file from-folder)
-         files (file-seq dir)]
-     files)))
-
-(comment
- (render-examples examples)
- )

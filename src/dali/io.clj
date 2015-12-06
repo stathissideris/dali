@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [namespace])
   (:require [clojure.java.io :as io]
             [clojure.walk :as walk]
+            [dali.batik :as batik]
             [dali
              [layout :as layout]
              [syntax :as syntax]]
@@ -107,5 +108,14 @@
       layout/resolve-layout
       syntax/ixml->xml
       (spit-svg filename)))
+
+(defn render-png [doc filename]
+  (-> doc
+      syntax/dali->ixml
+      layout/resolve-layout
+      syntax/ixml->xml
+      xml->svg-document-string
+      batik/parse-svg-string
+      (batik/render-document-to-png filename)))
 
 #_(-> "resources/symbol.svg" load-enlive-svg extract-svg-content :content enlive->hiccup pprint)
