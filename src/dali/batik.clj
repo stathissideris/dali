@@ -55,10 +55,6 @@
    :transformed-primitive (to-rect (.getTransformedPrimitiveBounds node id-transform))
    :transformed-sensitive (to-rect (.getTransformedSensitiveBounds node id-transform))})
 
-(defn- transformed-geometry-bounds [node]
-  (when node
-    (to-rect (.getTransformedGeometryBounds node id-transform))))
-
 (defn- get-parents [node]
   (->> node
        (iterate #(.getParent %))
@@ -68,9 +64,12 @@
 
 (defn- transformed-bounds [gvt]
   (let [parents    (get-parents gvt)
-        transforms (remove nil? (map #(when-let [t (.getTransform %)] (.clone t)) parents))
-        tr         (reduce (fn [a b] (.concatenate a b) a) transforms)]
-    (to-rect (.getTransformedGeometryBounds gvt tr))))
+        transforms (remove nil? (map #(when-let [t (.getTransform %)] (.clone t)) parents))]
+    (if (not-empty transforms)
+      (to-rect (.getTransformedGeometryBounds
+                gvt
+                (reduce (fn [a b] (.concatenate a b) a) transforms)))
+      (to-rect (.getTransformedGeometryBounds gvt id-transform)))))
 
 (defn- get-bounds-impl [this dom element]
   (let [dom-element (try (dom/get-node dom (-> element :attrs :dali/path))

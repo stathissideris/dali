@@ -170,12 +170,12 @@
   (and (-> doc :attrs :width)
        (-> doc :attrs :height)))
 
-(defn- page-dimensions-100
-  "See https://www.w3.org/Graphics/SVG/WG/wiki/Intrinsic_Sizing"
-  [doc]
-  (-> doc
-      (assoc-in [:attrs :width] "100%")
-      (assoc-in [:attrs :height] "100%")))
+(defn- infer-page-dimensions
+  [doc bounds-fn]
+  (let [[_ [x y] [w h]] (bounds-fn doc)]
+    (-> doc
+        (assoc-in [:attrs :width] (+ x w 10))
+        (assoc-in [:attrs :height] (+ y h 10)))))
 
 (defn resolve-layout
   ([doc]
@@ -193,7 +193,8 @@
          doc              (reduce (fn [doc layout]
                                     (apply-selector-layout doc layout ctx bounds-fn))
                                   doc selector-layouts)
+         doc              (apply-z-order doc)
          doc              (if (has-page-dimensions? doc)
                             doc
-                            (page-dimensions-100 doc))]
-     (-> doc apply-z-order de-index-tree))))
+                            (infer-page-dimensions doc bounds-fn))]
+     (-> doc de-index-tree))))
