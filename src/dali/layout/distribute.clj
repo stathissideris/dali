@@ -2,7 +2,7 @@
   (:require [dali.layout :as layout]
             [dali.layout.utils :refer [place-by-anchor]]))
 
-(defmethod layout/layout-nodes :distribute
+(defmethod layout/layout-nodes :dali/distribute
   [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
   (let [direction (or direction :right)
         anchor (or anchor :center)

@@ -78,7 +78,7 @@
   (when-not element
     (throw (ex-info "Cannot convert nil xml element to DOM")))
   (let [{:keys [tag attrs content]} element
-        e (create-element dom (name tag))]
+        e (create-element dom (utils/keyword-name tag))]
     (do
       (when attrs
         (doseq [[k v] attrs]
@@ -102,7 +102,7 @@
 (defn add-to-svg! [dom element]
   (let [svg (first-by-tag dom "svg")]
     (if-not svg
-      (throw (ex-info "Could not wfind SVG element in DOM" {:dom (->xml dom)}))
+      (throw (ex-info "Could not find SVG element in DOM" {:dom (->xml dom)}))
       (append-child! svg element))))
 
 (defn remove-from-svg! [dom element]

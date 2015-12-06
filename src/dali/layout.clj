@@ -148,7 +148,7 @@
   (let [nested-layout?    (fn [node]
                             (and (d/layout-tag? (-> node :tag))
                                  (has-content? node)))
-        composite-layout? (fn [{:keys [tag]}] (= :layout tag))]
+        composite-layout? (fn [{:keys [tag]}] (= :dali/layout tag))]
    (utils/transform-zipper-backwards
     (-> document utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
     (fn [zipper]

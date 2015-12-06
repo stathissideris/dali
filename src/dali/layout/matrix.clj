@@ -7,7 +7,7 @@
        (partition 2 1)
        (map (fn [[n1 n2]] (+ (/ n1 2) padding (/ n2 2))))))
 
-(defmethod layout/layout-nodes :matrix
+(defmethod layout/layout-nodes :dali/matrix
   [_ {{:keys [position columns padding row-padding column-padding]} :attrs :as tag}
    elements bounds-fn]
   (let [row-padding    (or padding row-padding 0)

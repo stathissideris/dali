@@ -27,7 +27,7 @@
    (map (fn [e b]
           (place-by-anchor e :center pos b)) elements bounds)))
 
-(defmethod layout/layout-nodes :align
+(defmethod layout/layout-nodes :dali/align
   [_ {{:keys [relative-to axis]} :attrs :as tag} elements bounds-fn]
   (assert (or (= :first relative-to)
               (= :last relative-to)

@@ -1,7 +1,7 @@
 (ns dali)
 
 (def layout-tags
-  (atom #{:layout :stack :distribute :align :connect :matrix}))
+  (atom #{:dali/layout :dali/stack :dali/distribute :dali/align :dali/connect :dali/matrix}))
 
 (defn register-layout-tag [tag]
   (swap! layout-tags conj tag))

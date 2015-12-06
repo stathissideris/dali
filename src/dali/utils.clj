@@ -130,5 +130,8 @@
 (defn keyword-ns [k]
   (->> k str (re-find #":(.+?)/") second))
 
+(defn keyword-name [k]
+  (-> k str (subs 1)))
+
 (defn keyword-concat [& args]
   (->> args (map name) (apply str) keyword))

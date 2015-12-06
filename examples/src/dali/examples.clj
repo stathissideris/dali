@@ -47,7 +47,7 @@
    {:filename "stack1"
     :document
     [:page {:width 200 :height 40 :stroke :none}
-     [:stack
+     [:dali/stack
       {:position [10 20] :anchor :left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
       [:rect {:fill :sandybrown} :_ [30 20]]
@@ -58,7 +58,7 @@
    {:filename "stack2"
     :document
     [:page {:width 200 :height 80 :stroke :none}
-     [:stack
+     [:dali/stack
       {:position [10 40] :anchor :left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
@@ -70,7 +70,7 @@
    {:filename "stack3"
     :document
     [:page {:width 310 :height 80 :stroke :none}
-     [:stack
+     [:dali/stack
       {:position [10 70] :anchor :bottom-left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
@@ -78,7 +78,7 @@
       [:rect {:fill :orange} :_ [20 40]]]
      [:circle {:fill :red} [10 70] 4]
      
-     [:stack
+     [:dali/stack
       {:position [170 10] :anchor :top-left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
@@ -97,15 +97,15 @@
                     [:circle :_ 15]
                     [:polyline [0 0] [20 0] [10 20] [20 20]]))]
       [:page {:width 150 :height 260 :stroke {:paint :black :width 2} :fill :none}
-       [:stack {:position [20 20] :direction :right} (shapes "right")]
-       [:stack {:position [130 70] :gap 5 :direction :left} (shapes "left")]
-       [:stack {:position [40 150] :gap 5 :direction :down} (shapes "down")]
-       [:stack {:position [110 250] :gap 18 :direction :up} (shapes "up")]])}
+       [:dali/stack {:position [20 20] :direction :right} (shapes "right")]
+       [:dali/stack {:position [130 70] :gap 5 :direction :left} (shapes "left")]
+       [:dali/stack {:position [40 150] :gap 5 :direction :down} (shapes "down")]
+       [:dali/stack {:position [110 250] :gap 18 :direction :up} (shapes "up")]])}
 
    {:filename "distribute1"
     :document
     [:page {:width 200 :height 60 :stroke :none}
-     [:distribute
+     [:dali/distribute
       {:direction :right}
       [:rect {:fill :mediumslateblue} [10 20] [50 20]]
       [:rect {:fill :sandybrown} [0 20] [30 20]]
@@ -205,7 +205,7 @@
    {:filename "graph1"
     :document
     [:page {:width 260 :height 140}
-     [:stack
+     [:dali/stack
       {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
            [10 30 22 56 90 59 23 12 44 50])]]}
@@ -213,10 +213,10 @@
    {:filename "graph2"
     :document
     [:page {:width 270 :height 140}
-     [:stack
+     [:dali/stack
       {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [h]
-             [:stack
+             [:dali/stack
               {:direction :up :gap 6}
               [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]]
               [:text {:text-family "Verdana" :font-size 12} (str h)]])
@@ -225,10 +225,10 @@
    {:filename "graph3"
     :document
     [:page {:width 270 :height 150}
-     [:stack
+     [:dali/stack
       {:position [10 140], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [[a b c]]
-             [:stack
+             [:dali/stack
               {:direction :up}
               [:rect {:stroke :none, :fill "#D46A6A"} :_ [20 a]]
               [:rect {:stroke :none, :fill "#D49A6A"} :_ [20 b]]
@@ -246,13 +246,13 @@
    {:filename "graph4"
     :document
     [:page {:width 270 :height 150}
-     [:stack {:position [10 140]
+     [:dali/stack {:position [10 140]
               :direction :right
               :anchor :bottom-left
               :gap 2
               :select [:.col]}]
      (map (fn [[a b c]]
-            [:stack
+            [:dali/stack
              {:direction :up :class :col}
              [:rect {:stroke :none, :fill "#D46A6A"} :_ [20 a]]
              [:rect {:stroke :none, :fill "#D49A6A"} :_ [20 b]]
@@ -272,7 +272,7 @@
     [:page {:width 350 :height 220}
      (map (fn [[guide axis]]
             [:g
-             [:align
+             [:dali/align
               {:relative-to guide :axis axis}
               [:rect {:stroke :none, :fill "#D49A6A"} [20 0] [20 30]]
               [:rect {:stroke :none, :fill "#D46A6A"} [45 0] [20 20]]
@@ -285,7 +285,7 @@
            [150 :h-center]])
      (map (fn [[guide axis]]
             [:g
-             [:align
+             [:dali/align
               {:relative-to guide :axis axis}
               [:rect {:stroke :none, :fill "#D49A6A"} [0 20] [30 20]]
               [:rect {:stroke :none, :fill "#D46A6A"} [0 45] [20 20]]
@@ -296,13 +296,13 @@
           [[170 :left]
            [260 :right]
            [330 :v-center]])
-     [:align {:relative-to :first :axis :center}
+     [:dali/align {:relative-to :first :axis :center}
       [:circle {:fill :none :stroke :gray :stroke-dasharray [5 5]} [215 170] 30]
       [:text {:text-family "Verdana" :font-size 12} "aligned!"]]]}
    {:filename "align-test2"
     :document
     [:page {:width 120 :height 120}
-     [:align {:relative-to :first :axis :center :select [:.label]}]
+     [:dali/align {:relative-to :first :axis :center :select [:.label]}]
      [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
      [:circle {:class :label :fill :none :stroke :black} :_ 50]
@@ -310,8 +310,8 @@
    {:filename "align-test3"
     :document
     [:page {:width 240 :height 140}
-     [:stack {:direction :down :anchor :top-left :gap 10}
-      [:align {:relative-to :first :axis :bottom}
+     [:dali/stack {:direction :down :anchor :top-left :gap 10}
+      [:dali/align {:relative-to :first :axis :bottom}
        [:rect {:fill :mediumslateblue} [20 60] [50 20]]
        [:rect {:fill :sandybrown} [70 0] [30 60]]
        [:rect {:fill :green} [100 0] [40 10]]
@@ -321,8 +321,8 @@
    {:filename "composite-layout"
     :document
     [:page
-     [:layout {:layouts [[:stack {:direction :right}]
-                         [:align {:relative-to :first :axis :bottom}]]}
+     [:dali/layout {:layouts [[:dali/stack {:direction :right}]
+                              [:dali/align {:relative-to :first :axis :bottom}]]}
       [:rect {:fill :mediumslateblue :stroke-width 20} [10 80] [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
       [:rect {:fill :green} :_ [40 10]]
@@ -358,45 +358,45 @@
       (prefab/sharp-arrow-marker :sharp)
       (prefab/sharp-arrow-marker :big-sharp {:scale 2})
       (prefab/triangle-arrow-marker :triangle)]
-     [:align {:axis :center}
+     [:dali/align {:axis :center}
       [:rect {:id :c :transform [:translate [0 -20]]} [200 70] [120 150]]
       [:text "center"]]
 
-     [:align {:axis :center}
+     [:dali/align {:axis :center}
       [:rect {:id :a :class :grey} [20 20] [100 100]]
       [:text "A"]]
 
-     [:align {:axis :center}
+     [:dali/align {:axis :center}
       [:rect {:id :b :transform [:translate [0 -20]]} [440 70] [50 50]]
       [:text "B"]]
 
-     [:align {:axis :center}
+     [:dali/align {:axis :center}
       [:rect {:id :d} [20 350] [50 50]]
       [:text "D"]]
 
-     [:align {:axis :center}
+     [:dali/align {:axis :center}
       [:rect {:id :e} [440 230] [50 50]]
       [:text "E"]]
 
-     [:align {:axis :center}
+     [:dali/align {:axis :center}
       [:rect {:id :f} [500 70] [50 50]]
       [:text "F"]]
 
-     [:align {:axis :center}
+     [:dali/align {:axis :center}
       [:rect {:id :g} [350 300] [50 50]]
       [:text "G"]]
      
-     [:connect {:from :a :to :c :dali/marker-end :sharp}]
+     [:dali/connect {:from :a :to :c :dali/marker-end :sharp}]
 
      ;; :fill :green doesn't work because CSS wins
-     [:connect {:from :c :to :b :stroke :green :stroke-width 2.5
+     [:dali/connect {:from :c :to :b :stroke :green :stroke-width 2.5
                 :dali/marker-end {:id :big-sharp :style "fill: green;"}}]
 
-     [:connect {:from :d :to :c :class :myclass :dali/marker-end :sharp}]
-     [:connect {:from :c :to :e :type :-| :dali/marker-end :sharp}]
-     [:connect {:from :e :to :f :type :-| :dali/marker-end :sharp}]
-     [:connect {:from :e :to :g :type :|- :class :foo :dali/marker-end :triangle}]
-     [:connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]}
+     [:dali/connect {:from :d :to :c :class :myclass :dali/marker-end :sharp}]
+     [:dali/connect {:from :c :to :e :type :-| :dali/marker-end :sharp}]
+     [:dali/connect {:from :e :to :f :type :-| :dali/marker-end :sharp}]
+     [:dali/connect {:from :e :to :g :type :|- :class :foo :dali/marker-end :triangle}]
+     [:dali/connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]}
 
    {:filename "matrix1"
     :document
@@ -405,7 +405,7 @@
       (s/css (str "polyline {fill: none; stroke: black;}\n"
                   "rect {fill: none; stroke: black;}\n"))
       (prefab/sharp-arrow-marker :sharp)]
-     [:matrix {:position [100 100] :columns 4 :row-padding 5 :column-padding 20}
+     [:dali/matrix {:position [100 100] :columns 4 :row-padding 5 :column-padding 20}
       [:rect :_ [50 50]]
       [:rect {:id :c} :_ [50 70]]
       [:rect {:id :b} :_ [70 50]]
@@ -421,12 +421,12 @@
       [:rect :_ [50 50]]
       [:rect :_ [20 50]]]
 
-     [:connect {:from :a :to :b :dali/marker-end :sharp}]
-     [:connect {:from :b :to :c :dali/marker-end :sharp}]
-     [:connect {:from :c :to :d :dali/marker-end :sharp}]
-     [:connect {:from :d :to :e :dali/marker-end :sharp}]
+     [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
+     [:dali/connect {:from :b :to :c :dali/marker-end :sharp}]
+     [:dali/connect {:from :c :to :d :dali/marker-end :sharp}]
+     [:dali/connect {:from :d :to :e :dali/marker-end :sharp}]
 
-     [:matrix {:columns 5 :padding 10 :position [50 400]}
+     [:dali/matrix {:columns 5 :padding 10 :position [50 400]}
       (take 25 (repeat [:rect :_ [20 20]]))]]}
 
    {:filename "send-to-bottom"
@@ -437,7 +437,7 @@
                   "circle {fill: lightgreen; stroke: black;}\n"
                   "rect {fill: green; stroke: black;}\n"))
       (prefab/sharp-arrow-marker :sharp)]
-     [:stack {:id :st :direction :down :position [100 50]}
+     [:dali/stack {:id :st :direction :down :position [100 50]}
       [:circle :_ 50]
       [:circle :_ 50]]
      [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}])

@@ -62,7 +62,7 @@
                          (bounds->anchor-point bounds2))]
     (connector attrs [p1 intersection p2])))
 
-(defmethod layout/layout-nodes :connect
+(defmethod layout/layout-nodes :dali/connect
   [document tag elements bounds-fn]
   (let [make-selector   (fn [x] (if (keyword? x) [(->> x name (str "#") keyword)] x))
 

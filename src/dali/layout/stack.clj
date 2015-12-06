@@ -9,7 +9,7 @@
    :right :left
    :left :right})
 
-(defmethod layout/layout-nodes :stack
+(defmethod layout/layout-nodes :dali/stack
   [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
   (let [gap         (or gap 0)
         direction   (or direction :down)
