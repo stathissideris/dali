@@ -133,7 +133,7 @@
     (with-open [in (ByteArrayInputStream. (.getBytes s StandardCharsets/UTF_8))]
       (.createDocument factory "file:///fake.svg" in))))
 
-(defn high-quality-png-transcoder []
+(defn- high-quality-png-transcoder []
   (proxy [PNGTranscoder] []
     (createRenderer []
       (let [add-hint (fn [hints k v] (.add hints (RenderingHints. k v)))
