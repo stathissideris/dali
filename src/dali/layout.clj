@@ -135,15 +135,14 @@
     (patch-elements document ctx new-elements)))
 
 (defn- apply-composite-layout [node document ctx bounds-fn]
-  (do
-    (layout-node->group-node
-     node
-     (first
-      (reduce (fn [[elements doc] layout-tag]
-                (let [new-elements (layout-nodes document layout-tag elements bounds-fn)]
-                  [new-elements
-                   (patch-elements document ctx new-elements)]))
-              [(:content node) document] (->> node :attrs :layouts (map syntax/dali->ixml)))))))
+  (layout-node->group-node
+   node
+   (first
+    (reduce (fn [[elements doc] layout-tag]
+              (let [new-elements (layout-nodes document layout-tag elements bounds-fn)]
+                [new-elements
+                 (patch-elements document ctx new-elements)]))
+            [(:content node) document] (->> node :attrs :layouts (map syntax/dali->ixml))))))
 
 (defn- apply-nested-layouts [document ctx bounds-fn]
   (let [nested-layout?    (fn [node]
