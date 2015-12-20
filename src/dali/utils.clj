@@ -110,16 +110,14 @@
   (let [tr replace-fn]
     (loop [last-move nil
            z         z]
-      (when-not z
-        (throw (ex-info "zipper z is nil" {:last-move last-move})))
       (cond (and z (zip/branch? z))
             (if (= :up last-move)
               (let [zz (tr z)]
-               (if (zip/right zz)
-                 (recur :right (zip/right zz))
-                 (if (zip/up zz)
-                   (recur :up (zip/up zz))
-                   (zip/node z))))
+                (if (zip/right zz)
+                  (recur :right (zip/right zz))
+                  (if (zip/up zz)
+                    (recur :up (zip/up zz))
+                    (zip/node z))))
               (recur :down (zip/down z)))
 
             (zip/right z)
@@ -130,31 +128,6 @@
 
             :else
             (zip/node (tr z))))))
-
-(comment
- (defn transform-zipper-eval-order
-   [z replace-fn]
-   (let [tr replace-fn]
-     (loop [last-move nil
-            z         z]
-       (let [z (tr z)] ;;TODO move to the loop itself
-         (cond (and z (zip/branch? z))
-               (if (= :up last-move)
-                 (if (zip/right z)
-                   (recur :right (zip/right z))
-                   (if (zip/up z)
-                     (recur :up (zip/up z))
-                     (zip/node z)))
-                 (recur :down (zip/down z)))
-
-               (zip/right z)
-               (recur :right (zip/right z))
-
-               (zip/up z)
-               (recur :up (zip/up z))
-
-               :else
-               (zip/node z)))))))
 
 (defn dump-zipper
   ([z]

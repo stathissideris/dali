@@ -183,9 +183,6 @@
   (let [original-path (-> zipper zip/node :attrs :dali/path)
         z
         (reduce (fn [z e]
-                  (comment
-                    (>pprint [:PATH (-> e :attrs :dali/path)
-                              :ELEMENT e]))
                   (batik/replace-node! ctx (-> e :attrs :dali/path) e (zip/root z))
                   (assoc-in-zipper z (-> e :attrs :dali/path) e))
                 zipper (map fix-id-and-class-for-enlive new-elements))]
