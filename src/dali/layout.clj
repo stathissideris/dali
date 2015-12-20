@@ -188,9 +188,15 @@
                 zipper (map fix-id-and-class-for-enlive new-elements))]
     (zipper-point-to-path (zip-up z) original-path))) ;;fix them so enlive can find them
 
+(defn- layout-selector [node]
+  (let [s (get-in node [:attrs :select])]
+    (if (keyword? s)
+      [(utils/to-enlive-id-selector s)]
+      s)))
+
 (defn- get-nodes-to-layout [layout-node document]
   (let [assoc-type (fn [node t] (assoc-in node [:attrs :dali/layout-type] t))]
-    (concat (if-let [selector (get-in layout-node [:attrs :select])]
+    (concat (if-let [selector (layout-selector layout-node)]
               (let [selected (en/select document selector)]
                 (when (empty? selected)
                   (throw (ex-info "select clause of layout node did not match any nodes"

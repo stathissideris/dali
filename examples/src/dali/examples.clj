@@ -8,7 +8,8 @@
             [dali.prefab :as prefab]
             [dali.schema :as schema]
             [dali.syntax :as s]
-            [dali.utils :as utils]))
+            [dali.utils :as utils]
+            [dali.examples.architecture :as architecture]))
 
 (def examples
   [{:filename "hello-world"
@@ -448,7 +449,10 @@
      [:dali/stack {:id :st :direction :down :position [100 50]}
       [:circle :_ 50]
       [:circle :_ 50]]
-     [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}])
+     [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}
+
+   {:filename "architecture"
+    :document architecture/document}])
 
 (defn render-example [dir filename document]
   (with-redefs [dali.layout/group-for-composite-layout (constantly :node-group-38348)]

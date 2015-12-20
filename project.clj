@@ -29,7 +29,8 @@
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
 
   :profiles {:dev {:source-paths ["dev" "examples/src"]
-                   :dependencies [[org.clojure/tools.namespace "0.2.11"]]}}
+                   :dependencies [[org.clojure/tools.namespace "0.2.11"]
+                                  [garden "1.3.0-SNAPSHOT"]]}}
   
   :cljsbuild
   {:builds [{:id "dali"
