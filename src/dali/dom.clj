@@ -120,11 +120,15 @@
     (loop [parent dom
            path   path]
       (if (= 1 (count path))
-        (replace-child! parent (first path) new-element)
-        (recur (nth-child parent (first path))
-               (rest path))))
+        (let [d (replace-child! parent (first path) new-element)]
+          d)
+        (do
+;;          (println "RECUR")
+          (recur (nth-child parent (first path))
+                 (rest path)))))
     (catch Exception e
       (throw (ex-info "Could not replace DOM node" {:dom (->xml dom)
+                                                    :cause e
                                                     :path path
                                                     :new-element (->xml new-element)})))))
 

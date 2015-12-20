@@ -246,11 +246,6 @@
    {:filename "graph4"
     :document
     [:page {:width 270 :height 150}
-     [:dali/stack {:position [10 140]
-              :direction :right
-              :anchor :bottom-left
-              :gap 2
-              :select [:.col]}]
      (map (fn [[a b c]]
             [:dali/stack
              {:direction :up :class :col}
@@ -266,7 +261,12 @@
            [23 10 13]
            [12 6 8]
            [44 22 18]
-           [50 20 10]])]}
+           [50 20 10]])
+     [:dali/stack {:position [10 140]
+              :direction :right
+              :anchor :bottom-left
+              :gap 2
+              :select [:.col]}]]}
    {:filename "align-test"
     :document
     [:page {:width 350 :height 220}
@@ -302,11 +302,11 @@
    {:filename "align-test2"
     :document
     [:page {:width 120 :height 120}
-     [:dali/align {:relative-to :first :axis :center :select [:.label]}]
      [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
      [:circle {:class :label :fill :none :stroke :black} :_ 50]
-     [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]}
+     [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]
+     [:dali/align {:relative-to :first :axis :center :select [:.label]}]]}
    {:filename "align-test3"
     :document
     [:page {:width 240 :height 140}
@@ -318,6 +318,14 @@
        [:rect {:fill :orange} [140 0] [20 40]]]
       [:text {:text-family "Helvetica" :font-size 14}
        "tests alignment with :relative-to :first"]]]}
+   {:filename "align-test4" ;;line align-test2, but invalid, this is here to ensure that selector layouts that don't match can still render
+    :document
+    [:page {:width 120 :height 120}
+     [:dali/align {:relative-to :first :axis :center :select [:.label]}]
+     [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
+     [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
+     [:circle {:class :label :fill :none :stroke :black} :_ 50]
+     [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]}
    {:filename "composite-layout"
     :document
     [:page

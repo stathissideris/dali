@@ -32,6 +32,7 @@
                       (filter #(-> % :filename (= filename)))
                       first
                       :document)]
+    (when (nil? document) (throw (ex-info (format "Document %s not found" filename) {})))
     (examples/render-example "examples/output/" filename document)))
 
 

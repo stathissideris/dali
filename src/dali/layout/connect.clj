@@ -36,8 +36,7 @@
   {:tag   :polyline
    :attrs (merge
            {:class :connector
-            :dali/content points
-            :dali/path :append}
+            :dali/content points}
            attrs)})
 
 ;;TODO refactor so that you pass bounds, not elements?
@@ -81,7 +80,7 @@
                                      name
                                      (pr-str x)
                                      (pr-str tag))))))
-        attrs           (dissoc (:attrs tag) :from :to :type)]
+        attrs           (dissoc (:attrs tag) :from :to :type :dali/path)]
     (check-element start-element "start")
     (check-element end-element "end")
     (if (= :-- connection-type)

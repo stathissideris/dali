@@ -9,6 +9,15 @@
              [utils :as utils]]
             [net.cgrand.enlive-html :as en]))
 
+(defn- zip-up
+  [loc]
+  (if (= :end (loc 1))
+    loc
+    (let [p (zip/up loc)]
+      (if p
+        (recur p)
+        loc))))
+
 (defn- tree-path [path]
   (interleave (repeat :content) (rest path)))
 
@@ -18,20 +27,35 @@
 (defn- assoc-in-tree [tree path value]
   (assoc-in tree (tree-path path) value))
 
+(defn- zipper-point-to-path [zipper path]
+  (let [right-times (fn [z i] (nth (iterate zip/right z) i))]
+    (right-times
+     (reduce (fn [z i]
+               (let [z (right-times z i)]
+                 (or (zip/down z) z))) zipper (butlast path))
+     (last path))))
+
+(defn- assoc-in-zipper [zipper path value]
+  (let [z (zipper-point-to-path (zip-up zipper) path)]
+    (zip/replace z value)))
+
 (defn- update-in-tree [tree path fun & params]
   (apply update-in tree (tree-path path) fun params))
 
-(defn- index-tree [document]
-  (utils/transform-zipper
-   (utils/ixml-zipper document)
-   (fn [z]
-     (let [node (zip/node z)]
-       (if (string? node)
-         node
-         (let [parent-path (or (some-> z zip/up zip/node :attrs :dali/path) [])
-               left-index  (or (some-> z zip/left zip/node :attrs :dali/path last) -1)
-               this-path   (conj parent-path (inc left-index))]
-           (assoc-in node [:attrs :dali/path] this-path)))))))
+(defn- index-tree
+  ([document]
+   (index-tree document []))
+  ([document path-prefix]
+   (utils/transform-zipper
+    (utils/ixml-zipper document)
+    (fn [z]
+      (let [node (zip/node z)]
+        (if (string? node)
+          node
+          (let [parent-path (or (some-> z zip/up zip/node :attrs :dali/path) [])
+                left-index  (or (some-> z zip/left zip/node :attrs :dali/path last) -1)
+                this-path   (conj parent-path (inc left-index))]
+            (assoc-in node [:attrs :dali/path] (into path-prefix this-path)))))))))
 
 (defn- de-index-tree [document] ;;TODO this is probably simpler with enlive
   (utils/transform-zipper
@@ -73,17 +97,26 @@
     #(and (not (has-content? %))
           (d/layout-tag? (:tag %))))])
 
-(defn- append? [element]
-  (= :append (some-> element :attrs :dali/path)))
+(defn- new-node? [element]
+  (nil? (some-> element :attrs :dali/path)))
+
+(defn- selected-node? [element]
+  (= :selected (some-> element :attrs :dali/layout-type)))
+
+(defn- nested-node? [element]
+  (= :nested (some-> element :attrs :dali/layout-type)))
 
 (defn- get-selector-layouts [document]
   (en/select document (selector-layout-selector)))
 
 (defn- layout-node->group-node [node elements]
-  (-> node
-      (assoc :tag :g)
-      (update :attrs select-keys [:id :class :dali/path])
-      (assoc :content (vec (filter (complement append?) elements)))))
+  (if (= 1 (count elements))
+    (-> (first elements)
+        (assoc-in [:attrs :dali/path] (-> node :attrs :dali/path)))
+    (-> node
+        (assoc :tag :g)
+        (update :attrs select-keys [:id :class :dali/path])
+        (assoc :content elements))))
 
 (defn- remove-selector-layouts [document]
   (-> [document]
@@ -113,57 +146,59 @@
 (defn- inc-path [path]
   (update path (dec (count path)) inc))
 
-(defn- patch-elements [document ctx new-elements]
-  (reduce (fn [doc e]
-            (if (append? e)
-              (do
-                (batik/append-node! ctx e document)
-                (update doc :content conj
-                        (set-dali-path e (-> doc :content last :attrs :dali/path inc-path)))) ;;keep it indexed
-              (do
-                (batik/replace-node! ctx (-> e :attrs :dali/path) e document)
-                (assoc-in-tree doc (-> e :attrs :dali/path) e))))
-          document (map fix-id-and-class-for-enlive new-elements))) ;;fix them so enlive can find them
+(defn- patch-elements [zipper ctx new-elements]
+  ;;(>pprint [:OLD-DOC (zip/root zipper)])
+  ;;(>pprint [:ORIGINAL-PATH (-> zipper zip/node :attrs :dali/path) :POINTING-TO (zip/node zipper)])
+  (let [original-path (-> zipper zip/node :attrs :dali/path)
+        z
+        (reduce (fn [z e]
+                  (comment
+                    (>pprint [:PATH (-> e :attrs :dali/path)
+                              :ELEMENT e]))
+                  (batik/replace-node! ctx (-> e :attrs :dali/path) e (zip/root z))
+                  (assoc-in-zipper z (-> e :attrs :dali/path) e))
+                zipper (map fix-id-and-class-for-enlive new-elements))]
+    ;;(>pprint [:NEW-DOC (zip/root z)])
+    ;;(>pprint (take 2 (clojure.data/diff (zip/root zipper) (zip/root z))))
+    (let [pp (zipper-point-to-path (zip-up z) original-path)]
+      ;;(>pprint [:POINTING-TO-AFTER (zip/node pp)])
+      pp))) ;;fix them so enlive can find them
 
-(defn- apply-selector-layout [document layout-tag ctx bounds-fn]
-  (let [selector     (get-in layout-tag [:attrs :select])
-        selector     (if (keyword? selector)
-                       [(utils/to-enlive-id-selector selector)]
-                       selector)
-        elements     (en/select document selector)
-        new-elements (layout-nodes document layout-tag elements bounds-fn)]
-    (patch-elements document ctx new-elements)))
+(defn- get-nodes-to-layout [layout-node document]
+  (when (and (= :dali/layout (:tag layout-node))
+             (get-in layout-node [:attrs :select]))
+    (throw (ex-info "composite layout nodes (:dali/layout) do not support selectors"
+                    {:layout-node layout-node})))
+  (let [assoc-type (fn [node t] (assoc-in node [:attrs :dali/layout-type] t))]
+    (concat (if-let [selector (get-in layout-node [:attrs :select])]
+              (map #(assoc-type % :selected)
+                   (en/select document selector)))
+            (map #(assoc-type % :nested)
+                 (:content layout-node)))))
 
-(defn- apply-composite-layout [node document ctx bounds-fn]
-  (layout-node->group-node
-   node
-   (first
-    (reduce (fn [[elements doc] layout-tag]
-              (let [new-elements (layout-nodes document layout-tag elements bounds-fn)]
-                [new-elements
-                 (patch-elements document ctx new-elements)]))
-            [(:content node) document] (->> node :attrs :layouts (map syntax/dali->ixml))))))
+(defn- apply-layout [layout-node zipper ctx bounds-fn]
+  (let [current-doc     (zip/root zipper)
+        nodes-to-layout (get-nodes-to-layout layout-node current-doc)
+        output-nodes    (layout-nodes current-doc layout-node nodes-to-layout bounds-fn)
+        new-nodes       (filter new-node? output-nodes)
+        nested-nodes    (filter nested-node? output-nodes)
+        selected-nodes  (filter selected-node? output-nodes)
+        group-node      (layout-node->group-node layout-node (concat new-nodes nested-nodes))]
+    (patch-elements zipper ctx (concat [group-node] selected-nodes))))
 
-(defn- apply-nested-layouts [document ctx bounds-fn]
-  (let [nested-layout?    (fn [node]
-                            (and (d/layout-tag? (-> node :tag))
-                                 (has-content? node)))
+(defn- apply-layouts [document ctx bounds-fn]
+  (let [layout?           (fn [node] (d/layout-tag? (-> node :tag)))
         composite-layout? (fn [{:keys [tag]}] (= :dali/layout tag))]
-   (utils/transform-zipper-backwards
-    (-> document utils/ixml-zipper utils/zipper-last) ;;perform depth first walk
-    (fn [zipper]
-      (let [node (zip/node zipper)]
-        (cond
-          (composite-layout? node)
-          (apply-composite-layout node document ctx bounds-fn)
-
-          (nested-layout? node)
-          (let [new-elements (layout-nodes document node (:content node) bounds-fn)
-                new-node     (layout-node->group-node node new-elements)]
-            (patch-elements document ctx [new-node])
-            new-node)
-
-          :else node))))))
+    (utils/transform-zipper-eval-order
+     (-> document utils/ixml-zipper)
+     (fn walker [zipper]
+       (let [node (zip/node zipper)]
+         (cond
+           ;;(composite-layout? node)
+           ;;(apply-composite-layout node document ctx bounds-fn)
+           (layout? node)
+           (apply-layout node zipper ctx bounds-fn)
+           :else zipper))))))
 
 (defn- has-page-dimensions? [doc]
   (and (-> doc :attrs :width)
@@ -181,17 +216,12 @@
    (when (nil? doc) (throw (utils/exception "Cannot resolve layout of nil document")))
    ;;do this early because batik/context uses ixml->xml which needs enlive-friendly IDs
    (let [doc (fix-id-and-class-for-enlive doc)]
-     (resolve-layout (batik/context (remove-selector-layouts doc)) doc)))
+     (resolve-layout (batik/context doc) doc)))
   ([ctx doc]
    (let [bounds-fn        #(batik/get-bounds ctx %)
-         selector-layouts (get-selector-layouts doc)
          doc              (-> doc
-                              remove-selector-layouts
                               index-tree
-                              (apply-nested-layouts ctx bounds-fn))
-         doc              (reduce (fn [doc layout]
-                                    (apply-selector-layout doc layout ctx bounds-fn))
-                                  doc selector-layouts)
+                              (apply-layouts ctx bounds-fn))
          doc              (apply-z-order doc)
          doc              (if (has-page-dimensions? doc)
                             doc
