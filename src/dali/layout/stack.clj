@@ -10,12 +10,12 @@
    :left :right})
 
 (defmethod layout/layout-nodes :dali/stack
-  [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
+  [_ {{:keys [position direction anchor gap]} :attrs} nodes bounds-fn]
   (let [gap         (or gap 0)
         direction   (or direction :down)
         anchor      (or anchor (direction->default-anchor direction))
-        elements    (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
-        position    (or position (second (bounds-fn (first elements))))
+        nodes       (if (seq? (first nodes)) (first nodes) nodes) ;;so that you map over nodes etc
+        position    (or position (second (bounds-fn (first nodes))))
         vertical?   (or (= direction :down) (= direction :up))
         [x y]       position
         advance-pos (if (or (= direction :down) (= direction :right)) + -)
@@ -37,6 +37,6 @@
             pos 0 (get-pos bounds)
             this-pos initial-pos (advance-pos this-pos' size' this-gap')
             element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
-           elements)]
+           nodes)]
 ;;      (>pprint x)
       x)))

@@ -263,10 +263,10 @@
            [44 22 18]
            [50 20 10]])
      [:dali/stack {:position [10 140]
-              :direction :right
-              :anchor :bottom-left
-              :gap 2
-              :select [:.col]}]]}
+                   :direction :right
+                   :anchor :bottom-left
+                   :gap 2
+                   :select [:.col]}]]}
    {:filename "align-test"
     :document
     [:page {:width 350 :height 220}
@@ -451,7 +451,8 @@
      [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}])
 
 (defn render-example [dir filename document]
-  (io/render-svg document (str dir filename ".svg")))
+  (with-redefs [dali.layout/group-for-composite-layout (constantly :node-group-38348)]
+    (io/render-svg document (str dir filename ".svg"))))
 
 (defn render-examples [dir documents]
   (doseq [{:keys [filename document]} documents]

@@ -344,6 +344,9 @@
 (defn add-transform [node transform]
   (update-in node [:attrs :transform] conj transform))
 
+(defn add-class [node cl]
+  (update-in node [:attrs :class] conj cl))
+
 (defn- dali-tag? [node]
   (and (vector? node) (keyword? (first node))))
 
