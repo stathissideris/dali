@@ -2,6 +2,7 @@
 
 ## Tasks
 
+* Remove retrograde dependency and re-write parts that use it
 * Simplify/tidy up/clarify layout code
 * Comment layout code
 * Remove explicit batik dependency from layout code to open the way for browser dali
@@ -29,6 +30,8 @@
 
 ## Features
 
+* Align relative to biggest/smallest (which means widest/narrowest or
+  tallest/shortest depending on the axis)
 * Dali markers for arbirary paths
 * "path" connector type: a flowing bezier curve
 * Connect the projected centers of elements

@@ -30,7 +30,8 @@
   (gvt-node-by-id [this id])
   (replace-node! [this dali-path new-node document])
   (append-node! [this new-node document])
-  (get-bounds [this element]))
+  (get-bounds [this element])
+  (get-relative-bounds [this element]))
 
 (defn- to-rect [rect]
   (when rect
@@ -86,6 +87,21 @@
                                        :dom-element (when dom-element (dom/->xml dom-element))})))]
     (transformed-bounds gvt)))
 
+(defn- get-relative-bounds-impl [this dom element]
+  (let [dom-element (try (dom/get-node dom (-> element :attrs :dali/path))
+                         (catch Exception e
+                           (throw (ex-info "Could not get DOM element for dali node" {:dali-node element
+                                                                                      :dom (dom/->xml dom)}))))
+        _           (when-not dom-element
+                      (throw (ex-info "DOM element for dali node is nil" {:dali-node element
+                                                                          :dom (dom/->xml dom)})))
+        gvt         (gvt-node this dom-element)
+        _           (when-not gvt
+                      (throw (ex-info "Cannot find GVT node for dali node"
+                                      {:dali-node element
+                                       :dom-element (when dom-element (dom/->xml dom-element))})))]
+    (to-rect (.getTransformedGeometryBounds gvt id-transform))))
+
 (defn- dali->dom [dali-node document dom]
   (->> dali-node
        (s/ixml-fragment->xml-node document)
@@ -102,7 +118,9 @@
   (append-node! [this new-node document]
     (dom/add-to-svg! dom (dali->dom new-node document dom)))
   (get-bounds [this element]
-    (get-bounds-impl this dom element)))
+    (get-bounds-impl this dom element))
+  (get-relative-bounds [this element]
+    (get-relative-bounds-impl this dom element)))
 
 (defn context
   ([doc]

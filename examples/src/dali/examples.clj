@@ -49,7 +49,7 @@
     :document
     [:page {:width 200 :height 40 :stroke :none}
      [:dali/stack
-      {:position [10 20] :anchor :left :direction :right}
+      {:position [10 10] :anchor :left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
       [:rect {:fill :sandybrown} :_ [30 20]]
       [:rect {:fill :green} :_ [40 20]]
@@ -60,7 +60,7 @@
     :document
     [:page {:width 200 :height 80 :stroke :none}
      [:dali/stack
-      {:position [10 40] :anchor :left :direction :right}
+      {:position [10 10] :anchor :left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
       [:rect {:fill :green} :_ [40 10]]
@@ -72,7 +72,7 @@
     :document
     [:page {:width 310 :height 80 :stroke :none}
      [:dali/stack
-      {:position [10 70] :anchor :bottom-left :direction :right}
+      {:position [10 10] :anchor :bottom-left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
       [:rect {:fill :green} :_ [40 10]]
@@ -97,12 +97,34 @@
                     [:rect :_ [20 20]]
                     [:circle :_ 15]
                     [:polyline [0 0] [20 0] [10 20] [20 20]]))]
-      [:page {:width 150 :height 260 :stroke {:paint :black :width 2} :fill :none}
+      [:page {:stroke {:paint :black :width 2} :fill :none}
        [:dali/stack {:position [20 20] :direction :right} (shapes "right")]
-       [:dali/stack {:position [130 70] :gap 5 :direction :left} (shapes "left")]
-       [:dali/stack {:position [40 150] :gap 5 :direction :down} (shapes "down")]
-       [:dali/stack {:position [110 250] :gap 18 :direction :up} (shapes "up")]])}
+       [:dali/stack {:position [20 90] :gap 5 :direction :left} (shapes "left")]
+       [:dali/stack {:position [20 140] :gap 5 :direction :down} (shapes "down")]
+       [:dali/stack {:position [110 140] :gap 18 :direction :up} (shapes "up")]])}
 
+   {:filename "stack5"
+    :document
+    [:page {:stroke :none}
+     [:g {:transform [:translate [-10 -10]]}
+      [:dali/stack
+       {:anchor :left :direction :right}
+       [:rect {:fill :mediumslateblue} [10 20] [50 20]]
+       [:rect {:fill :sandybrown} :_ [30 20]]
+       [:rect {:fill :green} :_ [40 20]]
+       [:rect {:fill :orange} :_ [20 20]]]]]}
+
+   {:filename "stack6"
+    :document
+    [:page {:stroke :none}
+     [:g {:transform [:translate [100 0]]}
+      [:dali/stack
+       {:position [10 30] :anchor :left :direction :up}
+       [:rect {:fill :mediumslateblue} :_ [50 20]]
+       [:rect {:fill :sandybrown} :_ [30 20]]
+       [:rect {:fill :green} :_ [40 20]]
+       [:rect {:fill :orange} :_ [20 20]]]]]}
+   
    {:filename "distribute1"
     :document
     [:page {:width 200 :height 60 :stroke :none}
@@ -207,15 +229,15 @@
     :document
     [:page {:width 260 :height 140}
      [:dali/stack
-      {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
+      {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
            [10 30 22 56 90 59 23 12 44 50])]]}
 
    {:filename "graph2"
     :document
-    [:page {:width 270 :height 140}
+    [:page {:width 260 :height 160}
      [:dali/stack
-      {:position [10 130], :direction :right, :anchor :bottom-left, :gap 2}
+      {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [h]
              [:dali/stack
               {:direction :up :gap 6}
@@ -227,7 +249,7 @@
     :document
     [:page {:width 270 :height 150}
      [:dali/stack
-      {:position [10 140], :direction :right, :anchor :bottom-left, :gap 2}
+      {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [[a b c]]
              [:dali/stack
               {:direction :up}
@@ -247,24 +269,24 @@
    {:filename "graph4"
     :document
     [:page {:width 270 :height 150}
-     (map (fn [[a b c]]
-            [:dali/stack
-             {:direction :up :class :col}
-             [:rect {:stroke :none, :fill "#D46A6A"} :_ [20 a]]
-             [:rect {:stroke :none, :fill "#D49A6A"} :_ [20 b]]
-             [:rect {:stroke :none, :fill "#407F7F"} :_ [20 c]]])
-          [[10 10 15]
-           [30 10 20]
-           [22 10 25]
-           [56 10 10]
-           [90 10 30]
-           [59 22 25]
-           [23 10 13]
-           [12 6 8]
-           [44 22 18]
-           [50 20 10]])
-     [:dali/stack {:position [10 140]
-                   :direction :right
+     [:g {:transform [:translate [20 175]]}
+      (map (fn [[a b c]]
+             [:dali/stack
+              {:direction :up :class :col}
+              [:rect {:stroke :none, :fill "#D46A6A"} :_ [20 a]]
+              [:rect {:stroke :none, :fill "#D49A6A"} :_ [20 b]]
+              [:rect {:stroke :none, :fill "#407F7F"} :_ [20 c]]])
+           [[10 10 15]
+            [30 10 20]
+            [22 10 25]
+            [56 10 10]
+            [90 10 30]
+            [59 22 25]
+            [23 10 13]
+            [12 6 8]
+            [44 22 18]
+            [50 20 10]])]
+     [:dali/stack {:direction :right
                    :anchor :bottom-left
                    :gap 2
                    :select [:.col]}]]}
@@ -414,7 +436,7 @@
       (s/css (str "polyline {fill: none; stroke: black;}\n"
                   "rect {fill: none; stroke: black;}\n"))
       (prefab/sharp-arrow-marker :sharp)]
-     [:dali/matrix {:position [100 100] :columns 4 :row-padding 5 :column-padding 20}
+     [:dali/matrix {:position [50 50] :columns 4 :row-padding 5 :column-padding 20}
       [:rect :_ [50 50]]
       [:rect {:id :c} :_ [50 70]]
       [:rect {:id :b} :_ [70 50]]
@@ -446,7 +468,7 @@
                   "circle {fill: lightgreen; stroke: black;}\n"
                   "rect {fill: green; stroke: black;}\n"))
       (prefab/sharp-arrow-marker :sharp)]
-     [:dali/stack {:id :st :direction :down :position [100 50]}
+     [:dali/stack {:id :st :direction :down :position [50 50]}
       [:circle :_ 50]
       [:circle :_ 50]]
      [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}

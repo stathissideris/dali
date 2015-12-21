@@ -117,7 +117,7 @@
     [:text {:font-family "Georgia" :font-size 30 :x 50 :y 60}
      "Architecture Overview"]
     (text-box :deps-toggle "show\ntools" :button [1200 20])
-    [:dali/stack {:direction :right :gap 60 :position [30 500]}
+    [:dali/stack {:direction :right :gap 60 :position [30 400]}
      (circle-text :maintenance "corp\nmaintenance" :corp-fun)
      (circle-text :extraction "extraction" [:main-fun :extractor])
      (circle-text :importing "importing" [:main-fun :extractor])

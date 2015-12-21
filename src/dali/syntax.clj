@@ -342,7 +342,9 @@
 
 
 (defn add-transform [node transform]
-  (update-in node [:attrs :transform] conj transform))
+  (if-not transform
+    node
+    (update-in node [:attrs :transform] conj transform)))
 
 (defn add-class [node cl]
   (update-in node [:attrs :class] conj cl))

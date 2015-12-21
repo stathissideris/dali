@@ -3,7 +3,7 @@
             [dali.layout.utils :refer [place-by-anchor]]))
 
 (defmethod layout/layout-nodes :dali/distribute
-  [_ {{:keys [position direction anchor gap]} :attrs} elements bounds-fn]
+  [_ {{:keys [direction anchor gap]} :attrs} elements bounds-fn]
   (let [direction (or direction :right)
         anchor (or anchor :center)
         vertical? (or (= direction :down) (= direction :up))]
@@ -16,8 +16,7 @@
           elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
           bounds (map bounds-fn elements)
 
-          position (or position (-> bounds first second))
-          [x y] position
+          [x y] (-> bounds first second)
           
           step (+ gap (if vertical?
                         (apply max (map (fn [[_ _ [_ h]]] h) bounds))

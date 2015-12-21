@@ -5,6 +5,7 @@
             [dali :as d]
             [dali
              [batik :as batik]
+             [geom :refer [v+ v-]]
              [syntax :as syntax]
              [utils :as utils]]
             [net.cgrand.enlive-html :as en]))
@@ -148,7 +149,7 @@
         (assoc-in [:attrs :dali/path] (-> node :attrs :dali/path)))
     (-> node
         (assoc :tag :g)
-        (update :attrs select-keys [:id :class :dali/path])
+        (update :attrs select-keys [:id :class :dali/path :position])
         (assoc :content elements))))
 
 (defn- remove-selector-layouts [document]
@@ -206,6 +207,19 @@
             (map #(assoc-type % :nested)
                  (:content layout-node)))))
 
+(defn- apply-position [zipper ctx group-node bounds-fn]
+  (if-not group-node
+    zipper
+    (if-let [p (some-> group-node :attrs :position)]
+      (let [[_ current-pos] (batik/get-relative-bounds ctx group-node)]
+        (patch-elements
+         zipper
+         ctx
+         [(-> group-node
+              (syntax/add-transform [:translate (v- p current-pos)])
+              (update :attrs dissoc :position))]))
+      zipper)))
+
 (defn- apply-layout [layout-node zipper ctx bounds-fn]
   (let [current-doc     (zip/root zipper)
         nodes-to-layout (get-nodes-to-layout layout-node current-doc)
@@ -214,12 +228,14 @@
         nested-nodes    (filter nested-node? output-nodes)
         selected-nodes  (filter selected-node? output-nodes)
         group-node      (layout-node->group-node layout-node (concat new-nodes nested-nodes))]
-    (patch-elements zipper ctx (concat [group-node] selected-nodes))))
+    (-> zipper
+        (patch-elements ctx (concat [group-node] selected-nodes))
+        (apply-position ctx group-node bounds-fn))))
 
 (defn- apply-layouts [document ctx bounds-fn]
   (let [layout?           (fn [node] (d/layout-tag? (-> node :tag)))]
     (utils/transform-zipper-eval-order
-     (-> document utils/ixml-zipper)
+     (utils/ixml-zipper document)
      (fn walker [zipper]
        (let [node (zip/node zipper)]
          (if (layout? node) (apply-layout node zipper ctx bounds-fn) zipper))))))

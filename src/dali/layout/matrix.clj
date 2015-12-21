@@ -8,12 +8,12 @@
        (map (fn [[n1 n2]] (+ (/ n1 2) padding (/ n2 2))))))
 
 (defmethod layout/layout-nodes :dali/matrix
-  [_ {{:keys [position columns padding row-padding column-padding]} :attrs :as tag}
+  [_ {{:keys [columns padding row-padding column-padding]} :attrs :as tag}
    elements bounds-fn]
   (let [row-padding    (or padding row-padding 0)
         column-padding (or padding column-padding 0)
         bounds-fn      (fn [element] (if (= :_ element) [:rect [0 0] [0 0]] (bounds-fn element)))
-        position       (or position (second (bounds-fn (first elements))))
+        position       (second (bounds-fn (first elements)))
         bounds         (map bounds-fn elements)
         sizes          (zipmap elements (map #(nth % 2) bounds))
         rows           (partition-all columns elements)
