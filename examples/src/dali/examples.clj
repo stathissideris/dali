@@ -543,12 +543,12 @@
      [:dali/place {:relative-to :p1}
       [:circle {:fill :lightblue} :_ 5]]
      [:dali/place {:relative-to [:p1 :top-right] :anchor :top-left :offset [5 0]}
-      [:circle {:fill :pink} :_ 10]]
+      [:circle {:fill :mediumslateblue} :_ 10]]
      [:dali/place {:relative-to [:p1 :bottom-right] :anchor :bottom-left}
-      [:rect {:fill :green} :_ [20 40]]]
+      [:rect {:fill :limegreen} :_ [20 40]]]
      [:dali/place {:relative-to [:p1 :bottom-left] :anchor :bottom-left :offset [10 -10]}
       [:rect {:fill :yellow} :_ [40 20]]]
-     [:rect {:id :child :fill :cyan} :_ [10 10]]
+     [:rect {:id :child :fill :orange} :_ [25 10]]
      [:dali/place {:select :child :relative-to [:p1 :top-left] :anchor :top-left :offset [10 10]}]
      [:dali/place {:relative-to [:p1 :top-right] :anchor :top-right :offset [-5 10]}
       [:text {:text-family "Verdana" :font-size 13 :stroke :none :fill :black} "foo bar"]]]}
