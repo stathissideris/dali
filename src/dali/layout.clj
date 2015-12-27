@@ -211,13 +211,16 @@
   (if-not group-node
     zipper
     (if-let [p (some-> group-node :attrs :position)]
-      (let [[_ current-pos] (batik/get-relative-bounds ctx group-node)]
-        (patch-elements
-         zipper
-         ctx
-         [(-> group-node
-              (syntax/add-transform [:translate (v- p current-pos)])
-              (update :attrs dissoc :position))]))
+      (if (empty? (:content group-node))
+        (throw (ex-info "Selector layouts cannot have a :position attribute"
+                        {:node group-node}))
+        (let [[_ current-pos] (batik/get-relative-bounds ctx group-node)]
+          (patch-elements
+           zipper
+           ctx
+           [(-> group-node
+                (syntax/add-transform [:translate (v- p current-pos)])
+                (update :attrs dissoc :position))])))
       zipper)))
 
 (defn- apply-layout [layout-node zipper ctx bounds-fn]

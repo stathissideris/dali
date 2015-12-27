@@ -1,6 +1,6 @@
 (ns dali.layout.stack
   (:require [dali.layout :as layout]
-            [dali.layout.utils :refer [place-by-anchor]]
+            [dali.layout.utils :refer [bounds->anchor-point place-by-anchor]]
             [retrograde :as retro]))
 
 (def direction->default-anchor
@@ -15,7 +15,7 @@
         direction   (or direction :down)
         anchor      (or anchor (direction->default-anchor direction))
         nodes       (if (seq? (first nodes)) (first nodes) nodes) ;;so that you map over nodes etc
-        [x y]       (second (bounds-fn (first nodes)))
+        [x y]       (bounds->anchor-point anchor (bounds-fn (first nodes)))
         vertical?   (or (= direction :down) (= direction :up))
         advance-pos (if (or (= direction :down) (= direction :right)) + -)
         get-size    (if vertical?

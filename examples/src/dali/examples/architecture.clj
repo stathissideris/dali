@@ -134,10 +134,10 @@
      (circle-text :corp-actions "corp\nactions" :corp-fun)]
 
     [:dali/distribute {:direction :right :gap 120}
-     (tool-box :sc "External\nData\ntools" :tool [200 210])
-     (tool-box :postgres "Database\nstorage\ntools" :tool [0 210])
-     (tool-box :r "Stats\ntools" :tool [0 210])
-     (tool-box :jira "Issue\ntracking\ntools" :tool [0 150])]
+     (tool-box :sc "External\nData\ntools" :tool [380 170])
+     (tool-box :postgres "Database\nstorage\ntools" :tool [0 170])
+     (tool-box :r "Stats\ntools" :tool [0 170])
+     (tool-box :jira "Issue\ntracking\ntools" :tool [0 110])]
     
     (label-box :extractor  [:.extractor] "extractor")
     (label-box :limits-clj [:#limits-clj] "limits.clj")

@@ -1,6 +1,6 @@
 (ns dali.layout.matrix
   (:require [dali.layout :as layout]
-            [dali.layout.utils :refer [place-by-anchor]]))
+            [dali.layout.utils :refer [bounds->anchor-point place-by-anchor]]))
 
 (defn- sizes->offsets [sizes padding]
   (->> sizes
@@ -13,7 +13,7 @@
   (let [row-padding    (or padding row-padding 0)
         column-padding (or padding column-padding 0)
         bounds-fn      (fn [element] (if (= :_ element) [:rect [0 0] [0 0]] (bounds-fn element)))
-        position       (second (bounds-fn (first elements)))
+        position       (bounds->anchor-point :center (bounds-fn (first elements)))
         bounds         (map bounds-fn elements)
         sizes          (zipmap elements (map #(nth % 2) bounds))
         rows           (partition-all columns elements)

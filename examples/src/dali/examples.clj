@@ -108,8 +108,8 @@
     [:page {:stroke :none}
      [:g {:transform [:translate [-10 -10]]}
       [:dali/stack
-       {:anchor :left :direction :right}
-       [:rect {:fill :mediumslateblue} [10 20] [50 20]]
+       {:direction :right}
+       [:rect {:fill :mediumslateblue} [10 10] [50 20]]
        [:rect {:fill :sandybrown} :_ [30 20]]
        [:rect {:fill :green} :_ [40 20]]
        [:rect {:fill :orange} :_ [20 20]]]]]}
@@ -124,22 +124,48 @@
        [:rect {:fill :sandybrown} :_ [30 20]]
        [:rect {:fill :green} :_ [40 20]]
        [:rect {:fill :orange} :_ [20 20]]]]]}
-   
+
+   {:filename "stack7"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:dali/stack {:direction :up}
+      [:circle [200 200] 50]
+      [:rect :_ [20 20]]]
+     [:dali/stack {:direction :up}
+      [:circle [200 200] 100]
+      [:rect :_ [20 20]]]
+     [:dali/stack {:direction :up}
+      [:circle [200 200] 150]
+      [:rect :_ [20 20]]]]}
+
    {:filename "distribute1"
     :document
-    [:page {:width 200 :height 60 :stroke :none}
+    [:page {:stroke :none}
+     [:rect {:fill :none :stroke :lightgrey} [10 10] [50 20]]
      [:dali/distribute
       {:direction :right}
-      [:rect {:fill :mediumslateblue} [10 20] [50 20]]
-      [:rect {:fill :sandybrown} [0 20] [30 20]]
-      [:rect {:fill :green} [0 20] [40 20]]
-      [:rect {:fill :orange} [0 20] [20 20]]]
+      [:rect {:fill :mediumslateblue} [10 10] [50 20]]
+      [:rect {:fill :sandybrown}       [0 10] [30 20]]
+      [:rect {:fill :green}            [0 10] [40 20]]
+      [:rect {:fill :orange}           [0 10] [20 20]]]
 
      ;;show centers
      [:g (map #(vector
                 :line
                 {:stroke {:paint :red :width 2}} [% 40] [% 50])
               (range 35 200 50))]]}
+
+   {:filename "distribute2"
+    :document
+    (let [gr {:fill :none :stroke :lightgrey}]
+     [:page
+      [:circle gr [60 60] 50]
+      [:dali/distribute
+       {:direction :right}
+       [:circle {:fill :mediumslateblue} [60 60] 50]
+       [:circle {:fill :sandybrown}      [60 60] 60]
+       [:circle {:fill :green}           [60 100] 70]
+       [:circle {:fill :orange}          [300 80] 80]]])}
 
    {:filename "markers1"
     :document
@@ -266,10 +292,11 @@
             [12 6 8]
             [44 22 18]
             [50 20 10]])]]}
+
    {:filename "graph4"
     :document
     [:page {:width 270 :height 150}
-     [:g {:transform [:translate [20 175]]}
+     [:g {:transform [:translate [10 130]]}
       (map (fn [[a b c]]
              [:dali/stack
               {:direction :up :class :col}
@@ -290,6 +317,7 @@
                    :anchor :bottom-left
                    :gap 2
                    :select [:.col]}]]}
+
    {:filename "align-test"
     :document
     [:page {:width 350 :height 220}
@@ -322,6 +350,7 @@
      [:dali/align {:relative-to :first :axis :center}
       [:circle {:fill :none :stroke :gray :stroke-dasharray [5 5]} [215 170] 30]
       [:text {:text-family "Verdana" :font-size 12} "aligned!"]]]}
+
    {:filename "align-test2"
     :document
     [:page {:width 120 :height 120}
@@ -330,6 +359,7 @@
      [:circle {:class :label :fill :none :stroke :black} :_ 50]
      [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]
      [:dali/align {:relative-to :first :axis :center :select [:.label]}]]}
+
    {:filename "align-test3"
     :document
     [:page {:width 240 :height 140}
@@ -341,7 +371,8 @@
        [:rect {:fill :orange} [140 0] [20 40]]]
       [:text {:text-family "Helvetica" :font-size 14}
        "tests alignment with :relative-to :first"]]]}
-   {:filename "align-test4" ;;line align-test2, but invalid, this is here to ensure that selector layouts that don't match can still render
+
+   {:filename "align-test4"
     :document
     [:page {:width 120 :height 120}
      [:dali/align {:relative-to :first :axis :center :select [:.label]}]
@@ -349,6 +380,19 @@
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
      [:circle {:class :label :fill :none :stroke :black} :_ 50]
      [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]}
+
+
+   {:filename "align-test5"
+    :document
+    [:page
+     [:line {:stroke :lightgrey} [20 110] [240 110]]
+     [:dali/align {:relative-to :first :axis :bottom}
+      [:circle {:fill :mediumslateblue} [50 90] 20]
+      [:circle {:fill :sandybrown}      [120 0] 40]
+      [:circle {:fill :green}           [170 0] 30]
+      [:circle {:fill :orange}          [220 0] 10]]
+     [:circle {:fill :none :stroke {:paint :red :width 2}} [50 90] 20]]}
+
    {:filename "composite-layout"
     :document
     [:page
@@ -459,6 +503,25 @@
 
      [:dali/matrix {:columns 5 :padding 10 :position [50 400]}
       (take 25 (repeat [:rect :_ [20 20]]))]]}
+
+   {:filename "matrix2"
+    :document
+    [:page {:fill :none :stroke :black}
+     [:dali/matrix {:columns 4}
+      [:circle [20 20] 20]
+      [:circle :_ 20]
+      [:circle :_ 20]
+      [:circle :_ 20]
+
+      [:circle :_ 10]
+      [:circle :_ 10]
+      [:circle :_ 10]
+      [:circle :_ 10]
+
+      [:circle :_ 5]
+      [:circle :_ 5]
+      [:circle :_ 5]
+      [:circle :_ 5]]]}
 
    {:filename "send-to-bottom"
     :document
