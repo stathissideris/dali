@@ -1,29 +1,12 @@
 (ns dali.examples.architecture
-  (:require [garden.core :refer [css]]
-            [clojure.string :as string]
-            [dali.layout :as l]
-            [dali.syntax :as d]
-            [dali.layout.utils :refer [place-by-anchor bounds->anchor-point]]
-            [dali.utils :as utils]
-            [dali.geom :as geom]
-            [dali.prefab :as prefab]
-            [net.cgrand.enlive-html :as en]))
+  (:require [clojure.string :as string]
+            [dali
+             [prefab :as prefab]
+             [syntax :as d]
+             [utils :as utils]]
+            [garden.core :refer [css]]))
 
 (def circle-radius 50)
-
-(defmethod l/layout-nodes :place
-  [doc {{:keys [offset relative-to location]} :attrs} elements bounds-fn]
-  (let [relative-to-el (first (en/select doc [(keyword (str "#" (name relative-to)))]))
-        _              (when-not relative-to-el
-                         (throw (ex-info "Cannot find relative-to element" {:element relative-to
-                                                                            :document doc})))
-        element        (first elements)
-        offset         (or offset [0 0])]
-    [(place-by-anchor element
-                      :top
-                      (geom/v+ offset (bounds->anchor-point :bottom (bounds-fn relative-to-el)))
-                      (bounds-fn element))]))
-(dali/register-layout-tag :place)
 
 (defn text-stack [texts]
   (vec (concat [:dali/stack {:direction :down :gap 6}]
@@ -65,7 +48,7 @@
                       :rounded 10
                       :attrs {:class :file :id box-id :dali/z-index -2}}]
      [:text {:id text-id :font-family "Verdana" :font-size 18} label]
-     [:place {:select text-id :relative-to box-id :offset [0 15]}])))
+     [:dali/place {:select text-id :relative-to [box-id :bottom] :anchor :top :offset [0 15]}])))
 
 (defn connect
   ([from to]

@@ -536,6 +536,23 @@
       [:circle :_ 50]]
      [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]}
 
+   {:filename "place1"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:rect {:id :p1} [20 20] [100 100]]
+     [:dali/place {:relative-to :p1}
+      [:rect {:fill :red} :_ [20 20]]]
+     [:dali/place {:relative-to [:p1 :top-right] :anchor :top-left :offset [5 0]}
+      [:rect {:fill :pink} :_ [20 20]]]
+     [:dali/place {:relative-to [:p1 :bottom-right] :anchor :bottom-left}
+      [:rect {:fill :green} :_ [20 20]]]
+     [:dali/place {:relative-to [:p1 :bottom-left] :anchor :bottom-left :offset [10 -10]}
+      [:rect {:fill :yellow} :_ [20 20]]]
+     [:rect {:id :child :fill :cyan} :_ [10 10]]
+     [:dali/place {:select :child :relative-to [:p1 :top-left] :anchor :top-left :offset [10 10]}]
+     [:dali/place {:relative-to [:p1 :top-right] :anchor :top-right :offset [-5 10]}
+      [:text {:text-family "Verdana" :font-size 13 :stroke :none :fill :black} "foo bar"]]]}
+
    {:filename "architecture"
     :document architecture/document}])
 

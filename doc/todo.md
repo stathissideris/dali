@@ -30,6 +30,7 @@
 
 ## Features
 
+* :dali/place support :distance attribute (or :gap?)
 * Align relative to biggest/smallest (which means widest/narrowest or
   tallest/shortest depending on the axis)
 * Dali markers for arbirary paths
