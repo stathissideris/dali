@@ -541,13 +541,13 @@
     [:page {:stroke :black :fill :none}
      [:rect {:id :p1} [20 20] [100 100]]
      [:dali/place {:relative-to :p1}
-      [:rect {:fill :red} :_ [20 20]]]
+      [:circle {:fill :lightblue} :_ 5]]
      [:dali/place {:relative-to [:p1 :top-right] :anchor :top-left :offset [5 0]}
-      [:rect {:fill :pink} :_ [20 20]]]
+      [:circle {:fill :pink} :_ 10]]
      [:dali/place {:relative-to [:p1 :bottom-right] :anchor :bottom-left}
-      [:rect {:fill :green} :_ [20 20]]]
+      [:rect {:fill :green} :_ [20 40]]]
      [:dali/place {:relative-to [:p1 :bottom-left] :anchor :bottom-left :offset [10 -10]}
-      [:rect {:fill :yellow} :_ [20 20]]]
+      [:rect {:fill :yellow} :_ [40 20]]]
      [:rect {:id :child :fill :cyan} :_ [10 10]]
      [:dali/place {:select :child :relative-to [:p1 :top-left] :anchor :top-left :offset [10 10]}]
      [:dali/place {:relative-to [:p1 :top-right] :anchor :top-right :offset [-5 10]}
