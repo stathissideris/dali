@@ -33,6 +33,7 @@
 * Align relative to biggest/smallest (which means widest/narrowest or
   tallest/shortest depending on the axis)
 * Dali markers for arbirary paths
+* Better error reporting by showing original form in the error (use meta)
 * "path" connector type: a flowing bezier curve
 * Connect the projected centers of elements
 * `[:surround]` layout to enclose elements in boxes
