@@ -11,26 +11,6 @@
 
 (def circle-radius 50)
 
-(defmethod l/layout-nodes :surround
-  [_ {{:keys [attrs padding]} :attrs} elements bounds-fn]
-  (let [padding (or padding 20)
-        bounds  (map bounds-fn elements)
-        min-x   (apply min (map (fn [[_ [x y] [w h]]] x) bounds))
-        min-y   (apply min (map (fn [[_ [x y] [w h]]] y) bounds))
-        max-x   (apply max (map (fn [[_ [x y] [w h]]] (+ x w)) bounds))
-        max-y   (apply max (map (fn [[_ [x y] [w h]]] (+ y h)) bounds))
-        x       min-x
-        y       min-y
-        w       (- max-x min-x)
-        h       (- max-y min-y)]
-    [(d/dali->ixml
-      [:rect
-       attrs
-       [(- x padding) (- y padding)]
-       [(+ w (* 2 padding)) (+ h (* 2 padding))]
-       10])]))
-(dali/register-layout-tag :surround)
-
 (defmethod l/layout-nodes :place
   [doc {{:keys [offset relative-to location]} :attrs} elements bounds-fn]
   (let [relative-to-el (first (en/select doc [(keyword (str "#" (name relative-to)))]))
@@ -80,9 +60,10 @@
   (let [box-id (utils/keyword-concat id :-box)
         text-id (utils/keyword-concat id :-text)]
     (list
-     [:surround {:select selector
-                 :padding 25
-                 :attrs {:class :file :id box-id :dali/z-index -2}}]
+     [:dali/surround {:select selector
+                      :padding 25
+                      :rounded 10
+                      :attrs {:class :file :id box-id :dali/z-index -2}}]
      [:text {:id text-id :font-family "Verdana" :font-size 18} label]
      [:place {:select text-id :relative-to box-id :offset [0 15]}])))
 
