@@ -28,14 +28,11 @@
                       (fn place-point [x y pos] [x pos])
                       (fn place-point [x y pos] [pos y]))
         initial-pos (if vertical? y x)]
-    (let [x
-          (retro/transform
-           [this-gap 0 gap
-            bounds nil (bounds-fn element)
-            size 0 (get-size bounds)
-            pos 0 (get-pos bounds)
-            this-pos initial-pos (advance-pos this-pos' size' this-gap')
-            element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
-           nodes)]
-;;      (>pprint x)
-      x)))
+    (retro/transform
+     [this-gap 0 gap
+      bounds nil (bounds-fn element)
+      size 0 (get-size bounds)
+      pos 0 (get-pos bounds)
+      this-pos initial-pos (advance-pos this-pos' size' this-gap')
+      element (place-by-anchor element anchor (place-point x y this-pos) bounds)]
+     nodes)))
