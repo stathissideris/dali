@@ -564,6 +564,16 @@
       [:rect :_ [100 100]]
       [:dali/ghost :_ [100 100]]
       [:rect :_ [100 100]]]]}
+
+   {:filename "allow-nil"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:dali/stack {:direction :right}
+      [:rect [10 10] [100 100]]
+      nil
+      [:rect [50 50] [100 100]]
+      nil
+      [:rect :_ [100 100]]]]}
    
    {:filename "architecture"
     :document architecture/document}])

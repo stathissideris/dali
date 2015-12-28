@@ -113,14 +113,6 @@
   (string/join
    " " (map convert-path-command commands)))
 
-;;the following implements a behaviour that also exists in hiccup: if
-;;the first element of the content is a seq, it is unwrapped in order
-;;to make the use of map, filter etc more convenient. See tests for
-;;group and polygon for an examples.
-(defn- unwrap-seq [coll]
-  (when coll
-    (if (seq? (first coll)) (first coll) coll)))
-
 (defn- has-dali-marker? [{:keys [attrs]}]
   (or (:dali/marker-end attrs)
       (:dali/marker-start attrs)))
@@ -314,6 +306,13 @@
         {:tag :rect
          :attrs (calc-attrs {:x x :y y :width w :height h :rx rounded :ry rounded} attrs)}))))
 
+;;the following implements a behaviour that also exists in hiccup: if
+;;the first element of the content is a seq, it is unwrapped in order
+;;to make the use of map, filter etc more convenient. See tests for
+;;group and polygon for an examples.
+(defn- flatten-1 [coll]
+  (mapcat (fn [x] (if (seq? x) x [x])) coll))
+
 (defmethod ixml-tag->xml :polyline
   [{:keys [attrs] :as node} document]
   (as-> node x
@@ -323,11 +322,11 @@
       (assoc x :attrs (calc-attrs {:points (string/join
                                             " "
                                             (map (fn [[x y]] (str x "," y))
-                                                 (-> x dali-content unwrap-seq)))} attrs)))))
+                                                 (-> x dali-content flatten-1)))} attrs)))))
 
 (defmethod ixml-tag->xml :polygon
   [{:keys [attrs] :as node} _]
-  (let [points (-> node dali-content unwrap-seq)]
+  (let [points (-> node dali-content flatten-1)]
     {:tag :polygon
      :attrs (calc-attrs {:points (string/join " " (map (fn [[x y]] (str x "," y)) points))} attrs)}))
 
@@ -356,9 +355,6 @@
   (if (and attrs (:transform attrs) (not (string? (:transform attrs))))
     (update attrs :transform (partial partition 2))
     attrs))
-
-(defn- flatten-1 [coll]
-  (mapcat (fn [x] (if (seq? x) x [x])) coll))
 
 (defn- replace-empty-coords [document]
   (utils/transform-zipper
@@ -389,7 +385,7 @@
     (let [[tag & r]     (process-dali-tag node)
           attrs         (attrs->ixml (when (map? (first r)) (first r)))
           r             (if (map? (first r)) (rest r) r)
-          content       (not-empty (flatten-1 r))
+          content       (not-empty (remove nil? (flatten-1 r)))
           content-attr? (and (not-empty content)
                              (not (every? string? content))
                              (every? (complement dali-tag?) content))
@@ -418,7 +414,7 @@
   (if (string? node)
     node
     (let [{:keys [tag attrs content]} (ixml-tag->xml node document)
-          content                     (unwrap-seq content)]
+          content                     (remove nil? (flatten-1 content))]
       (merge
        {:tag tag}
        (when-not (empty? attrs) {:attrs attrs})
@@ -442,9 +438,10 @@
 
 (defn dali->xml [document]
   (let [document (replace-empty-coords document)]
-    (utils/transform-zipper (utils/ixml-zipper document) (comp (partial ixml-node->xml-node document)
-                                                               dali-node->ixml-node
-                                                               zip/node))))
+    (utils/transform-zipper (utils/ixml-zipper document)
+                            (comp (partial ixml-node->xml-node document)
+                                  dali-node->ixml-node
+                                  zip/node))))
 
 (defn css [css-string]
   [:style {:type "text/css"} (str "<![CDATA[" css-string "]]>")])
