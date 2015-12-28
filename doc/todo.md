@@ -15,8 +15,6 @@
 
 * Possible bug: I suspect that selector layouts that don't match
   anything throw an exception. It should be a warning at most.
-* Nested layouts are not affected by the transforms of parent elements
-  and this is surprising.
 * Dali markers are not displayed in Safari.
 * PNG transcoding of drop-shadow fails when the specified width is
   double the original (200->400). dali fails by not rendering the
@@ -30,16 +28,15 @@
 
 ## Features
 
+* Allow for nil elements in content
 * :dali/place support :distance attribute (or :gap?)
+* :dali/place on path
 * Align relative to biggest/smallest (which means widest/narrowest or
   tallest/shortest depending on the axis)
 * Dali markers for arbirary paths
 * Better error reporting by showing original form in the error (use meta)
 * "path" connector type: a flowing bezier curve
 * Connect the projected centers of elements
-* `[:surround]` layout to enclose elements in boxes
-* `[:place]` layout that places something in relation to something
-  else. Use case: connector labels.
 * `[:at]` to appear generically in the place of coordinates and to
   refer to other elements or attributes of elements (such as anchors)
   so that you can draw paths that start/end at anchors. Will require
@@ -61,6 +58,11 @@
 
 # Done
 
+* Nested layouts are not affected by the transforms of parent elements
+  and this is surprising.
+* `[:place]` layout that places something in relation to something
+  else. Use case: connector labels.
+* `[:surround]` layout to enclose elements in boxes
 * Layouts are not applied in the order that they appear, nested
   layouts are applied first, then selectors are applied. Change that
   so that they are applied in document order.
