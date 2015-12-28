@@ -5,7 +5,7 @@
             [dali :as d]
             [dali
              [batik :as batik]
-             [geom :refer [v+ v-]]
+             [geom :refer [v-]]
              [syntax :as syntax]
              [utils :as utils]]
             [net.cgrand.enlive-html :as en]))
@@ -103,14 +103,14 @@
   ([document]
    (utils/transform-zipper (utils/ixml-zipper document) composite->normal-layout)))
 
-(defn- hoover-empty-groups
+(defn- hoover-obsolete-nodes
   ([document]
    (loop [zipper (utils/ixml-zipper document)]
      (if (zip/end? zipper)
        (zip/root zipper)
        (let [node   (zip/node zipper)
-             zipper (if (and (= :g (:tag node))
-                             (empty? (:content node)))
+             zipper (if (or (and (= :g (:tag node)) (empty? (:content node))) ;;empty groups
+                            (= "dali-ghost" (some-> node :attrs :class)))
                       (zip/remove zipper)
                       zipper)]
          (recur (zip/next zipper)))))))
@@ -271,4 +271,4 @@
          doc              (if (has-page-dimensions? doc)
                             doc
                             (infer-page-dimensions doc bounds-fn))]
-     (-> doc de-index-tree hoover-empty-groups))))
+     (-> doc de-index-tree hoover-obsolete-nodes))))

@@ -368,11 +368,25 @@
 (def dali-content-coords-tags
   #{:use :line :circle :ellipse :rect :polyline :polygon :path})
 
+
+
+(defmulti process-dali-tag first)
+
+(defmethod process-dali-tag :dali/ghost
+  [x] (concat [:rect {:class :dali-ghost}]
+              (if (map? (second x)) ;;has attributes?
+                (drop 2 x)
+                (rest x))))
+
+(defmethod process-dali-tag :default [x] x)
+
+
+
 (defn dali-node->ixml-node ;;TODO find out why this gets called with nodes that are already XML
   [node]
   (if-not (dali-tag? node)
     node
-    (let [[tag & r] node
+    (let [[tag & r]     (process-dali-tag node)
           attrs         (attrs->ixml (when (map? (first r)) (first r)))
           r             (if (map? (first r)) (rest r) r)
           content       (not-empty (flatten-1 r))

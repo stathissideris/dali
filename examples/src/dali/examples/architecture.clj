@@ -95,7 +95,10 @@
      (circle-stack :reporter-clj
                    [:limits-reporting "limits\nreporting" :main-fun]
                    [:corp-targets-reporting "corp\ntargets\nreporting" :corp-fun])
-     (circle-text :corp-actions "corp\nactions" :corp-fun)]
+
+     [:dali/stack {:id :papars :direction :down :gap 25}
+      [:dali/ghost :_ [100 100]]
+      (circle-text :corp-actions "corp\nactions" :corp-fun)]]
 
     [:dali/distribute {:direction :right :gap 120}
      (tool-box :sc "External\nData\ntools" :tool [380 170])

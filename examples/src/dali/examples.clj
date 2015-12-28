@@ -553,6 +553,18 @@
      [:dali/place {:relative-to [:p1 :top-right] :anchor :top-right :offset [-5 10]}
       [:text {:text-family "Verdana" :font-size 13 :stroke :none :fill :black} "foo bar"]]]}
 
+   {:filename "ghost1"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:rect {:fill :none :stroke :lightgrey} [110 10] [100 100]]
+     [:rect {:fill :none :stroke :lightgrey} [310 10] [100 100]]
+     [:dali/stack {:direction :right}
+      [:rect [10 10] [100 100]]
+      [:dali/ghost :_ [100 100]]
+      [:rect :_ [100 100]]
+      [:dali/ghost :_ [100 100]]
+      [:rect :_ [100 100]]]]}
+   
    {:filename "architecture"
     :document architecture/document}])
 

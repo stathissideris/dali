@@ -7,8 +7,9 @@
 (defn register-layout-tag [tag]
   (swap! layout-tags conj tag))
 
-(defn dali-tag? [tag]
-  (@layout-tags (keyword tag)))
-
 (defn layout-tag? [tag]
   (@layout-tags (keyword tag)))
+
+(defn dali-tag? [tag]
+  (let [tag (keyword tag)]
+    (layout-tag? tag)))
