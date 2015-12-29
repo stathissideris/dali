@@ -2,7 +2,6 @@
 
 ## Tasks
 
-* Remove cljs stuff prior to 0.7.0 release
 * Remove retrograde dependency and re-write parts that use it
 * Simplify/tidy up/clarify layout code
 * Comment layout code

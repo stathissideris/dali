@@ -10,7 +10,6 @@
                  [hiccup "1.0.5"]
                  [enlive "1.1.6"]
                  [prismatic/schema "1.0.3"]
-                 [org.clojure/clojurescript "1.7.145"]
                  [xerces/xerces "2.4.0"]
                  [org.apache.xmlgraphics/batik-transcoder "1.8"
                   :exclusions [[xerces/xercesImpl]
@@ -21,23 +20,8 @@
                  [org.apache.xmlgraphics/xmlgraphics-commons "2.0.1"]
                  [retrograde "0.10"]]
 
-  :plugins [[lein-cljsbuild "1.1.1-SNAPSHOT" :exclusions [org.clojure/clojure]]
-            [lein-figwheel "0.4.1" :exclusions [org.codehaus.plexus/plexus-utils]]
-            [org.codehaus.plexus/plexus-utils "3.0"] ;;figwheel itself has conflicting deps
-            ]
-  
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
 
   :profiles {:dev {:source-paths ["dev" "examples/src"]
                    :dependencies [[org.clojure/tools.namespace "0.2.11"]
-                                  [garden "1.3.0-SNAPSHOT"]]}}
-  
-  :cljsbuild
-  {:builds [{:id "dali"
-             :source-paths ["src"]
-             :figwheel true
-             :compiler
-             {:output-to      "release-js/dali.js"
-              :optimizations  :advanced
-              :pretty-print   false
-              :output-wrapper false}}]})
+                                  [garden "1.3.0-SNAPSHOT"]]}})
