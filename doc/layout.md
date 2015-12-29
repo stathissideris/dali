@@ -2,7 +2,7 @@
 
 Layout functionality in dali allows the placement of elements without
 knowing their exact dimensions in advance. All layouts have been
-implemented as custom tags, that all use the `:dali/` prefix.
+implemented as custom tags, and they all use the `:dali/` prefix.
 
 In most cases, the layout tag will contain elements that will be
 tranformed accordingly to conform to the desired layout. This can mean
@@ -26,10 +26,16 @@ this, dali uses the [enlive](https://github.com/cgrand/enlive)
 selector syntax. Those "selector layouts" participate in the normal
 order of resolution of layouts.
 
+Layout tags that contain elements are rendered as `<g>` tags in the
+final SVG, while layout tags that operate on a different part of the
+document via their selector, are completely removed from the SVG.
+
+In order to use the built-in layouts you need to require the relevant
+namespace (`dali.layout.stack`, `dali.layout.align` etc) despite the
+fact that you are not using any of the functions directly.
+
 [Apache Batik](http://xmlgraphics.apache.org/batik/) is used for
 figuring out the sizes of various elements.
-
-???(mention `require`s when using layouts)
 
 ## Basic layouts
 
@@ -65,13 +71,21 @@ figuring out the sizes of various elements.
 This is how you stack elements:
 
 ```clojure
-[:page {:width 200 :height 40 :stroke :none}
- [:dali/stack
-  {:position [10 10] :anchor :left :direction :right}
-  [:rect {:fill :mediumslateblue} :_ [50 20]]
-  [:rect {:fill :sandybrown} :_ [30 20]]
-  [:rect {:fill :green} :_ [40 20]]
-  [:rect {:fill :orange} :_ [20 20]]]]
+(ns stack-example
+  (:require [dali.io :as io]
+            [dali.layout.stack])) ;;don't forget this
+
+(def document
+  [:page {:stroke :none}
+   [:dali/stack
+    {:position [10 10] :anchor :left :direction :right}
+    [:rect {:fill :mediumslateblue} :_ [50 20]]
+    [:rect {:fill :sandybrown} :_ [30 60]]
+    [:rect {:fill :green} :_ [40 10]]
+    [:rect {:fill :orange} :_ [20 40]]]
+   [:circle {:fill :red} [10 40] 4]])
+
+(io/render-svg document "stack.svg")
 ```
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/stack1.svg)
 
@@ -159,6 +173,8 @@ in the same way).
 ???(stack with a selector)
 
 ### Distribute
+
+#### Quick ref:
 
 ```
 [:dali/distribute {:direction :right, :anchor :center, :gap 0}]
