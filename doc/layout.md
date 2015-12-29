@@ -1,5 +1,32 @@
 # Layout
 
+Layout functionality in dali allows the placement of elements without
+knowing their exact dimensions in advance. All layouts have been
+implemented as custom tags, that all use the `:dali/` prefix.
+
+In most cases, the layout tag will contain elements that will be
+tranformed accordingly to conform to the desired layout. This can mean
+that the element is translated to a new position, but this is not
+always the case.
+
+Layouts tags can be nested within other layout tags.
+
+dali's layout mechanism **is not** based on constraints. Each layout
+operation is applied to its elements in a predictable order, and
+operations that are applied later can cancel out the effects of
+previous operations. Layouts are resolved in the same order that
+Clojure expressions are evaluated: left-to-right, and children are
+laid out before their parents. We'll demonstrate the implications of
+that with examples later.
+
+Apart from acting on children elements, layouts can also "select"
+elements from other parts of the document and transform them. dali
+uses the [enlive](https://github.com/cgrand/enlive) selector
+syntax. Those "selector layouts" participate in the normal order of
+resolution of layouts.
+
+## Stack
+
 There are currently two ways to layout elements in dali: you can stack
 them on top of each other or you can distribute them at equal
 distances. They both involve custom syntax.
@@ -102,6 +129,8 @@ they have to be returned as lists and not vectors, because dali will
 expand lists but will try to interpret vectors as tags (hiccup behaves
 in the same way).
 
+## Distribute
+
 The other way is to distribute the centers of the elements in equal
 distances:
 
@@ -129,3 +158,17 @@ supported by stack.
 
 Layouts can also be nested within each other. The deepest layouts are
 resolved first and then they may be moved by their parents.
+
+## Align
+
+## Layouts are composable
+
+## Place
+
+## Matrix
+
+## Connect
+
+## Surround
+
+## Make your own

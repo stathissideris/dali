@@ -2,6 +2,7 @@
 
 ## Tasks
 
+* Remove cljs stuff prior to 0.7.0 release
 * Remove retrograde dependency and re-write parts that use it
 * Simplify/tidy up/clarify layout code
 * Comment layout code
@@ -15,7 +16,7 @@
 
 * Possible bug: I suspect that selector layouts that don't match
   anything throw an exception. It should be a warning at most.
-* Dali markers are not displayed in Safari.
+* dali markers are not displayed in Safari.
 * PNG transcoding of drop-shadow fails when the specified width is
   double the original (200->400). dali fails by not rendering the
   circle and drop shadow effect, batik's command-line transcoder
@@ -28,12 +29,11 @@
 
 ## Features
 
-* Allow for nil elements in content
 * :dali/place support :distance attribute (or :gap?)
 * :dali/place on path
 * Align relative to biggest/smallest (which means widest/narrowest or
   tallest/shortest depending on the axis)
-* Dali markers for arbirary paths
+* dali markers for arbirary paths
 * Better error reporting by showing original form in the error (use meta)
 * "path" connector type: a flowing bezier curve
 * Connect the projected centers of elements

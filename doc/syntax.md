@@ -49,9 +49,9 @@ to re-organise the hiccup SVG representation so that it, hopefully,
 makes more sense. Because the dali syntax is a superset of hiccup, you
 can choose to ignore the shortcuts provided and stick with the normal
 hiccup representation of SVG and everything will still work as normal
-for most things. More advanced features of Dali like layouts, markers
-etc, assume that you are using Dali's syntax, so it's preferrable to
-stick to that.
+for most things. More advanced features like layouts, markers etc,
+dali assumes that you are using dali's syntax, so it's preferrable to
+stick to that to get the most out of dali.
 
 ## Shapes syntax
 
@@ -79,6 +79,12 @@ Polylines and polygons:
 
 [:polygon [x1 y1] [x2 y2] [x3 y3] [x4 y4] ...]
 ```
+
+If you are using any [dali markers](prefab.md) in your document, you
+*have* to express your polylines in this way instead of using the
+standard SVG `:points` attribute, because dali needs to be able to
+replace the last and/or first point so that it rests at the base of
+the marker(s).
 
 Rectangles:
 ```clojure
