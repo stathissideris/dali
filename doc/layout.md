@@ -54,8 +54,9 @@ figuring out the sizes of various elements.
   * optional
 * `:select` - an enlive selector that will transform elements from the
   document instead of tranforming the children of the layout tag
-* `:position` - the position of the whole layout relative to its
-  parent. Can only be applied when the is no `:select` attribute
+* `:position` - the position of the top-left corner of the whole
+  layout relative to its parent. Can only be applied when there is no
+  `:select` attribute
   * `[x y]` - doubles
   * default: `[0 0]` - the position of the first element is used when
     no position is defined
@@ -174,10 +175,10 @@ in the same way).
   * double
   * default: `0`
   * optional
-* `:select` - an enlive selector that will transform elements from the
-  document instead of tranforming the children of the layout tag
-* `:position` - the position of the whole layout relative to its
-  parent. Can only be applied when the is no `:select` attribute
+* `:position` - the position of the top-left corner of the whole
+  layout relative to its parent. Can only be applied when there is no
+  `:select` attribute
+  parent. Can only be applied when there is no `:select` attribute
   * `[x y]` - doubles
   * default: `[0 0]` - the position of the first element is used when
     no position is defined
