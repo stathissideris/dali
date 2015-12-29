@@ -8,22 +8,22 @@
        (map (fn [[n1 n2]] (+ (/ n1 2) padding (/ n2 2))))))
 
 (defmethod layout/layout-nodes :dali/matrix
-  [_ {{:keys [columns padding row-padding column-padding]} :attrs :as tag}
+  [_ {{:keys [columns padding row-gap column-gap]} :attrs :as tag}
    elements bounds-fn]
-  (let [row-padding    (or padding row-padding 0)
-        column-padding (or padding column-padding 0)
-        bounds-fn      (fn [element] (if (= :_ element) [:rect [0 0] [0 0]] (bounds-fn element)))
-        position       (bounds->anchor-point :center (bounds-fn (first elements)))
-        bounds         (map bounds-fn elements)
-        sizes          (zipmap elements (map #(nth % 2) bounds))
-        rows           (partition-all columns elements)
-        columns        (apply map vector rows)
-        row-height     (fn [elements] (apply max (map (comp second sizes) elements)))
-        row-heights    (map row-height rows)
-        y-positions    (reductions + (second position) (sizes->offsets row-heights row-padding))
-        column-width   (fn [elements] (apply max (map (comp first sizes) elements)))
-        column-widths  (map column-width columns)
-        x-positions    (reductions + (first position) (sizes->offsets column-widths column-padding))]
+  (let [row-gap       (or padding row-gap 0)
+        column-gap    (or padding column-gap 0)
+        bounds-fn     (fn [element] (if (= :_ element) [:rect [0 0] [0 0]] (bounds-fn element)))
+        position      (bounds->anchor-point :center (bounds-fn (first elements)))
+        bounds        (map bounds-fn elements)
+        sizes         (zipmap elements (map #(nth % 2) bounds))
+        rows          (partition-all columns elements)
+        columns       (apply map vector rows)
+        row-height    (fn [elements] (apply max (map (comp second sizes) elements)))
+        row-heights   (map row-height rows)
+        y-positions   (reductions + (second position) (sizes->offsets row-heights row-gap))
+        column-width  (fn [elements] (apply max (map (comp first sizes) elements)))
+        column-widths (map column-width columns)
+        x-positions   (reductions + (first position) (sizes->offsets column-widths column-gap))]
     ;;(utils/prn-names bounds column-widths x-positions row-heights y-positions)
     (->> (for [y y-positions
            x x-positions]

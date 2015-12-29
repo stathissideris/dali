@@ -480,7 +480,7 @@
       (s/css (str "polyline {fill: none; stroke: black;}\n"
                   "rect {fill: none; stroke: black;}\n"))
       (prefab/sharp-arrow-marker :sharp)]
-     [:dali/matrix {:position [50 50] :columns 4 :row-padding 5 :column-padding 20}
+     [:dali/matrix {:position [50 50] :columns 4 :row-gap 5 :column-gap 20}
       [:rect :_ [50 50]]
       [:rect {:id :c} :_ [50 70]]
       [:rect {:id :b} :_ [70 50]]
