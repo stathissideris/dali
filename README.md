@@ -45,7 +45,7 @@ change. Just add this to the dependencies of your `project.clj`:
 * [How-to](doc/howto.md) -
   Task-driven documentation, click here first if you like learning by
   example.
-* [The dali pipeline]
+* [The dali pipeline](pipeline.md)
 
 ## Roadmap
 
