@@ -9,4 +9,5 @@ pom.xml
 .lein-failures
 .lein-plugins
 .nrepl-port
+.DS_Store
 /generated/
