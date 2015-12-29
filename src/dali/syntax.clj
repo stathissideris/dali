@@ -307,9 +307,9 @@
          :attrs (calc-attrs {:x x :y y :width w :height h :rx rounded :ry rounded} attrs)}))))
 
 ;;the following implements a behaviour that also exists in hiccup: if
-;;the first element of the content is a seq, it is unwrapped in order
-;;to make the use of map, filter etc more convenient. See tests for
-;;group and polygon for an examples.
+;;an element of the content is a seq, it is unwrapped and spliced to
+;;the main content in order to allow the use of map, filter etc more
+;;convenient. See tests for group and polygon for an examples.
 (defn- flatten-1 [coll]
   (mapcat (fn [x] (if (seq? x) x [x])) coll))
 
