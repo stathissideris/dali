@@ -20,11 +20,18 @@ This is almost valid dali syntax, with the small exception of the
  [:circle {:cx 50 :cy 50 :r 40}]]
 ```
 
-You could use dali like that, but there is a shorter and more
-convenient way to represent circles:
+If you leave out width and height, they will be calculated
+automatically to include all the graphics in the document:
 
 ```clojure
-[:page {:width 100 :height 100}
+[:page
+ [:circle {:cx 50 :cy 50 :r 40}]]
+```
+
+There is a shorter and more convenient way to represent circles:
+
+```clojure
+[:page
  [:circle [50 50] 40]]
 ```
 

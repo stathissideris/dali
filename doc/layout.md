@@ -16,45 +16,56 @@ operation is applied to its elements in a predictable order, and
 operations that are applied later can cancel out the effects of
 previous operations. Layouts are resolved in the same order that
 Clojure expressions are evaluated: left-to-right, and children are
-laid out before their parents. We'll demonstrate the implications of
-that with examples later.
+laid out before their parents. The implications of this may not be
+immediately clear, but they will hopefully become obvious with a few
+examples.
 
 Apart from acting on children elements, layouts can also "select"
-elements from other parts of the document and transform them. dali
-uses the [enlive](https://github.com/cgrand/enlive) selector
-syntax. Those "selector layouts" participate in the normal order of
-resolution of layouts.
+elements from other parts of the document and transform them. For
+this, dali uses the [enlive](https://github.com/cgrand/enlive)
+selector syntax. Those "selector layouts" participate in the normal
+order of resolution of layouts.
 
-## Stack
-
-There are currently two ways to layout elements in dali: you can stack
-them on top of each other or you can distribute them at equal
-distances. They both involve custom syntax.
 [Apache Batik](http://xmlgraphics.apache.org/batik/) is used for
 figuring out the sizes of various elements.
+
+## Basic layouts
+
+### Stack
+
+#### Quick ref:
+
+```
+[:dali/stack {:direction :up, :anchor :bottom, :gap 0}]
+```
+* `:direction` - the direction of accumulation
+  * one of `:up`, `:down`, `:left`, `:right`
+  * default: `:up`
+* `:anchor` - the anchor used to align the elements
+  * one of: `:top`, `:bottom`, `:left`, `:right`, `:top-left`, `:top-right`, `:bottom-left`, `:bottom-right`
+  * default: sensible default selected based on `:direction`
+* `:gap` - the gap to leave between elements
+  * integer
+  * default: 0
 
 This is how you can stack elements:
 
 ```clojure
-(s/dali->hiccup
- (layout/resolve-layout
-  [:page {:width 200 :height 40 :stroke :none}
-   [:dali/stack
-    {:position [10 20] :anchor :left :direction :right}
-    [:rect {:fill :mediumslateblue} :_ [50 20]]
-    [:rect {:fill :sandybrown} :_ [30 20]]
-    [:rect {:fill :green} :_ [40 20]]
-    [:rect {:fill :orange} :_ [20 20]]]]))
+[:page {:width 200 :height 40 :stroke :none}
+ [:dali/stack
+  {:position [10 10] :anchor :left :direction :right}
+  [:rect {:fill :mediumslateblue} :_ [50 20]]
+  [:rect {:fill :sandybrown} :_ [30 20]]
+  [:rect {:fill :green} :_ [40 20]]
+  [:rect {:fill :orange} :_ [20 20]]]]
 ```
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/stack1.svg)
 
 The rectangles are simply stacked next to each other, from left to
-right (as defined by the `:direction` parameter). Note that in order
-to calculate the new positions of the rectangles, you need to call
-`resolve-layout` on the document. The weird `:_` syntax is simply
-replaced by `[0 0]` when resolving the layout. This is simply to have
-a visual queue of the parameters that don't matter as the rectangles
-will be moved anyway.
+right (as defined by the `:direction` parameter). ???(link to a recipe
+for rendering) The `:_` keyword is simply replaced by `[0 0]` before
+resolving the layout and it is a visual cue for dimensions that don't
+matter as the rectangles will be moved anyway.
 
 When stacking to the right, the middle of the left edge of each shape
 is aligned on the same line. In other words, the middle-left "anchors"
@@ -64,7 +75,7 @@ different heights. Let's remix the previous example:
 ```clojure
 [:page {:width 200 :height 80 :stroke :none}
  [:dali/stack
-  {:position [10 40] :anchor :left :direction :right}
+  {:position [10 10] :anchor :left :direction :right}
   [:rect {:fill :mediumslateblue} :_ [50 20]]
   [:rect {:fill :sandybrown} :_ [30 60]]
   [:rect {:fill :green} :_ [40 10]]
@@ -97,7 +108,7 @@ is possible to perform stacking using different anchors:
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/stack3.svg)
 
 The stack layout also supports stacking in different directions (left,
-right, up and down) and it has an optional gap parameter (0 by
+right, up and down) and it has an optional `:gap` parameter (0 by
 default):
 
 ```clojure
@@ -129,7 +140,11 @@ they have to be returned as lists and not vectors, because dali will
 expand lists but will try to interpret vectors as tags (hiccup behaves
 in the same way).
 
-## Distribute
+???(stack without a position)
+
+???(stack with a selector)
+
+### Distribute
 
 The other way is to distribute the centers of the elements in equal
 distances:
@@ -159,16 +174,24 @@ supported by stack.
 Layouts can also be nested within each other. The deepest layouts are
 resolved first and then they may be moved by their parents.
 
-## Align
+### Align
 
-## Layouts are composable
+## Understanding the mechanism
 
-## Place
+### Layout application order
 
-## Matrix
+### Layouts are composable
 
-## Connect
+## More placement layouts
 
-## Surround
+### Place
+
+### Matrix
+
+## "Layouts" that produce stuff 
+
+### Connect
+
+### Surround
 
 ## Make your own
