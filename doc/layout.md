@@ -29,6 +29,8 @@ order of resolution of layouts.
 [Apache Batik](http://xmlgraphics.apache.org/batik/) is used for
 figuring out the sizes of various elements.
 
+???(mention `require`s when using layouts)
+
 ## Basic layouts
 
 ### Stack
@@ -50,12 +52,14 @@ figuring out the sizes of various elements.
   * double
   * default: `0`
   * optional
-* `:position` - the position of the whole layout relative to its parent
-  * `[x y]` - double
-  * default: `[0 0]`
-  * optional
 * `:select` - an enlive selector that will transform elements from the
   document instead of tranforming the children of the layout tag
+* `:position` - the position of the whole layout relative to its
+  parent. Can only be applied when the is no `:select` attribute
+  * `[x y]` - doubles
+  * default: `[0 0]` - the position of the first element is used when
+    no position is defined
+  * optional
 
 This is how you stack elements:
 
@@ -155,17 +159,41 @@ in the same way).
 
 ### Distribute
 
-The other way is to distribute the centers of the elements in equal
+```
+[:dali/distribute {:direction :right, :anchor :center, :gap 0}]
+```
+* `:direction` - the direction of accumulation
+  * one of `:up`, `:down`, `:left`, `:right`
+  * default: `:right`
+  * optional
+* `:anchor` - the anchor used to align the elements
+  * one of: `:top`, `:bottom`, `:left`, `:right`, `:top-left`, `:top-right`, `:bottom-left`, `:bottom-right`
+  * default: `:center`
+  * optional
+* `:gap` - the gap to leave between elements
+  * double
+  * default: `0`
+  * optional
+* `:select` - an enlive selector that will transform elements from the
+  document instead of tranforming the children of the layout tag
+* `:position` - the position of the whole layout relative to its
+  parent. Can only be applied when the is no `:select` attribute
+  * `[x y]` - doubles
+  * default: `[0 0]` - the position of the first element is used when
+    no position is defined
+  * optional
+
+This is how to distribute the centers of the elements in equal
 distances:
 
 ```clojure
-[:page {:width 200 :height 60 :stroke :none}
+[:page {:stroke :none}
  [:dali/distribute
-  {:position [10 20] :direction :right}
-  [:rect {:fill :mediumslateblue} :_ [50 20]]
-  [:rect {:fill :sandybrown} :_ [30 20]]
-  [:rect {:fill :green} :_ [40 20]]
-  [:rect {:fill :orange} :_ [20 20]]]
+  {:direction :right}
+  [:rect {:fill :mediumslateblue} [10 10] [50 20]]
+  [:rect {:fill :sandybrown}       [0 10] [30 20]]
+  [:rect {:fill :green}            [0 10] [40 20]]
+  [:rect {:fill :orange}           [0 10] [20 20]]]
 
  ;;show centers
  [:g (map #(vector
@@ -175,13 +203,13 @@ distances:
 ```
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/distribute1.svg)
 
-The exact distance between the centers is determined by the widest or
-tallest element (depending on the direction) and also the gap
-parameter. The distribute layout also supports the 4 directions
-supported by stack.
+In this example, no `:position` parameter was defined, so the whole
+layout happened in relation to the position of the first element.
 
-Layouts can also be nested within each other. The deepest layouts are
-resolved first and then they may be moved by their parents.
+The exact distance between the centers is determined by the *widest*
+or the *tallest* element (depending on the direction) and also by the
+`:gap` parameter. The `dali/distribute` layout also supports the 4
+directions supported by stack.
 
 ### Align
 
