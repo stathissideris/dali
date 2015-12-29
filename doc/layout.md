@@ -41,14 +41,23 @@ figuring out the sizes of various elements.
 * `:direction` - the direction of accumulation
   * one of `:up`, `:down`, `:left`, `:right`
   * default: `:up`
+  * optional
 * `:anchor` - the anchor used to align the elements
   * one of: `:top`, `:bottom`, `:left`, `:right`, `:top-left`, `:top-right`, `:bottom-left`, `:bottom-right`
   * default: sensible default selected based on `:direction`
+  * optional
 * `:gap` - the gap to leave between elements
-  * integer
-  * default: 0
+  * double
+  * default: `0`
+  * optional
+* `:position` - the position of the whole layout relative to its parent
+  * `[x y]` - double
+  * default: `[0 0]`
+  * optional
+* `:select` - an enlive selector that will transform elements from the
+  document instead of tranforming the children of the layout tag
 
-This is how you can stack elements:
+This is how you stack elements:
 
 ```clojure
 [:page {:width 200 :height 40 :stroke :none}
