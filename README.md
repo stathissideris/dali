@@ -39,10 +39,10 @@ change. Just add this to the dependencies of your `project.clj`:
 
 ## Documentation
 
-* [Basic syntax](https://github.com/stathissideris/dali/doc/syntax.md)
-* [Layout](https://github.com/stathissideris/dali/doc/layout.md)
-* [Pre-fabricated elements](https://github.com/stathissideris/dali/doc/prefab.md)
-* [How-to](https://github.com/stathissideris/dali/doc/howto.md) -
+* [Basic syntax](doc/syntax.md)
+* [Layout](doc/layout.md)
+* [Pre-fabricated elements](doc/prefab.md)
+* [How-to](doc/howto.md) -
   Task-driven documentation, click here first if you like learning by
   example.
 
