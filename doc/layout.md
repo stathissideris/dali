@@ -1,30 +1,19 @@
 # Layout
 
 Layout functionality in dali allows the placement of elements without
-knowing their exact dimensions in advance. All layouts have been
-implemented as custom tags, and they all use the `:dali/` prefix.
+knowing their exact dimensions in advance. All appear as custom tags,
+and they all use the `:dali/` prefix.
 
-In most cases, the layout tag will contain elements that will be
-tranformed accordingly to conform to the desired layout. This can mean
-that the element is translated to a new position, but this is not
-always the case.
+In most cases, the children of the layout tag will be moved around to
+conform to the layout. For some layouts this not the case, instead the
+introduce new elements into the document.
 
 Layouts tags can be nested within other layout tags.
 
-dali's layout mechanism **is not** based on constraints. Each layout
-operation is applied to its elements in a predictable order, and
-operations that are applied later can cancel out the effects of
-previous operations. Layouts are resolved in the same order that
-Clojure expressions are evaluated: left-to-right, and children are
-laid out before their parents. The implications of this may not be
-immediately clear, but they will hopefully become obvious with a few
-examples.
-
-Apart from acting on children elements, layouts can also "select"
-elements from other parts of the document and transform them. For
-this, dali uses the [enlive](https://github.com/cgrand/enlive)
-selector syntax. Those "selector layouts" participate in the normal
-order of resolution of layouts.
+Instead of acting on their children elements, layouts can also
+"select" elements from other parts of the document and transform
+them. For this, dali uses the
+[enlive](https://github.com/cgrand/enlive) selector syntax.
 
 Layout tags that contain elements are rendered as `<g>` tags in the
 final SVG, while layout tags that operate on a different part of the
@@ -37,7 +26,7 @@ fact that you are not using any of the functions directly.
 [Apache Batik](http://xmlgraphics.apache.org/batik/) is used for
 figuring out the sizes of various elements.
 
-## Basic layouts
+## Basic layouts: stack, distribute, align
 
 ### Stack
 
@@ -47,11 +36,11 @@ figuring out the sizes of various elements.
 [:dali/stack {:direction :up, :anchor :bottom, :gap 0}]
 ```
 * `:direction` - the direction of accumulation
-  * one of `:up`, `:down`, `:left`, `:right`
+  * one of `:up` `:down` `:left` `:right`
   * default: `:up`
   * optional
 * `:anchor` - the anchor used to align the elements
-  * one of: `:top`, `:bottom`, `:left`, `:right`, `:top-left`, `:top-right`, `:bottom-left`, `:bottom-right`
+  * one of: `:top` `:bottom` `:left` `:right` `:top-left` `:top-right` `:bottom-left` `:bottom-right`
   * default: sensible default selected based on `:direction`
   * optional
 * `:gap` - the gap to leave between elements
@@ -118,7 +107,7 @@ is possible to perform stacking using different anchors:
 ```clojure
 [:page {:width 310 :height 80 :stroke :none}
  [:dali/stack
-  {:position [10 70] :anchor :bottom-left :direction :right}
+  {:position [10 10] :anchor :bottom-left :direction :right}
   [:rect {:fill :mediumslateblue} :_ [50 20]]
   [:rect {:fill :sandybrown} :_ [30 60]]
   [:rect {:fill :green} :_ [40 10]]
@@ -180,11 +169,11 @@ in the same way).
 [:dali/distribute {:direction :right, :anchor :center, :gap 0}]
 ```
 * `:direction` - the direction of accumulation
-  * one of `:up`, `:down`, `:left`, `:right`
+  * one of `:up` `:down` `:left` `:right`
   * default: `:right`
   * optional
 * `:anchor` - the anchor used to align the elements
-  * one of: `:top`, `:bottom`, `:left`, `:right`, `:top-left`, `:top-right`, `:bottom-left`, `:bottom-right`
+  * one of: `:top` `:bottom` `:left` `:right` `:top-left` `:top-right` `:bottom-left` `:bottom-right`
   * default: `:center`
   * optional
 * `:gap` - the gap to leave between elements
@@ -233,6 +222,15 @@ directions supported by stack.
 ## Understanding the mechanism
 
 ### Layout application order
+
+dali's layout mechanism **is not** based on constraints. Each layout
+operation is applied to its elements in a predictable order, and
+operations that are applied later can cancel out the effects of
+previous operations. Layouts are resolved in the same order that
+Clojure expressions are evaluated: left-to-right, and children are
+laid out before their parents. The implications of this may not be
+immediately clear, but they will hopefully become obvious with a few
+examples.
 
 ### Layouts are composable
 
