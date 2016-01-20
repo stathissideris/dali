@@ -44,7 +44,11 @@ map of the shape:
   (prefab/sharp-arrow-marker :sharp {:scale 2})]
  [:polyline {:dali/marker-end {:id :sharp :fill :red}} [50 80] [90 30]]]
 ```
- 
+
+## Add a drop-shadow
+
+## Set the fill to stripes
+
 ## Bar Charts
 
 Although dali is a generic graphics library, it's really easy to create

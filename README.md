@@ -39,12 +39,11 @@ change. Just add this to the dependencies of your `project.clj`:
 
 ## Documentation
 
-* [Basic syntax](doc/syntax.md)
+* [Basic syntax](doc/syntax.md) -- Start here
 * [Layout](doc/layout.md)
 * [Pre-fabricated elements](doc/prefab.md)
 * [How-to](doc/howto.md) -
-  Task-driven documentation, click here first if you like learning by
-  example.
+  Task-driven documentation, recipes for common tasks.
 * [The dali pipeline](pipeline.md)
 
 ## Roadmap

@@ -1,4 +1,4 @@
-# Layout
+# Layouts and document operations
 
 Layout functionality in dali allows the placement of elements without
 knowing their exact dimensions in advance. All appear as custom tags,
@@ -18,6 +18,10 @@ them. For this, dali uses the
 Layout tags that contain elements are rendered as `<g>` tags in the
 final SVG, while layout tags that operate on a different part of the
 document via their selector, are completely removed from the SVG.
+
+The same mechanism is used for document operations that do not involve
+changing the positions of elements but may add new elements based on
+the position and dimensions of other elements.
 
 In order to use the built-in layouts you need to require the relevant
 namespace (`dali.layout.stack`, `dali.layout.align` etc) despite the
@@ -223,14 +227,46 @@ directions supported by stack.
 
 ### Layout application order
 
-dali's layout mechanism **is not** based on constraints. Each layout
-operation is applied to its elements in a predictable order, and
-operations that are applied later can cancel out the effects of
-previous operations. Layouts are resolved in the same order that
-Clojure expressions are evaluated: left-to-right, and children are
-laid out before their parents. The implications of this may not be
-immediately clear, but they will hopefully become obvious with a few
-examples.
+dali's layout mechanism **is not** based on constraints, and this
+choice was made because contraint-based systems try to satisfy all
+constraints at once and you end up with unpredictable behaviour that's
+hard to debug.
+
+In dali, each layout operation is applied in a predictable order which
+the order that Clojure expressions are evaluated: left-to-right, and
+children are laid out before their parents (deepest first).
+
+The implications of this is that operations that are applied later can
+cancel out the effects of previous operations. The first layout
+operation is given the document tree, it modifies it as necessary and
+the result is passed to the next layout operation. So keep in mind
+that with the exception of the first one, layout operations act on the
+output of the previous operation, and not on the original document
+that you pass to dali.
+
+This means that if some elements are aligned to the left by one layout
+operation, and then aligned to the right by a subsequent operation,
+the last one wins.
+
+??? example
+
+Because you can use enlive selectors to refer to any part of the
+document, you may be tempted to put layouts anywhere, even at the
+beginning of the document. This would work in simple cases, but if you
+don't think about order you'll get unexpected results. For example,
+say you want to connect 2 boxes, and somehow decide to put the
+`[:connect]` tags first:
+
+??? wrong example
+
+What happened? Because `[:connect]` was evaluated first, the arrow was
+placed according to the *original* positions of the boxes, and then
+`[:stack]` changed these positions. The correct way to do it is to
+make sure that `[:connect]` is applied *after* the positions of the
+boxes have been finalised by any layout operations that may affect
+them:
+
+??? window
 
 ### Layouts are composable
 
@@ -240,7 +276,7 @@ examples.
 
 ### Matrix
 
-## "Layouts" that produce stuff 
+## Document operations
 
 ### Connect
 
