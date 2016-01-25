@@ -8,7 +8,9 @@
              [layout :as layout]
              [syntax :as syntax]]
             [net.cgrand.enlive-html :as en])
-  (:import [javax.imageio ImageIO]))
+  (:import [java.io ByteArrayOutputStream]
+           [javax.imageio ImageIO]
+           [java.awt.image BufferedImage]))
 
 (defn- slurp-bytes
   "Slurp the bytes from a slurpable thing"
@@ -34,6 +36,14 @@
     {:width      (.getWidth image)
      :height     (.getHeight image)
      :xlink:href (slurp-data-uri filename (str "image/" (name format)))}))
+
+(defn buffered-image-attr [^BufferedImage buffered-image]
+  (let [baos  (ByteArrayOutputStream.)
+        _     (ImageIO/write buffered-image "png" baos)
+        bytes (.toByteArray baos)]
+    {:width      (.getWidth buffered-image)
+     :height     (.getHeight buffered-image)
+     :xlink:href (data-uri bytes "image/png")}))
 
 (defn load-enlive-svg [filename]
   (en/xml-resource (io/file filename)))

@@ -9,7 +9,8 @@
             [dali.schema :as schema]
             [dali.syntax :as s]
             [dali.utils :as utils]
-            [dali.examples.architecture :as architecture]))
+            [dali.examples.architecture :as architecture])
+  (:import [javax.imageio ImageIO]))
 
 (def examples
   [{:filename "hello-world"
@@ -593,6 +594,13 @@
 
      [:dali/place {:relative-to [:arrow :top] :anchor :bottom :offset [0 -10]}
       [:text {:font-family "Impact" :font-size 20 :stroke :none :fill :black} "but of course!"]]]}
+
+   ;;embed in-memory image
+   {:filename "images2"
+    :document
+    (let [cat (ImageIO/read (java-io/file "resources/cat2.png"))]
+      [:page {:stroke :black}     
+       [:image (merge {:x 50 :y 50} (io/buffered-image-attr cat))]])}
 
    {:filename "architecture"
     :document architecture/document}])
