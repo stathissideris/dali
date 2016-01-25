@@ -8,16 +8,18 @@
   (:import [java.awt RenderingHints Rectangle]
            [java.awt.geom AffineTransform PathIterator]
            [javax.imageio ImageIO]
-           [java.io File]
-           java.io.ByteArrayInputStream
-           java.nio.charset.StandardCharsets
+           [java.io File ByteArrayInputStream]
+           [java.nio.charset StandardCharsets]
            [org.apache.batik.anim.dom SAXSVGDocumentFactory SVGDOMImplementation]
            [org.apache.batik.bridge BridgeContext GVTBuilder UserAgentAdapter]
            [org.apache.batik.bridge TextNode]
            [org.apache.batik.gvt RootGraphicsNode CompositeGraphicsNode ShapeNode]
            [org.apache.batik.gvt.renderer ConcreteImageRendererFactory]
            [org.apache.batik.transcoder TranscoderInput TranscoderOutput SVGAbstractTranscoder]
-           org.apache.batik.transcoder.image.PNGTranscoder))
+           [org.apache.batik.ext.awt.image.spi ImageTagRegistry]
+           [org.apache.batik.ext.awt.image.codec.png PNGRegistryEntry]
+           [org.apache.batik.ext.awt.image.codec.tiff TIFFRegistryEntry]
+           [org.apache.batik.transcoder.image PNGTranscoder]))
 
 ;;Batik - calculating bounds of cubic spline
 ;;http://stackoverflow.com/questions/10610355/batik-calculating-bounds-of-cubic-spline?rq=1
@@ -32,6 +34,12 @@
   (append-node! [this new-node document])
   (get-bounds [this element])
   (get-relative-bounds [this element]))
+
+(defn apply-imageio-workaround []
+  (let [registry (ImageTagRegistry/getRegistry)]
+    (doto registry
+      (.register (new PNGRegistryEntry))
+      (.register (new TIFFRegistryEntry)))))
 
 (defn- to-rect [rect]
   (when rect

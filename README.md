@@ -42,7 +42,7 @@ change. Just add this to the dependencies of your `project.clj`:
 * [Basic syntax](doc/syntax.md) -- Start here
 * [Layout](doc/layout.md)
 * [Pre-fabricated elements](doc/prefab.md)
-* [How-to](doc/howto.md) -
+* [How-to](doc/howto.md) --
   Task-driven documentation, recipes for common tasks.
 * [The dali pipeline](pipeline.md)
 

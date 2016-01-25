@@ -7,6 +7,7 @@
   ;;:pedantic? :abort
   
   :dependencies [[org.clojure/clojure "1.7.0"]
+                 [org.clojure/data.codec "0.1.0"]
                  [hiccup "1.0.5"]
                  [enlive "1.1.6"]
                  [prismatic/schema "1.0.3"]

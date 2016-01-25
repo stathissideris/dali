@@ -2,11 +2,34 @@
   (:refer-clojure :exclude [namespace])
   (:require [clojure.java.io :as io]
             [clojure.walk :as walk]
+            [clojure.data.codec.base64 :as b64]
             [dali.batik :as batik]
             [dali
              [layout :as layout]
              [syntax :as syntax]]
-            [net.cgrand.enlive-html :as en]))
+            [net.cgrand.enlive-html :as en])
+  (:import [javax.imageio ImageIO]))
+
+(defn- slurp-bytes
+  "Slurp the bytes from a slurpable thing"
+  [x]
+  (with-open [out (java.io.ByteArrayOutputStream.)]
+    (io/copy (io/input-stream x) out)
+    (.toByteArray out)))
+
+(defn slurp-data-uri [filename]
+  (->> filename
+       io/file
+       slurp-bytes
+       b64/encode
+       (new String)
+       (str "data:image/png;base64,")))
+
+(defn raster-image-attr [filename]
+  (let [image (ImageIO/read (io/file filename))]
+    {:width      (.getWidth image)
+     :height     (.getHeight image)
+     :xlink:href (slurp-data-uri filename)}))
 
 (defn load-enlive-svg [filename]
   (en/xml-resource (io/file filename)))

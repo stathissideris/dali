@@ -248,7 +248,7 @@ directions supported by stack.
   * default: `:center` - special case which means that elements are
     aligned both horizontally and vertically so they are centered on
     top of each other
-    * optional
+  * optional
 
 ??? examples
 

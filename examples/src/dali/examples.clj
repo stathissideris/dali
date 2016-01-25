@@ -465,7 +465,7 @@
 
      ;; :fill :green doesn't work because CSS wins
      [:dali/connect {:from :c :to :b :stroke :green :stroke-width 2.5
-                :dali/marker-end {:id :big-sharp :style "fill: green;"}}]
+                     :dali/marker-end {:id :big-sharp :style "fill: green;"}}]
 
      [:dali/connect {:from :d :to :c :class :myclass :dali/marker-end :sharp}]
      [:dali/connect {:from :c :to :e :type :-| :dali/marker-end :sharp}]
@@ -551,7 +551,7 @@
      [:rect {:id :child :fill :orange} :_ [25 10]]
      [:dali/place {:select :child :relative-to [:p1 :top-left] :anchor :top-left :offset [10 10]}]
      [:dali/place {:relative-to [:p1 :top-right] :anchor :top-right :offset [-5 10]}
-      [:text {:text-family "Verdana" :font-size 13 :stroke :none :fill :black} "foo bar"]]]}
+      [:text {:font-family "Verdana" :font-size 13 :stroke :none :fill :black} "foo bar"]]]}
 
    {:filename "ghost1"
     :document
@@ -574,7 +574,26 @@
       [:rect [50 50] [100 100]]
       nil
       [:rect :_ [100 100]]]]}
-   
+
+   {:filename "images1"
+    :document
+    [:page {:stroke :black}
+     [:defs (prefab/curvy-arrow-marker :curvy {:scale 2})]
+     [:dali/stack {:direction :right :position [50 50] :gap 200}
+      [:image (merge {:id :cat1} (io/raster-image-attr "resources/cat1.png"))]
+      [:image (merge {:id :cat2} (io/raster-image-attr "resources/cat2.png"))]]
+
+     [:dali/connect {:from :cat1 :to :cat2 :dali/marker-end :curvy :id :arrow :stroke-width 4}]
+
+     [:dali/place {:relative-to [:cat1 :bottom] :anchor :bottom :offset [0 -10]}
+      [:text {:font-family "Impact" :font-size 26 :stroke :black :fill :white} "I CAN HAZ"]]
+
+     [:dali/place {:relative-to [:cat2 :bottom] :anchor :bottom :offset [0 -10]}
+      [:text {:font-family "Impact" :font-size 20 :stroke :black :fill :white} "CHEEZEBURGER"]]
+
+     [:dali/place {:relative-to [:arrow :top] :anchor :bottom :offset [0 -10]}
+      [:text {:font-family "Impact" :font-size 20 :stroke :none :fill :black} "but of course!"]]]}
+
    {:filename "architecture"
     :document architecture/document}])
 
