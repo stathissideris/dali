@@ -35,11 +35,15 @@
   (get-bounds [this element])
   (get-relative-bounds [this element]))
 
-(defn apply-imageio-workaround []
-  (let [registry (ImageTagRegistry/getRegistry)]
-    (doto registry
-      (.register (new PNGRegistryEntry))
-      (.register (new TIFFRegistryEntry)))))
+(def imageio-workaround-applied? (atom false))
+
+(defn- apply-imageio-workaround! []
+  (when-not @imageio-workaround-applied?
+    (let [registry (ImageTagRegistry/getRegistry)]
+      (doto registry
+        (.register (new PNGRegistryEntry))
+        (.register (new TIFFRegistryEntry))))
+    (reset! imageio-workaround-applied? true)))
 
 (defn- to-rect [rect]
   (when rect
@@ -134,6 +138,7 @@
   ([doc]
    (context doc nil))
   ([doc dom & {:keys [dynamic?]}]
+   (apply-imageio-workaround!)
    (let [dom (or dom
                  (-> (SVGDOMImplementation/getDOMImplementation)
                      (.createDocument SVGDOMImplementation/SVG_NAMESPACE_URI "svg" nil)))
