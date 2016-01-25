@@ -17,13 +17,17 @@
     (io/copy (io/input-stream x) out)
     (.toByteArray out)))
 
+(defn data-uri [bytes]
+  (->> bytes
+       b64/encode
+       (new String)
+       (str "data:image/png;base64,")))
+
 (defn slurp-data-uri [filename]
   (->> filename
        io/file
        slurp-bytes
-       b64/encode
-       (new String)
-       (str "data:image/png;base64,")))
+       data-uri))
 
 (defn raster-image-attr [filename]
   (let [image (ImageIO/read (io/file filename))]
