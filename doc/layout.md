@@ -2,7 +2,10 @@
 
 Layout functionality in dali allows the placement of elements without
 knowing their exact dimensions in advance. All appear as custom tags,
-and they all use the `:dali/` prefix.
+and they all use the `:dali/` prefix. Use this page as a reference of
+the differect layouts and operations, but make sure to read the
+"Understanding the mechanism" section at the bottom before you start
+using them.
 
 In most cases, the children of the layout tag will be moved around to
 conform to the layout. For some layouts this not the case, instead the
@@ -36,7 +39,7 @@ figuring out the sizes of various elements.
 
 #### Quick ref:
 
-```
+```clojure
 [:dali/stack {:direction :up, :anchor :bottom, :gap 0}]
 ```
 * `:direction` - the direction of accumulation
@@ -223,6 +226,46 @@ directions supported by stack.
 
 ### Align
 
+#### Quick ref:
+
+```clojure
+[:dali/align {:relative-to :first, :axis :left}]
+```
+
+* `:relative-to` - what to align the elements to.
+  * Value is either:
+    * one of `:first` `:last` - to align relative to the first or last
+      elements
+    * a number - to align elements relative to a particular horizontal
+      or vertical depending on the `:axis`. This is in absolute
+      coordinates.
+  * default: `:first`
+  * optional
+* `:axis` - the "axis" of alignment. For example, `:left` will align
+  the left edges of all elements relative to whatever is defined by
+  `:relative-to`
+  * one of: `:top` `:bottom` `:left` `:right` `:v-center` `:h-center` `:center`
+  * default: `:center` - special case which means that elements are
+    aligned both horizontally and vertically so they are centered on
+    top of each other
+    * optional
+
+??? examples
+
+### Place
+
+#### Quick ref:
+
+### Matrix
+
+#### Quick ref:
+
+## Document operations
+
+### Connect
+
+### Surround
+
 ## Understanding the mechanism
 
 ### Layout application order
@@ -266,20 +309,8 @@ make sure that `[:connect]` is applied *after* the positions of the
 boxes have been finalised by any layout operations that may affect
 them:
 
-??? window
+??? example
 
 ### Layouts are composable
-
-## More placement layouts
-
-### Place
-
-### Matrix
-
-## Document operations
-
-### Connect
-
-### Surround
 
 ## Make your own
