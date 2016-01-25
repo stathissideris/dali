@@ -580,8 +580,8 @@
     [:page {:stroke :black}
      [:defs (prefab/curvy-arrow-marker :curvy {:scale 2})]
      [:dali/stack {:direction :right :position [50 50] :gap 200}
-      [:image (merge {:id :cat1} (io/raster-image-attr "resources/cat1.png"))]
-      [:image (merge {:id :cat2} (io/raster-image-attr "resources/cat2.png"))]]
+      [:image (merge {:id :cat1} (io/raster-image-attr "resources/cat1.png" :png))]
+      [:image (merge {:id :cat2} (io/raster-image-attr "resources/cat2.png" :png))]]
 
      [:dali/connect {:from :cat1 :to :cat2 :dali/marker-end :curvy :id :arrow :stroke-width 4}]
 

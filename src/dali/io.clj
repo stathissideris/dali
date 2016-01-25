@@ -17,23 +17,23 @@
     (io/copy (io/input-stream x) out)
     (.toByteArray out)))
 
-(defn data-uri [bytes]
+(defn data-uri [bytes mime-type]
   (->> bytes
        b64/encode
        (new String)
-       (str "data:image/png;base64,")))
+       (str "data:" mime-type ";base64,")))
 
-(defn slurp-data-uri [filename]
-  (->> filename
-       io/file
-       slurp-bytes
-       data-uri))
+(defn slurp-data-uri [filename mime-type]
+  (-> filename
+      io/file
+      slurp-bytes
+      (data-uri mime-type)))
 
-(defn raster-image-attr [filename]
+(defn raster-image-attr [filename format]
   (let [image (ImageIO/read (io/file filename))]
     {:width      (.getWidth image)
      :height     (.getHeight image)
-     :xlink:href (slurp-data-uri filename)}))
+     :xlink:href (slurp-data-uri filename (str "image/" (name format)))}))
 
 (defn load-enlive-svg [filename]
   (en/xml-resource (io/file filename)))
