@@ -44,7 +44,8 @@ change. Just add this to the dependencies of your `project.clj`:
 * [Pre-fabricated elements](doc/prefab.md)
 * [How-to](doc/howto.md) --
   Task-driven documentation, recipes for common tasks.
-* [The dali pipeline](pipeline.md)
+* [Tutorial](doc/diagram-tutorial.md) on how to make a diagram.
+* [The dali pipeline](doc/pipeline.md)
 
 ## Roadmap
 

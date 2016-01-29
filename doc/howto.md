@@ -49,6 +49,8 @@ map of the shape:
 
 ## Set the fill to stripes
 
+## Embed raster images`
+
 ## Bar Charts
 
 Although dali is a generic graphics library, it's really easy to create
