@@ -120,7 +120,7 @@ is possible to perform stacking using different anchors:
   [:rect {:fill :green} :_ [40 10]]
   [:rect {:fill :orange} :_ [20 40]]]
  [:circle {:fill :red} [10 70] 4]
- 
+
  [:dali/stack
   {:position [170 10] :anchor :top-left :direction :right}
   [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -250,7 +250,45 @@ directions supported by stack.
     top of each other
   * optional
 
-??? examples
+This layout will align the edges of elements either in relation to the
+corresponding edge of another element, or in relation to a "guide"
+which a theoretical horizontal or vertical line on the screen.
+
+This is a simple case where the bottom edges of the last three circles
+are aligned to the bottom edge of the first circle:
+
+```clojure
+[:page
+ [:line {:stroke :lightgrey} [20 110] [240 110]]
+ [:dali/align {:relative-to :first :axis :bottom}
+  [:circle {:fill :mediumslateblue} [50 90] 20]
+  [:circle {:fill :sandybrown}      [120 0] 40]
+  [:circle {:fill :green}           [170 0] 30]
+  [:circle {:fill :orange}          [220 0] 10]]
+ [:circle {:fill :none :stroke {:paint :red :width 2}} [50 90] 20]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/align-test5.svg)
+
+Here's a snippet that uses the `:center` axis alignment to align some
+text, a circle and a rectangle all at the center of a circle:
+
+```clojure
+[:page {:width 120 :height 120}
+ [:dali/align {:relative-to :first :axis :center :select [:.label]}]
+ [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
+ [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
+ [:circle {:class :label :fill :none :stroke :black} :_ 50]
+ [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/align-test4.svg)
+
+In this case, we elected to use the selector-style layout instead of
+nesting the children elements within the `[:dali/align]` -- this style
+of layout application is supported by most layouts, and the "first"
+element in this case is the first element that matches the selector.
+
 
 ### Place
 
