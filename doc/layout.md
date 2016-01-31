@@ -294,9 +294,65 @@ element in this case is the first element that matches the selector.
 
 #### Quick ref:
 
+```clojure
+[:dali/place {:relative-to [:p1 :top-right] :anchor :top-left :offset [5 0]}
+  [:circle {:fill :mediumslateblue} :_ 10]]
+```
+
+* `:relative-to`
+  * Value is either:
+    * a two-element vector of `[other-id anchor]` to place the element
+      in relation to a particular anchor of another element.
+    * a keyword referring to the id of another element, in which case
+      the element being placed is placed in relation to the center of
+      the `:relative-to` element (equivalent to `[other-id :center]`).
+* `:anchor` - the anchor to
+  * default: `:center`
+  * optional
+* `:offset`
+  * default: `[0 0]`
+  * optional
+
+The `[:dali/place]` layout allows you to place an element in relation
+to another element. So you can say things like "place this circle on
+the left of that rectangle". The child of the `[:dali/place]` is
+translated in relation to the `:relation-to` element. Here is an
+example of using a larger rectangle as a reference element to place a
+number of smaller elements:
+
+```clojure
+[:page {:stroke :black :fill :none}
+ [:rect {:id :p1} [20 20] [100 100]]
+
+ [:dali/place {:relative-to :p1}
+  [:circle {:fill :lightblue} :_ 5]]
+
+ [:dali/place {:relative-to [:p1 :top-right] :anchor :top-left :offset [5 0]}
+  [:circle {:fill :mediumslateblue} :_ 10]]
+
+ [:dali/place {:relative-to [:p1 :bottom-right] :anchor :bottom-left}
+  [:rect {:fill :limegreen} :_ [20 40]]]
+
+ [:dali/place {:relative-to [:p1 :bottom-left] :anchor :bottom-left :offset [10 -10]}
+  [:rect {:fill :yellow} :_ [40 20]]]
+
+ [:rect {:id :child :fill :orange} :_ [25 10]]
+
+ [:dali/place {:select :child :relative-to [:p1 :top-left] :anchor :top-left :offset [10 10]}]
+
+ [:dali/place {:relative-to [:p1 :top-right] :anchor :top-right :offset [-5 10]}
+  [:text {:font-family "Verdana" :font-size 13 :stroke :none :fill :black} "foo bar"]]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/place1.svg)
+
+The `:relative-to` value can either be keyword referring to the id of
+an element, or a two-element vector of `[id anchor]` to place the
+element in relation to a particular anchor of another element.
+
 ### Matrix
 
-#### Quick ref:
+#### Quick ref: ???
 
 ## Document operations
 

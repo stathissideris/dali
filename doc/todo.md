@@ -13,6 +13,7 @@
 
 ## Bugs
 
+* Matrix layout does not support :_
 * Possible bug: I suspect that selector layouts that don't match
   anything throw an exception. It should be a warning at most.
 * dali markers are not displayed in Safari.
