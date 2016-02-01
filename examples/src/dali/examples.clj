@@ -26,12 +26,12 @@
      [:polyline (map #(vector %1 %2) (range 10 210 20) (cycle [10 30]))]
      [:polyline (map #(vector %1 %2) (range 10 210 5) (cycle [60 80]))]
      [:polyline (map #(vector %1 %2) (range 10 210 10) (cycle [100 100 120 120]))]]}
-   
+
    ;;transform syntax demonstrated
    {:filename "transform"
     :document
     [:page {:stroke :black :stroke-width 2 :fill :none}
-     
+
      [:rect {:transform [:rotate [30 30 20]]} ;;rotate around center marked by circle
       [20 10] [20 20]]
      [:circle {:stroke :none :fill :red} [30 20] 2]
@@ -79,7 +79,7 @@
       [:rect {:fill :green} :_ [40 10]]
       [:rect {:fill :orange} :_ [20 40]]]
      [:circle {:fill :red} [10 70] 4]
-     
+
      [:dali/stack
       {:position [170 10] :anchor :top-left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -239,7 +239,7 @@
       (arrow-column 150 :sharp)
       (arrow-column 300 :curvy)
       (arrow-column 450 :dot)
-      
+
       [:polyline {:dali/marker-end :triangle :fill :none}
        (map #(vector %1 %2) (range 10 210 20) (cycle [680 700]))]])}
 
@@ -251,7 +251,7 @@
       (prefab/stripe-pattern :stripes {:angle -30 :fill :pink})]
      [:rect {:fill "url(#stripes)"} [0 0] [200 200]]
      [:circle {:fill :green :filter "url(#ds)"} [100 100] 75]]}
-   
+
    {:filename "graph1"
     :document
     [:page {:width 260 :height 140}
@@ -461,7 +461,7 @@
      [:dali/align {:axis :center}
       [:rect {:id :g} [350 300] [50 50]]
       [:text "G"]]
-     
+
      [:dali/connect {:from :a :to :c :dali/marker-end :sharp}]
 
      ;; :fill :green doesn't work because CSS wins
@@ -502,7 +502,7 @@
      [:dali/connect {:from :c :to :d :dali/marker-end :sharp}]
      [:dali/connect {:from :d :to :e :dali/marker-end :sharp}]
 
-     [:dali/matrix {:columns 5 :padding 10 :position [50 400]}
+     [:dali/matrix {:columns 5 :gap 10 :position [50 400]}
       (take 25 (repeat [:rect :_ [20 20]]))]]}
 
    {:filename "matrix2"
@@ -523,6 +523,34 @@
       [:circle :_ 5]
       [:circle :_ 5]
       [:circle :_ 5]]]}
+
+   {:filename "matrix3"
+    :document
+    [:page
+     [:defs
+      (s/css (str "polyline {fill: none; stroke: black;}\n"
+                  "rect {fill: none; stroke: black;}\n"))
+      (prefab/sharp-arrow-marker :sharp)]
+     [:dali/matrix {:position [50 50] :columns 4 :row-gap 5 :column-gap 20}
+      [:rect :_ [50 50]]
+      [:rect {:id :c} :_ [50 70]]
+      [:rect {:id :b} :_ [70 50]]
+      [:rect :_ [30 30]]
+
+      [:rect {:id :e} :_ [30 90]]
+      [:rect {:id :d} :_ [30 30]]
+      [:rect {:id :a} :_ [50 50]]
+      [:rect :_ [70 50]]
+
+      [:rect :_ [100 100]]
+      [:rect :_ [90 30]]
+      [:rect :_ [50 50]]
+      [:rect :_ [20 50]]]
+
+     [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
+     [:dali/connect {:from :b :to :c :dali/marker-end :sharp}]
+     [:dali/connect {:from :c :to :d :dali/marker-end :sharp}]
+     [:dali/connect {:from :d :to :e :dali/marker-end :sharp}]]}
 
    {:filename "send-to-bottom"
     :document
@@ -599,7 +627,7 @@
    {:filename "images2"
     :document
     (let [cat (ImageIO/read (java-io/file "resources/cat2.png"))]
-      [:page {:stroke :black}     
+      [:page {:stroke :black}
        [:image (merge {:x 50 :y 50} (io/buffered-image-attr cat))]])}
 
    {:filename "architecture"

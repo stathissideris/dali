@@ -2,16 +2,16 @@
   (:require [dali.layout :as layout]
             [dali.layout.utils :refer [bounds->anchor-point place-by-anchor]]))
 
-(defn- sizes->offsets [sizes padding]
+(defn- sizes->offsets [sizes gap]
   (->> sizes
        (partition 2 1)
-       (map (fn [[n1 n2]] (+ (/ n1 2) padding (/ n2 2))))))
+       (map (fn [[n1 n2]] (+ (/ n1 2) gap (/ n2 2))))))
 
 (defmethod layout/layout-nodes :dali/matrix
-  [_ {{:keys [columns padding row-gap column-gap]} :attrs :as tag}
+  [_ {{:keys [columns gap row-gap column-gap]} :attrs :as tag}
    elements bounds-fn]
-  (let [row-gap       (or padding row-gap 0)
-        column-gap    (or padding column-gap 0)
+  (let [row-gap       (or gap row-gap 0)
+        column-gap    (or gap column-gap 0)
         bounds-fn     (fn [element] (if (= :_ element) [:rect [0 0] [0 0]] (bounds-fn element)))
         position      (bounds->anchor-point :center (bounds-fn (first elements)))
         bounds        (map bounds-fn elements)

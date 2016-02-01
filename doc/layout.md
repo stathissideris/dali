@@ -254,7 +254,7 @@ This layout will align the edges of elements either in relation to the
 corresponding edge of another element, or in relation to a "guide"
 which a theoretical horizontal or vertical line on the screen.
 
-This is a simple case where the bottom edges of the last three circles
+Here's a simple case where the bottom edges of the last three circles
 are aligned to the bottom edge of the first circle:
 
 ```clojure
@@ -269,6 +269,12 @@ are aligned to the bottom edge of the first circle:
 ```
 
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/align-test5.svg)
+
+Note that when aligning vertically, the horizontal positions of
+elements remain unchanged. That's why the second circle for example
+has an initial position of `[120 0]`, the `0` will be replaced by the
+new position to align it to the first circle, but `120` will remain
+unchanged.
 
 Here's a snippet that uses the `:center` axis alignment to align some
 text, a circle and a rectangle all at the center of a circle:
@@ -352,13 +358,65 @@ element in relation to a particular anchor of another element.
 
 ### Matrix
 
-#### Quick ref: ???
+#### Quick ref:
 
-## Document operations
+```clojure
+[:dali/matrix {:position [50 50] :columns 4 :row-gap 5 :column-gap 20} ...]
+```
+
+* `:columns` - how many columns the matrix has
+* `:gap` - gap between the elements
+* `:row-gap` - gap between rows - overrides `:gap`
+* `:column-gap` - gap between columns - overrides `:gap`
+* `:position` - the position of the top-left corner of the whole
+  layout relative to its parent. Can only be applied when there is no
+  `:select` attribute
+  * `[x y]` - doubles
+  * default: `[0 0]` - the position of the first element is used when
+    no position is defined
+  * optional
+
+Matrices are just like grids -- the main difference being that
+matrices are elastic: the widths of rows and columns in matrices is
+determined by the widest or the tallest element respectively.
+
+```clojure
+[:page
+ [:defs
+  (s/css (str "polyline {fill: none; stroke: black;}\n"
+              "rect {fill: none; stroke: black;}\n"))
+  (prefab/sharp-arrow-marker :sharp)]
+ [:dali/matrix {:position [50 50] :columns 4 :row-gap 5 :column-gap 20}
+  [:rect :_ [50 50]]
+  [:rect {:id :c} :_ [50 70]]
+  [:rect {:id :b} :_ [70 50]]
+  [:rect :_ [30 30]]
+
+  [:rect {:id :e} :_ [30 90]]
+  [:rect {:id :d} :_ [30 30]]
+  [:rect {:id :a} :_ [50 50]]
+  [:rect :_ [70 50]]
+
+  [:rect :_ [100 100]]
+  [:rect :_ [90 30]]
+  [:rect :_ [50 50]]
+  [:rect :_ [20 50]]]
+
+ [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
+ [:dali/connect {:from :b :to :c :dali/marker-end :sharp}]
+ [:dali/connect {:from :c :to :d :dali/marker-end :sharp}]
+ [:dali/connect {:from :d :to :e :dali/marker-end :sharp}]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/matrix3.svg)
+
+## Document transformations
 
 ### Connect
 
 ### Surround
+
+## Ghost
 
 ## Understanding the mechanism
 
