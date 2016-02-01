@@ -54,8 +54,9 @@ figuring out the sizes of various elements.
   * double
   * default: `0`
   * optional
-* `:select` - an enlive selector that will transform elements from the
-  document instead of tranforming the children of the layout tag
+* `:select` - an enlive selector that will transform elements from
+  elsewhere in the document instead of tranforming the direct children
+  of the layout tag
 * `:position` - the position of the top-left corner of the whole
   layout relative to its parent. Can only be applied when there is no
   `:select` attribute
@@ -187,6 +188,9 @@ in the same way).
   * double
   * default: `0`
   * optional
+* `:select` - an enlive selector that will transform elements from
+  elsewhere in the document instead of tranforming the direct children
+  of the layout tag
 * `:position` - the position of the top-left corner of the whole
   layout relative to its parent. Can only be applied when there is no
   `:select` attribute
@@ -249,6 +253,9 @@ directions supported by stack.
     aligned both horizontally and vertically so they are centered on
     top of each other
   * optional
+* `:select` - an enlive selector that will transform elements from
+  elsewhere in the document instead of tranforming the direct children
+  of the layout tag
 
 This layout will align the edges of elements either in relation to the
 corresponding edge of another element, or in relation to a "guide"
@@ -377,8 +384,9 @@ element in relation to a particular anchor of another element.
   * optional
 
 Matrices are just like grids -- the main difference being that
-matrices are elastic: the widths of rows and columns in matrices is
-determined by the widest or the tallest element respectively.
+matrices are elastic: the width of each row is determined by the
+tallest element in the row and the width of each column is determined
+by the widest element in the column.
 
 ```clojure
 [:page
