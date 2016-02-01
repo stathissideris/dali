@@ -9,8 +9,9 @@
 
 ## Documentation
 
-* How-to
 * How to extend layouts/transformations
+* How to use markers
+* How to define your own markers
 
 ## Bugs
 
