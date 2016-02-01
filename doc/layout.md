@@ -414,6 +414,110 @@ determined by the widest or the tallest element respectively.
 
 ### Connect
 
+#### Quick ref:
+
+```clojure
+[:dali/connect {:from :c, :to :e, :type :-|, :dali/marker-end :sharp}]
+```
+
+* `:from` - the id of the element frorm which the connection starts
+* `:to` - the id of the element to which the connection ends
+* `:type` - the type of line
+  * one of: `:--` `:|-` `:-|`
+    * `:--` straight line
+    * `:|-` corner, first vertical then horizontal
+    * `:-|` corner, first horizontal then vertical
+  * default: `:--`
+  * optional
+
+`:dali/connect` adds a line that will connect the closest anchors of
+two elements in the document. The anchors that can be connected are
+`:top`, `:bottom`, `:left` or `:right`, and the pair is selected
+automatically based on their distance. The connector is a straight
+line by default, but you can instruct dali to create a corner
+connector that starts vertically and then moves horizontally
+(`:type :|-`) or the inverse (`:type :-|`).
+
+Here is an example of `:connect` in action:
+
+```clojure
+[:page {:stroke :black :fill :none}
+ [:defs
+  (s/css (str ".marker {fill: black; stroke: none;}"
+              ".grey {fill: lightgrey;}\n"
+              "rect {fill: white;}\n"
+              "rect:hover {fill: orange;}\n"
+              "text {fill: black; stroke: none;}"))
+  (prefab/sharp-arrow-marker :sharp)
+  (prefab/sharp-arrow-marker :big-sharp {:scale 2})
+  (prefab/triangle-arrow-marker :triangle)]
+ [:dali/align {:axis :center}
+  [:rect {:id :c :transform [:translate [0 -20]]} [200 70] [120 150]]
+  [:text "center"]]
+ [:dali/align {:axis :center}
+  [:rect {:id :a :class :grey} [20 20] [100 100]]
+  [:text "A"]]
+ [:dali/align {:axis :center}
+  [:rect {:id :b :transform [:translate [0 -20]]} [440 70] [50 50]]
+  [:text "B"]]
+ [:dali/align {:axis :center}
+  [:rect {:id :d} [20 350] [50 50]]
+  [:text "D"]]
+ [:dali/align {:axis :center}
+  [:rect {:id :e} [440 230] [50 50]]
+  [:text "E"]]
+ [:dali/align {:axis :center}
+  [:rect {:id :f} [500 70] [50 50]]
+  [:text "F"]]
+ [:dali/align {:axis :center}
+  [:rect {:id :g} [350 300] [50 50]]
+  [:text "G"]]
+
+ [:dali/connect {:from :a :to :c :dali/marker-end :sharp}]
+
+ ;; :fill :green doesn't work because CSS wins
+ [:dali/connect {:from :c :to :b :stroke :green :stroke-width 2.5
+                 :dali/marker-end {:id :big-sharp :style "fill: green;"}}]
+
+ [:dali/connect {:from :d :to :c :class :myclass :dali/marker-end :sharp}]
+ [:dali/connect {:from :c :to :e :type :-| :dali/marker-end :sharp}]
+ [:dali/connect {:from :e :to :f :type :-| :dali/marker-end :sharp}]
+ [:dali/connect {:from :e :to :g :type :|- :class :foo :dali/marker-end :triangle}]
+ [:dali/connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/connect1.svg)
+
+Note that the `:connect` tags appear at the bottom of the document to
+ensure that all the other layout tranformations have been applied
+first, and that everything is in its final position before connecting
+the elements. Also see [Layout application order](#layout-application-order).
+
+Apart from the `:from`, `:to` and `:type` keys, any other keys present
+in the attributes of `:connect` get merged into the attribute map of
+the `:polyline` tag that's inserted into the document as the line of
+the connector. You can use this mechanism in various ways, for example:
+
+* Pass an `:id` to be attached to the polyline and refer to it later.
+* Pass a value for `:dali/marker-end` to add an arrowhead as a line
+  marker to use at the end of the line. As explained
+  [here](prefab.md), the value of this is either:
+  * the id of a marker as defined in the `[:defs]` part of the
+    document. dali prefabs allow you to pass this id when
+    constructing them, or you can make your own marker.
+  * a map containing an `:id` key to identify the marker to use and
+    any other attributes that will get merged into the `[:use]` tag of
+    the marker. Refer to the [prefab](prefab.md) documentation for
+    more details.
+* Pass `:dali/marker-start` - same as marker-end, but for the start of
+  the connection.
+
+If the above paints a slightly complex picture, just remember this:
+The extra attributes end up on the line of the connector, any
+attributes in maps under `:dali/marker-end` or `:dali/marker-start`
+end up on the marker `[:use]` tag. In this way, the fill etc of both
+the line and the markers can be controlled.
+
 ### Surround
 
 ## Ghost
@@ -464,5 +568,3 @@ them:
 ??? example
 
 ### Layouts are composable
-
-## Make your own

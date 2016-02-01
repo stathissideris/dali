@@ -10,6 +10,7 @@
 ## Documentation
 
 * How-to
+* How to extend layouts/transformations
 
 ## Bugs
 
