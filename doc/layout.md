@@ -520,6 +520,34 @@ the line and the markers can be controlled.
 
 ### Surround
 
+#### Quick ref:
+
+```clojure
+[:dali/surround {:select [:.foo] :padding 20 :rounded 15 :attrs {:id box-id :dali/z-index -1}}]
+```
+
+* `:select` - an enlive selector that selects the elements to be
+  surrounded with the rectangle. You can also use a single keyword as
+  a value, and just a single element with that `:id` will be
+  surrounded.
+* `:padding` - how much space to leave between the edge of the
+  surrounded elements and the edge of the rectangle. Optional,
+  defaults to 20.
+* `:rounded` - the radius of the rounding of the rectangle. Optional,
+  defaults to 0.
+* `:attrs` - the attribute map of the produced `[:rect]`
+  tag. Optional, defaults to empty.
+
+The surround transformation adds a `[:rect]` to the document that will
+completely surround the elements that are matched by the selector.
+
+??? example
+
+You can use the attribute map to be used in the produced `[:rect]` to
+define things like `:dali/z-index` to make sure that the rectangle
+appears below all other elements, to give it an `:id` and refer to
+from other layouts, or even a `:class` to control its appearance.
+
 ## Ghost
 
 ## Understanding the mechanism
