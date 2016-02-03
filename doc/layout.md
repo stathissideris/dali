@@ -628,4 +628,43 @@ them:
 
 ??? example
 
-### Layouts are composable
+### Layouts and tranformations are composable
+
+It is possible to apply a series of layout operations and/or document
+tranformations in a composable way without having to use
+selectors. This is done with a generic "layout" operation:
+
+```clojure
+[:dali/layout {:layouts [...]}]
+```
+
+For example, say you have a few elements that you'd like to stack
+together and also surround them with a rounded box. This is how you
+could do it with selectors (in a non-composable way):
+
+??? example
+
+To make your life easier, you can avoid selectors by composing the two
+layouts:
+
+```clojure
+[:page
+ [:dali/layout
+  {:layouts
+   [[:dali/stack {:direction :right :gap 10}]
+    [:dali/surround {:rounded 10 :attrs {:stroke :grey :fill :none}}]]}
+  [:rect {:fill :mediumslateblue :stroke-width 20} [30 50] [50 20]]
+  [:rect {:fill :sandybrown} :_ [30 60]]
+  [:rect {:fill :green} :_ [40 10]]
+  [:rect {:fill :orange} :_ [20 40]]]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/composite-layout2.svg)
+
+The tranformations are applied in the orde that they appear: the
+elements are stacked first and the resulting transformed elements are
+implicitly selected and passed to the `:surround` transformation.
+
+### Layouts and transformations are extensible
+
+???

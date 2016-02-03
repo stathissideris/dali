@@ -404,6 +404,18 @@
       [:rect {:fill :green} :_ [40 10]]
       [:rect {:fill :orange} :_ [20 40]]]]}
 
+   {:filename "composite-layout2"
+    :document
+    [:page
+     [:dali/layout
+      {:layouts
+       [[:dali/stack {:direction :right :gap 10}]
+        [:dali/surround {:rounded 10 :attrs {:stroke :grey :fill :none}}]]}
+      [:rect {:fill :mediumslateblue :stroke-width 20} [30 50] [50 20]]
+      [:rect {:fill :sandybrown} :_ [30 60]]
+      [:rect {:fill :green} :_ [40 10]]
+      [:rect {:fill :orange} :_ [20 40]]]]}
+
    {:filename "venn"
     :document
     (let [r 130
