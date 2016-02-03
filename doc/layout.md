@@ -1,4 +1,4 @@
-# Layouts and document operations
+# Layouts and document tranformations
 
 Layout functionality in dali allows the placement of elements without
 knowing their exact dimensions in advance. All appear as custom tags,
@@ -556,7 +556,32 @@ define things like `:dali/z-index` to make sure that the rectangle
 appears below all other elements, to give it an `:id` and refer to
 from other layouts, or even a `:class` to control its appearance.
 
-## Ghost
+## Ghosts
+
+At any point in the document you can insert "ghost" elements to affect
+the layout. Ghosts are essentially rectangles that participate in the
+calculation of the layout but don't get inserted in the exported SVG,
+so you use them to "push" other elements in the layout.
+
+The syntax of ghosts is identical to `[:rect]`:
+
+```clojure
+[:dali/ghost [x y] [width height]]
+```
+
+Here is an example:
+
+```clojure
+[:page {:stroke :black :fill :none}
+ [:rect {:fill :none :stroke :lightgrey} [110 10] [100 100]]
+ [:rect {:fill :none :stroke :lightgrey} [310 10] [100 100]]
+ [:dali/stack {:direction :right}
+  [:rect [10 10] [100 100]]
+  [:dali/ghost :_ [100 100]]
+  [:rect :_ [100 100]]
+  [:dali/ghost :_ [100 100]]
+  [:rect :_ [100 100]]]]
+```
 
 ## Understanding the mechanism
 
