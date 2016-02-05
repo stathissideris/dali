@@ -607,12 +607,15 @@ Here is an example of it in action:
  [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]
 ```
 
-`:dali/surround` can only be used as a selector layout. The map under
-`:attrs` will be merged with the attributes of the generated `[:rect]`
-and you can use it to define things like `:dali/z-index` to make sure
-that the rectangle appears below all other elements, to give it an
-`:id` to refer to from other layouts, or even a `:class` to control
-its appearance.
+`:dali/surround` can only be used as a selector layout. You can also
+use a simple keyword as a value, in which case just a single element
+with that `:id` will be surrounded.
+
+The map under `:attrs` will be merged with the attributes of the
+generated `[:rect]` and you can use it to define things like
+`:dali/z-index` to make sure that the rectangle appears below all
+other elements (as in the example above), to give it an `:id` to refer
+to from other layouts, or even a `:class` to control its appearance.
 
 ## Ghosts
 
