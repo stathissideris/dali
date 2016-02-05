@@ -9,13 +9,13 @@
 
 ## Documentation
 
-* How to extend layouts/transformations
-* How to use markers
-* How to define your own markers
+* z-index
+* classes being in vectors
 
 ## Bugs
 
 * Matrix layout does not support :_
+* `:page` should be `:dali/page`
 * Possible bug: I suspect that selector layouts that don't match
   anything throw an exception. It should be a warning at most.
 * dali markers are not displayed in Safari.
@@ -31,10 +31,11 @@
 
 ## Features
 
-* :dali/place support :distance attribute (or :gap?)
-* :dali/place on path
+* `:dali/place` support :distance attribute (or :gap?)
+* `:dali/place` on path
 * Align relative to biggest/smallest (which means widest/narrowest or
   tallest/shortest depending on the axis)
+* Allow using `:dali/surround` as a nested layout.
 * dali markers for arbirary paths
 * Better error reporting by showing original form in the error (use meta)
 * "path" connector type: a flowing bezier curve

@@ -591,12 +591,28 @@ the line and the markers can be controlled.
 The surround transformation adds a `[:rect]` to the document that will
 completely surround the elements that are matched by the selector.
 
-??? example
+Here is an example of it in action:
 
-You can use the attribute map to be used in the produced `[:rect]` to
-define things like `:dali/z-index` to make sure that the rectangle
-appears below all other elements, to give it an `:id` and refer to
-from other layouts, or even a `:class` to control its appearance.
+```clojure
+[:page
+ [:circle {:class :left} [50 50] 20]
+ [:circle {:class :left} [50 100] 20]
+ [:circle {:class :left} [50 150] 20]
+
+ [:circle {:class :right} [150 50] 20]
+ [:circle {:class :right} [150 100] 20]
+ [:circle {:class :right} [150 150] 20]
+
+ [:dali/surround {:select [:.left] :rounded 5 :attrs {:stroke :none :fill :grey, :dali/z-index -1}}]
+ [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]
+```
+
+`:dali/surround` can only be used as a selector layout. The map under
+`:attrs` will be merged with the attributes of the generated `[:rect]`
+and you can use it to define things like `:dali/z-index` to make sure
+that the rectangle appears below all other elements, to give it an
+`:id` to refer to from other layouts, or even a `:class` to control
+its appearance.
 
 ## Ghosts
 
@@ -703,9 +719,13 @@ layouts:
 
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/composite-layout2.svg)
 
-The tranformations are applied in the orde that they appear: the
+The tranformations are applied in the order that they appear: the
 elements are stacked first and the resulting transformed elements are
-implicitly selected and passed to the `:surround` transformation.
+implicitly selected and passed to the `:dali/surround`
+transformation. This implicit selection is why in this particular
+case, `:dali/surround` looks like it's being used as a nested layout,
+which, as mentioned, is something that is currently not supported by
+this transformation.
 
 ### Layouts and transformations are extensible
 

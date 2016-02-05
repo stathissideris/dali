@@ -438,6 +438,20 @@
       [:rect {:fill :green} :_ [40 10]]
       [:rect {:fill :orange} :_ [20 40]]]]}
 
+   {:filename "surround"
+    :document
+    [:page
+     [:circle {:class :left} [50 50] 20]
+     [:circle {:class :left} [50 100] 20]
+     [:circle {:class :left} [50 150] 20]
+
+     [:circle {:class :right} [150 50] 20]
+     [:circle {:class :right} [150 100] 20]
+     [:circle {:class :right} [150 150] 20]
+
+     [:dali/surround {:select [:.left] :rounded 5 :attrs {:stroke :none :fill :grey, :dali/z-index -1}}]
+     [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]}
+
    {:filename "venn"
     :document
     (let [r 130
