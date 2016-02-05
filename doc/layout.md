@@ -165,7 +165,21 @@ they have to be returned as lists and not vectors, because dali will
 expand lists but will try to interpret vectors as tags (hiccup behaves
 in the same way).
 
+If no `:position` attribute is passed, the stack layout is performed
+based on the position of the first element:
+
 ???(stack without a position)
+
+#### Selector layouts
+
+Where supported, layouts and other transformations can be used as
+selector layouts, which instead of affecting their direct children,
+they affect elements that can appear under different parts of the
+tree. The elements that are affected are determined using an
+[enlive selector](https://github.com/cgrand/enlive#selectors), defined
+in the `:select` attribute. Selector layouts have no children.
+
+Stack supports the `:select` attribute and it can be used thus:
 
 ???(stack with a selector)
 
