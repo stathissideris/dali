@@ -708,7 +708,7 @@ its bounds as `[:rect [x-pos y-pos] [width height]]`.
 In order to define your own layout/transformation tag (e.g. `:foo`),
 you need to `defmethod` the `dali.layout/layout-nodes` multi-method,
 using `:foo` as the dispatch value, and you also need to register the
-name of your tag by calling `(register-layout-tag :foo)`.
+name of your tag by calling `(dali/register-layout-tag :foo)`.
 
 `dali.layout.stack` is a good example of a dali layout, and a good
 starting point if you'd like to extend the mechanism.

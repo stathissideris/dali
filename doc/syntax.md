@@ -155,7 +155,7 @@ paths:
 
 ## Attributes
 
-Generally, attributes are represented as a map which is the standard
+Generally, attributes are represented as a map, which is the standard
 hiccup way. All the usual conversions apply, so keywords and numbers
 are converted to strings. There are however some optional extensions
 in attribute handling as well:
@@ -165,13 +165,11 @@ transformations to be applied:
 
 ```clojure
 [:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
-     
-     [:rect {:transform [:rotate [30 30 20]]} ;;rotate around center marked by circle
-      [20 10] [20 20]]
-     [:circle {:stroke :none :fill :red} [30 20] 2]
-
-     [:rect {:transform [:rotate [10 60 20] :skew-x [30]]}
-      [50 10] [20 20]]]
+  [:rect {:transform [:rotate [30 30 20]]} ;;rotate around center marked by circle
+   [20 10] [20 20]]
+  [:circle {:stroke :none :fill :red} [30 20] 2]
+  [:rect {:transform [:rotate [10 60 20] :skew-x [30]]}
+   [50 10] [20 20]]]
 ```
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/transform.svg)
 
@@ -179,8 +177,8 @@ transformations to be applied:
 
 ```clojure
 [:page {:width 120 :height 30 :stroke :black :stroke-width 2}
-     [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
-     [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]
+  [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
+  [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]
 ```
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/dasharray.svg)
 
