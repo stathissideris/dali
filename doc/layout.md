@@ -607,6 +607,8 @@ Here is an example of it in action:
  [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]
 ```
 
+![](https://rawgit.com/stathissideris/dali/master/examples/output/surround.svg)
+
 `:dali/surround` can only be used as a selector layout. You can also
 use a simple keyword as a value, in which case just a single element
 with that `:id` will be surrounded.
@@ -643,6 +645,8 @@ Here is an example:
   [:dali/ghost :_ [100 100]]
   [:rect :_ [100 100]]]]
 ```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/ghost1.svg)
 
 ## Understanding the mechanism
 
