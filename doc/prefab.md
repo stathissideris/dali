@@ -23,7 +23,7 @@ See the individual functions in the namespace for more details.
 ```
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/markers1.svg)
 
-## dali markers
+## dali markers mechanism
 
 In the markers example you may have noticed that instead of simply
 using `:marker-end` we used `:dali/marker-end`, implying that this

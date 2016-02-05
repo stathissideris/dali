@@ -168,7 +168,17 @@ in the same way).
 If no `:position` attribute is passed, the stack layout is performed
 based on the position of the first element:
 
-???(stack without a position)
+```clojure
+[:g
+ [:dali/stack
+  {:direction :right}
+  [:rect {:fill :mediumslateblue} [10 10] [50 20]]
+  [:rect {:fill :sandybrown} :_ [30 20]]
+  [:rect {:fill :green} :_ [40 20]]
+  [:rect {:fill :orange} :_ [20 20]]]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/stack5-5.svg)
 
 #### Selector layouts
 
@@ -179,9 +189,27 @@ tree. The elements that are affected are determined using an
 [enlive selector](https://github.com/cgrand/enlive#selectors), defined
 in the `:select` attribute. Selector layouts have no children.
 
-Stack supports the `:select` attribute and it can be used thus:
+Stack supports the `:select` attribute, and this is how you can use it:
 
-???(stack with a selector)
+```clojure
+[:page {:stroke :none}
+ [:rect {:class :stacked, :fill :mediumslateblue} [10 10] [50 20]]
+ [:rect {:class :stacked, :fill :sandybrown} :_ [30 20]]
+ [:rect {:class :stacked, :fill :green} :_ [40 20]]
+ [:rect {:class :stacked, :fill :orange} :_ [20 20]]
+ [:rect {:fill :red} [10 50] [30 30]]
+ [:dali/stack
+  {:select [:.stacked] :anchor :left :direction :right}]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/stack8.svg)
+
+The class-based selector in this case selects all the `:rect`s with
+the `:stacked` class, and stacks them as part of the same stack. The
+red rectangle does not have the `:stacked` class, so it remains in it
+original position. Selector layouts cannot have a `:position`
+attribute, so in this case the layout starts at the position of the
+first element matched by the selector.
 
 ### Distribute
 

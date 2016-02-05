@@ -115,6 +115,17 @@
        [:rect {:fill :green} :_ [40 20]]
        [:rect {:fill :orange} :_ [20 20]]]]]}
 
+   {:filename "stack5-5"
+    :document
+    [:page {:stroke :none}
+     [:g
+      [:dali/stack
+       {:direction :right}
+       [:rect {:fill :mediumslateblue} [10 10] [50 20]]
+       [:rect {:fill :sandybrown} :_ [30 20]]
+       [:rect {:fill :green} :_ [40 20]]
+       [:rect {:fill :orange} :_ [20 20]]]]]}
+
    {:filename "stack6"
     :document
     [:page {:stroke :none}
@@ -138,6 +149,17 @@
      [:dali/stack {:direction :up}
       [:circle [200 200] 150]
       [:rect :_ [20 20]]]]}
+
+   {:filename "stack8"
+    :document
+    [:page {:stroke :none}
+     [:rect {:class :stacked, :fill :mediumslateblue} [10 10] [50 20]]
+     [:rect {:class :stacked, :fill :sandybrown} :_ [30 20]]
+     [:rect {:class :stacked, :fill :green} :_ [40 20]]
+     [:rect {:class :stacked, :fill :orange} :_ [20 20]]
+     [:rect {:fill :red} [10 50] [30 30]]
+     [:dali/stack
+      {:select [:.stacked] :anchor :left :direction :right}]]}
 
    {:filename "distribute1"
     :document
