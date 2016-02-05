@@ -667,4 +667,34 @@ implicitly selected and passed to the `:surround` transformation.
 
 ### Layouts and transformations are extensible
 
-???
+As you may have realised by now, both layouts and transformations are
+driven by the same mechanism. This mechanism is uniform and extensible
+and it is based on the `dali.layout/layout-nodes` multimethod, which
+is defined like so:
+
+```clojure
+(defmulti layout-nodes (fn [doc tag elements bounds-fn] (:tag tag)))
+```
+
+`doc` is the whole document in a
+[clojure.xml format](https://clojuredocs.org/clojure.xml/parse) (which
+is what dali uses internally) instead of a hiccup format.
+
+`tag` is the actual layout tag (for example `{:tag :dali/stack ...}`
+
+`elements` is a collection of the elements being transformed. These
+can either be the direct children of the layout tag, or some elements
+selected via the `:select` selector. If `:select` is in the
+attributes, collecting the elements is done automatically by the
+layout mechanism, otherwise the direct children are passed.
+
+`bounds-fn` is a function that when called on an element, will return
+its bounds as `[:rect [x-pos y-pos] [width height]]`.
+
+In order to define your own layout/transformation tag (e.g. `:foo`),
+you need to `defmethod` the `dali.layout/layout-nodes` multi-method,
+using `:foo` as the dispatch value, and you also need to register the
+name of your tag by calling `(register-layout-tag :foo)`.
+
+`dali.layout.stack` is a good example of a dali layout, and a good
+starting point if you'd like to extend the mechanism.
