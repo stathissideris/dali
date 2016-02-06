@@ -39,12 +39,12 @@ change. Just add this to the dependencies of your `project.clj`:
 
 ## Documentation
 
-* [Basic syntax](doc/syntax.md) -- Start here
+* [Basic syntax](doc/syntax.md) -- Start here.
 * Compare the
   [examples source](https://github.com/stathissideris/dali/blob/master/examples/src/dali/examples.clj)
   to the
   [rendered SVGs](https://github.com/stathissideris/dali/tree/master/examples/output).
-* [Layout](doc/layout.md)
+* [Layout](doc/layout.md) -- the main value that dali adds on top of vanilla SVG.
 * [Pre-fabricated elements](doc/prefab.md)
 * [How-to](doc/howto.md) --
   Task-driven documentation, recipes for common tasks.
