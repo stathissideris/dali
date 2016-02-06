@@ -10,7 +10,6 @@
 ## Documentation
 
 * z-index
-* classes being in vectors
 
 ## Bugs
 
@@ -31,6 +30,8 @@
 
 ## Features
 
+* change `:position` in layouts to mean position in relation to min
+  dimensions, NOT in relation to first element.
 * `:dali/place` support :distance attribute (or :gap?)
 * `:dali/place` on path
 * Align relative to biggest/smallest (which means widest/narrowest or

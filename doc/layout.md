@@ -26,9 +26,10 @@ The same mechanism is used for document operations that do not involve
 changing the positions of elements but may add new elements based on
 the position and dimensions of other elements.
 
-In order to use the built-in layouts you need to require the relevant
-namespace (`dali.layout.stack`, `dali.layout.align` etc) despite the
-fact that you are not using any of the functions directly.
+**IMPORTANT:** In order to use the built-in layouts you need to
+require the relevant namespace (`dali.layout.stack`,
+`dali.layout.align` etc) despite the fact that you are not using any
+of the functions directly.
 
 [Apache Batik](http://xmlgraphics.apache.org/batik/) is used for
 figuring out the sizes of various elements.
@@ -87,10 +88,10 @@ This is how you stack elements:
 ![](https://rawgit.com/stathissideris/dali/master/examples/output/stack1.svg)
 
 The rectangles are simply stacked next to each other, from left to
-right (as defined by the `:direction` parameter). ???(link to a recipe
-for rendering) The `:_` keyword is simply replaced by `[0 0]` before
-resolving the layout and it is a visual cue for dimensions that don't
-matter as the rectangles will be moved anyway.
+right (as defined by the `:direction` parameter). The `:_` keyword is
+simply replaced by `[0 0]` before resolving the layout and it is a
+visual cue for dimensions that don't matter as the rectangles will be
+moved anyway.
 
 When stacking to the right, the middle of the left edge of each shape
 is aligned on the same line. In other words, the middle-left "anchors"
