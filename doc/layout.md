@@ -211,6 +211,24 @@ original position. Selector layouts cannot have a `:position`
 attribute, so in this case the layout starts at the position of the
 first element matched by the selector.
 
+Selector layouts are in contrast to most layout mechanisms, which
+generally only allow elements to affect the dimensions of their direct
+children. The traditional way of doing this, quickly runs into
+situations where it becomes necessary for a single layout function
+(like say a grid), to accept parameters that should be decoupled from
+it, like how to align the elements of the first column in relation to
+each other.
+
+On the other hand, dali (in most cases) tries to keep the
+functionality of each layout operator to a minimum by allowing other
+operators to reach into a different part of the document and "layer"
+further transformations onto the already laid-out elements. This gradual
+laying out is the equivalent of a `reduce` operation where each
+operator tranforms the results of the previous operator. See section
+[layout application order](#layout-application-order) for more
+details.
+
+
 ### Distribute
 
 #### Quick ref:
