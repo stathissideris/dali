@@ -185,3 +185,39 @@ transformations to be applied:
 In the example `[10 5]` becomes `"10,5"`. A similar rule applies to
 any attribute which is a sequence that contains just numbers: the
 numbers are converted to a **space-delimited** string.
+
+The valus of the `:class` attribute, can be a single keyword for the
+case of having a single class, or a vector of keywords for the case of
+multiple classes.
+
+## z-index
+
+SVG does not support z-indexes, instead complecting the order of the
+elements in the source of the document with their appearance on the
+screen. dali, defines a `:dali/z-index` attribute which allows you to
+affect the z order of elements. Notice that the rectangle is at the
+end of the document, but appears underneath the circles because of its
+negative z-index:
+
+```clojure
+(require '[dali.syntax :as s])
+
+[:page
+ [:defs
+  (s/css (str "polyline {fill: none; stroke: black;}\n"
+              "circle {fill: lightgreen; stroke: black;}\n"
+              "rect {fill: green; stroke: black;}\n"))
+  (prefab/sharp-arrow-marker :sharp)]
+ [:dali/stack {:id :st :direction :down :position [50 50]}
+  [:circle :_ 50]
+  [:circle :_ 50]]
+ [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/send-to-bottom.svg)
+
+## Helper functions
+
+dali defines helper functions to help with the generation of hiccup
+syntax. In the previous example, `dali.syntax/css` allows you to
+easily embed verbatim CSS. Similarly, `dali.syntax/javascript` allows
+the embedding of JavaScript code.
