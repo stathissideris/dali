@@ -45,11 +45,39 @@ map of the shape:
  [:polyline {:dali/marker-end {:id :sharp :fill :red}} [50 80] [90 30]]]
 ```
 
-## Add a drop-shadow
+## Add a drop-shadow and set the fill to stripes
 
-## Set the fill to stripes
+```clojure
+[:dali/page {:width 200 :height 200}
+ [:defs
+  (prefab/drop-shadow-effect :ds {:opacity 0.8 :offset [10 10] :radius 10})
+  (prefab/stripe-pattern :stripes {:angle -30 :fill :pink})]
+ [:rect {:fill "url(#stripes)"} [0 0] [200 200]]
+ [:circle {:fill :green :filter "url(#ds)"} [100 100] 75]]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/drop-shadow.svg)
 
-## Embed raster images`
+## Embed raster images
+
+```clojure
+[:dali/page {:stroke :black}
+ [:defs (prefab/curvy-arrow-marker :curvy {:scale 2})]
+ [:dali/stack {:direction :right :position [50 50] :gap 200}
+  [:image (merge {:id :cat1} (io/raster-image-attr "resources/cat1.png" :png))]
+  [:image (merge {:id :cat2} (io/raster-image-attr "resources/cat2.png" :png))]]
+
+ [:dali/connect {:from :cat1 :to :cat2 :dali/marker-end :curvy :id :arrow :stroke-width 4}]
+
+ [:dali/place {:relative-to [:cat1 :bottom] :anchor :bottom :offset [0 -10]}
+  [:text {:font-family "Impact" :font-size 26 :stroke :black :fill :white} "I CAN HAZ"]]
+
+ [:dali/place {:relative-to [:cat2 :bottom] :anchor :bottom :offset [0 -10]}
+  [:text {:font-family "Impact" :font-size 20 :stroke :black :fill :white} "CHEEZEBURGER"]]
+
+ [:dali/place {:relative-to [:arrow :top] :anchor :bottom :offset [0 -10]}
+  [:text {:font-family "Impact" :font-size 20 :stroke :none :fill :black} "but of course!"]]]
+```
+![](https://rawgit.com/stathissideris/dali/master/examples/output/images1.svg)
 
 ## Bar Charts
 
