@@ -54,7 +54,7 @@ change. Just add this to the dependencies of your `project.clj`:
 Planned for the future:
 
 * Porting basic functionality to ClojureScript.
-* More stock elements.
+* More pre-fabricated elements.
 
 ## License
 
