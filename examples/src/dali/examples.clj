@@ -452,6 +452,16 @@
      [:dali/surround {:select [:.left] :rounded 5 :attrs {:stroke :none :fill :grey, :dali/z-index -1}}]
      [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]}
 
+   {:filename "surround2"
+    :document
+    [:page
+     [:dali/stack {:direction :right :gap 10}
+      [:rect {:fill :mediumslateblue :stroke-width 20} [30 50] [50 20]]
+      [:rect {:fill :sandybrown} :_ [30 60]]
+      [:rect {:fill :green} :_ [40 10]]
+      [:rect {:fill :orange} :_ [20 40]]]
+     [:dali/surround {:select [:rect] :rounded 10 :attrs {:stroke :grey :fill :none}}]]}
+
    {:filename "venn"
     :document
     (let [r 130
