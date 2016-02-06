@@ -21,7 +21,7 @@ See the individual functions in the namespace for more details.
  [:polyline {:dali/marker-end :dot} [140 80] [180 30]]
  [:polyline {:dali/marker-end :very-sharp} [170 80] [210 30]]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/markers1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/markers1.svg)
 
 ## dali markers mechanism
 
@@ -37,7 +37,7 @@ line is attached. The problem with that is that if for example you
 have an arrowhead marker and you attach the end of the line to the tip
 of the arrow, a thick line will be visible on either side of the arrow:
 
-![](https://rawgit.com/stathissideris/dali/master/doc/marker-problem.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/doc/marker-problem.svg)
 
 dali overcomes that problem by defining its own syntax for markers,
 which allows for two points: a base and a tip. The base is always at

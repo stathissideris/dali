@@ -213,7 +213,7 @@ negative z-index:
   [:circle :_ 50]]
  [:rect {:id :the-rect :dali/z-index -1} [25 100] [150 100]]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/send-to-bottom.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/send-to-bottom.svg)
 
 ## Helper functions
 

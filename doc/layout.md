@@ -85,7 +85,7 @@ This is how you stack elements:
 
 (io/render-svg document "stack.svg")
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/stack1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/stack1.svg)
 
 The rectangles are simply stacked next to each other, from left to
 right (as defined by the `:direction` parameter). The `:_` keyword is
@@ -108,7 +108,7 @@ different heights. Let's remix the previous example:
   [:rect {:fill :orange} :_ [20 40]]]
  [:circle {:fill :red} [10 40] 4]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/stack2.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/stack2.svg)
 
 The `:left` anchor of the first shape is indicated by the red dot. It
 is possible to perform stacking using different anchors:
@@ -131,7 +131,7 @@ is possible to perform stacking using different anchors:
   [:rect {:fill :orange} :_ [20 40]]]
  [:circle {:fill :red} [170 10] 4]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/stack3.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/stack3.svg)
 
 The stack layout also supports stacking in different directions (left,
 right, up and down) and it has an optional `:gap` parameter (0 by
@@ -152,7 +152,7 @@ default):
  [:dali/stack {:position [90 250] :gap 18 :direction :up} (shapes "up")]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/stack4.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/stack4.svg)
 
 There are two noteworthy things about this example: First, when you
 use text that participates in layouts, you should *always* be specific
@@ -203,7 +203,7 @@ Stack supports the `:select` attribute, and this is how you can use it:
   {:select [:.stacked] :anchor :left :direction :right}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/stack8.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/stack8.svg)
 
 The class-based selector in this case selects all the `:rect`s with
 the `:stacked` class, and stacks them as part of the same stack. The
@@ -279,7 +279,7 @@ distances:
             {:stroke {:paint :red :width 2}} [% 40] [% 50])
           (range 35 200 50))]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/distribute1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/distribute1.svg)
 
 In this example, no `:position` parameter was defined, so the whole
 layout happened in relation to the position of the first element.
@@ -336,7 +336,7 @@ are aligned to the bottom edge of the first circle:
  [:circle {:fill :none :stroke {:paint :red :width 2}} [50 90] 20]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/align-test5.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/align-test5.svg)
 
 Note that when aligning vertically, the horizontal positions of
 elements remain unchanged. That's why the second circle for example
@@ -356,7 +356,7 @@ text, a circle and a rectangle all at the center of a circle:
  [:rect {:class :label :fill :none :stroke :gray} :_ [60 25]]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/align-test4.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/align-test4.svg)
 
 In this case, we elected to use the selector-style layout instead of
 nesting the children elements within the `[:dali/align]` -- this style
@@ -418,7 +418,7 @@ number of smaller elements:
   [:text {:font-family "Verdana" :font-size 13 :stroke :none :fill :black} "foo bar"]]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/place1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/place1.svg)
 
 The `:relative-to` value can either be keyword referring to the id of
 an element, or a two-element vector of `[id anchor]` to place the
@@ -477,7 +477,7 @@ by the widest element in the column.
  [:dali/connect {:from :d :to :e :dali/marker-end :sharp}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/matrix3.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/matrix3.svg)
 
 ## Document transformations
 
@@ -555,7 +555,7 @@ Here is an example of `:connect` in action:
  [:dali/connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/connect1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/connect1.svg)
 
 Note that the `:connect` tags appear at the bottom of the document to
 ensure that all the other layout tranformations have been applied
@@ -626,7 +626,7 @@ Here is an example of it in action:
  [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/surround.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/surround.svg)
 
 `:dali/surround` can only be used as a selector layout. You can also
 use a simple keyword as a value, in which case just a single element
@@ -665,7 +665,7 @@ Here is an example:
   [:rect :_ [100 100]]]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/ghost1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/ghost1.svg)
 
 ## Understanding the mechanism
 
@@ -702,7 +702,7 @@ Let's define a simple stack of rectangles:
   [:rect :_ [50 50]]]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/last-wins1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/last-wins1.svg)
 
 The initial positions of the rectangles are not pre-defined, they are
 calculated when the `:dali/stack` layout is resolved. Let's add a
@@ -718,7 +718,7 @@ them to the left.
  [:dali/align {:select [:rect] :relative-to :first :axis :left}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/last-wins2.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/last-wins2.svg)
 
 Because `:dali/align` appears further down in the document in relation
 to `:dali/stack`, it's applied after `:dali/stack`, and therefore it
@@ -740,7 +740,7 @@ right.
  [:dali/align {:select [:rect] :relative-to :first :axis :right}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/last-wins3.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/last-wins3.svg)
 
 From this example, you can clearly see that "the last one wins" when
 it comes to layouts.
@@ -758,7 +758,7 @@ to put the `[:connect]` tags first:
   [:rect {:id :b} [50 150] [50 50]]]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/connect2-wrong.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/connect2-wrong.svg)
 
 What happened? Because `[:connect]` was evaluated first, the arrow was
 placed according to the *original* positions of the boxes, and then
@@ -776,7 +776,7 @@ them:
  [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/connect2-right.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/connect2-right.svg)
 
 ### Layouts and tranformations are composable
 
@@ -821,7 +821,7 @@ layouts:
   [:rect {:fill :orange} :_ [20 40]]]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/composite-layout2.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/composite-layout2.svg)
 
 The tranformations are applied in the order that they appear: the
 elements are stacked first and the resulting transformed elements are

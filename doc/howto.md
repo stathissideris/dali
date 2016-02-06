@@ -55,7 +55,7 @@ map of the shape:
  [:rect {:fill "url(#stripes)"} [0 0] [200 200]]
  [:circle {:fill :green :filter "url(#ds)"} [100 100] 75]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/drop-shadow.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/drop-shadow.svg)
 
 ## Embed raster images
 
@@ -77,7 +77,7 @@ map of the shape:
  [:dali/place {:relative-to [:arrow :top] :anchor :bottom :offset [0 -10]}
   [:text {:font-family "Impact" :font-size 20 :stroke :none :fill :black} "but of course!"]]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/images1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/images1.svg)
 
 ## Bar Charts
 
@@ -91,7 +91,7 @@ bar charts with it, so here are some examples:
   (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
        [10 30 22 56 90 59 23 12 44 50])]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/graph1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/graph1.svg)
 
 Nested layouts make adding text easy:
 
@@ -106,7 +106,7 @@ Nested layouts make adding text easy:
           [:text {:text-family "Verdana" :font-size 12} (str h)]])
        [10 30 22 56 90 59 23 12 44 50])]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/graph2.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/graph2.svg)
 
 Stacked bar charts are a piece of cake:
 
@@ -131,7 +131,7 @@ Stacked bar charts are a piece of cake:
         [44 22 18]
         [50 20 10]])]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/graph3.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/graph3.svg)
 
 ## Flowchart
 
@@ -191,4 +191,4 @@ Stacked bar charts are a piece of cake:
  [:dali/connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/connect1.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/connect1.svg)
