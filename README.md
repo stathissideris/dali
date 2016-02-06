@@ -24,8 +24,7 @@ Here's a hello world for dali:
 ;;you can also rasterize directly using Batik:
 (io/render-png document "hello-world.png")
 ```
-
-![](https://rawgit.com/stathissideris/dali/master/examples/output/hello-world.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/hello-world.svg)
 
 ## Using dali in your project
 
