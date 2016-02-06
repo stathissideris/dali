@@ -179,7 +179,7 @@ based on the position of the first element:
   [:rect {:fill :orange} :_ [20 20]]]]
 ```
 
-![](https://rawgit.com/stathissideris/dali/master/examples/output/stack5-5.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/stack5-5.svg)
 
 #### Selector layouts
 
