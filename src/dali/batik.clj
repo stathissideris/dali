@@ -258,7 +258,7 @@
       (map (fn [[type params]]
              (condp = type
                :M (vec (take 2 params))
-               :L 
+               :L
                :Q
                :C
                :Z)) segments)))))
@@ -305,7 +305,7 @@
 (comment
   (do
     (require '[dali.syntax :as syntax])
-    (-> [:page {:width 250 :height 250}
+    (-> [:dali/page {:width 250 :height 250}
          [:circle {:stroke {:paint :black :width 3}
                    :fill :green} [125 125] 75]]
         syntax/dali->hiccup

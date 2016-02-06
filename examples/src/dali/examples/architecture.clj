@@ -63,7 +63,7 @@
                     :dali/marker-end {:id :arrow-head :fill faint-grey}
                     :dali/marker-group-attrs {:class :dep}}
         dep-corner (assoc dep :type :|-)]
-   [:page
+   [:dali/page
     [:defs
      (prefab/drop-shadow-effect :ds {:opacity 0.3 :offset [5 5] :radius 6})
      (prefab/curvy-arrow-marker :arrow-head {:scale 1.5})
@@ -105,7 +105,7 @@
      (tool-box :postgres "Database\nstorage\ntools" :tool [0 170])
      (tool-box :r "Stats\ntools" :tool [0 170])
      (tool-box :jira "Issue\ntracking\ntools" :tool [0 110])]
-    
+
     (label-box :extractor  [:.extractor] "extractor")
     (label-box :limits-clj [:#limits-clj] "limits.clj")
     (label-box :incidents-clj [:#incidents-clj] "incidents.clj")
@@ -140,4 +140,3 @@
        "  if(s.display == 'block') { s.display = 'none' } else {s.display = 'block'}"
        "}"
        "document.getElementById('deps-toggle').addEventListener('click', toggleDeps);"]))]))
-

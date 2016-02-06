@@ -80,8 +80,8 @@
          (dali->ixml [:polyline [1 2] [3 4]])))
   (is (= {:tag :polyline :attrs {:foo :bar :dali/content [[1 2] [3 4]]}}
          (dali->ixml [:polyline {:foo :bar} [1 2] [3 4]])))
-  
-  (is (= {:tag :page,
+
+  (is (= {:tag :dali/page,
           :attrs {:width 60, :height 60},
           :content
           [{:tag :circle
@@ -90,11 +90,11 @@
              :stroke-width 4
              :fill :darkorange
              :dali/content [[30 30] 20]}}]}
-         (dali->ixml [:page {:width 60 :height 60}
+         (dali->ixml [:dali/page {:width 60 :height 60}
                       [:circle
                        {:stroke :indigo :stroke-width 4 :fill :darkorange}
                        [30 30] 20]])))
-  (is (= {:tag :page,
+  (is (= {:tag :dali/page,
           :attrs {:width 60, :height 60},
           :content
           [{:tag :circle,
@@ -103,13 +103,13 @@
              :stroke-width 4,
              :fill :darkorange
              :dali/content [[0 0] 20]}}]}
-         (dali->ixml [:page {:width 60 :height 60}
+         (dali->ixml [:dali/page {:width 60 :height 60}
                       [:circle
                        {:stroke :indigo :stroke-width 4 :fill :darkorange}
                        :_ 20]])))
-  (is (= {:tag :page, :attrs {:width 60, :height 60}}
-         (dali->ixml [:page {:width 60 :height 60}])))
-  (is (= {:tag :page,
+  (is (= {:tag :dali/page, :attrs {:width 60, :height 60}}
+         (dali->ixml [:dali/page {:width 60 :height 60}])))
+  (is (= {:tag :dali/page,
           :attrs {:width 60, :height 60},
           :content
           [{:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 20]}}
@@ -119,7 +119,7 @@
            {:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 4]}}
            {:tag :circle :attrs {:stroke :indigo :dali/content [[0 0] 20]}}]}
          (dali->ixml
-          [:page {:width 60 :height 60}
+          [:dali/page {:width 60 :height 60}
            [:circle  {:stroke :indigo} :_ 20]
            (map
             (fn [r] [:circle {:stroke :indigo} :_ r])
@@ -155,7 +155,7 @@
              :dali/content [[30 30] 20]}}]}
          (ixml-node->xml-node
           {} ;;nil document
-          {:tag :page,
+          {:tag :dali/page,
            :attrs {:width 60 :height 60}
            :content
            [{:tag :circle
@@ -196,7 +196,7 @@
              :stroke-width 4
              :fill "darkorange"}}]}
          (ixml->xml
-          {:tag :page
+          {:tag :dali/page
            :attrs {:width 60 :height 60}
            :content
            [{:tag :circle
@@ -218,7 +218,7 @@
                      :fill "black"}
              :content ["up"]}]}
          (ixml->xml
-          {:tag :page
+          {:tag :dali/page
            :content
            [{:tag :text,
               :attrs
@@ -235,7 +235,7 @@
           :content
           [{:tag :text, :attrs {:class "a b"}, :content ["up"]}]}
          (ixml->xml
-          {:tag :page
+          {:tag :dali/page
            :content
            [{:tag :text
               :attrs

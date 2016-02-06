@@ -16,7 +16,7 @@ This is almost valid dali syntax, with the small exception of the
 `svg` tag being replaced by `page`:
 
 ```clojure
-[:page {:width 100 :height 100}
+[:dali/page {:width 100 :height 100}
  [:circle {:cx 50 :cy 50 :r 40}]]
 ```
 
@@ -24,14 +24,14 @@ If you leave out width and height, they will be calculated
 automatically to include all the graphics in the document:
 
 ```clojure
-[:page
+[:dali/page
  [:circle {:cx 50 :cy 50 :r 40}]]
 ```
 
 There is a shorter and more convenient way to represent circles:
 
 ```clojure
-[:page
+[:dali/page
  [:circle [50 50] 40]]
 ```
 
@@ -164,7 +164,7 @@ in attribute handling as well:
 transformations to be applied:
 
 ```clojure
-[:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
+[:dali/page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
   [:rect {:transform [:rotate [30 30 20]]} ;;rotate around center marked by circle
    [20 10] [20 20]]
   [:circle {:stroke :none :fill :red} [30 20] 2]
@@ -176,7 +176,7 @@ transformations to be applied:
 `:stroke-dasharray` can be passed as a sequence of numbers, for example:
 
 ```clojure
-[:page {:width 120 :height 30 :stroke :black :stroke-width 2}
+[:dali/page {:width 120 :height 30 :stroke :black :stroke-width 2}
   [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
   [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]
 ```
@@ -202,7 +202,7 @@ negative z-index:
 ```clojure
 (require '[dali.syntax :as s])
 
-[:page
+[:dali/page
  [:defs
   (s/css (str "polyline {fill: none; stroke: black;}\n"
               "circle {fill: lightgreen; stroke: black;}\n"

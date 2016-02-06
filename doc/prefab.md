@@ -6,7 +6,7 @@ SVG effects which are parameterizable.
 See the individual functions in the namespace for more details.
 
 ```clojure
-[:page
+[:dali/page
  [:defs
   (s/css (str "polyline {stroke: black; stroke-width: 2;}"))
   (prefab/sharp-arrow-marker :sharp {:scale 2})

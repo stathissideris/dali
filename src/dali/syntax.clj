@@ -156,7 +156,7 @@
 (defn- add-dali-markers [{:keys [attrs] :as original-node} document]
   (let [end? (some? (:dali/marker-end attrs))
         start? (some? (:dali/marker-start attrs))
-        
+
         [node marker-end]
         (if-not end?
           [original-node nil]
@@ -215,7 +215,7 @@
 (defn- process-nested-attr-map [parent-key m]
   (let [make-key (fn [k]
                    (if (= k :paint) ;;to produce :stroke or :paint keys
-                    parent-key 
+                    parent-key
                     (keyword (str (name parent-key) "-" (name k)))))]
     (reduce-kv
      (fn [m k v] (assoc m (make-key k) v))
@@ -258,7 +258,7 @@
 
 (defmulti ixml-tag->xml :tag)
 
-(defmethod ixml-tag->xml :page
+(defmethod ixml-tag->xml :dali/page
   [{:keys [attrs content]} _]
   {:tag :svg
    :attrs
@@ -429,7 +429,7 @@
    (comp (partial ixml-node->xml-node document) zip/node)))
 
 (defn ixml->xml [document]
-  (when-not (= :page (:tag document))
+  (when-not (= :dali/page (:tag document))
     (throw (ex-info "ixml->xml is not applicable to dali fragments, use on whole documents only"
                     {:fragment document})))
   (utils/transform-zipper
@@ -452,7 +452,7 @@
 (comment
   (spit-svg
    (dali->hiccup
-    [:page
+    [:dali/page
      {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
 
      [:rect {:stroke :blue} [110.0 10.0] [170.0 140.0]] ;;geometry bounds
@@ -481,7 +481,7 @@
 (comment
   (spit-svg
    (dali->hiccup
-    [:page {:width 500 :height 500}
+    [:dali/page {:width 500 :height 500}
      [:defs
       [:g {:id :logo :stroke {:paint :green :width 4} :fill :white}
        (map
@@ -499,7 +499,7 @@
   (require '[dali.io :as io])
   (spit-svg
    (dali->hiccup
-    [:page {:width 500 :height 500}
+    [:dali/page {:width 500 :height 500}
      [:defs
       (-> "resources/symbol.svg" io/load-enlive-svg io/extract-svg-content :content :symbol io/enlive->hiccup)]
      [:use :symbol [50 50]]

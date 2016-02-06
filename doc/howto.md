@@ -6,7 +6,7 @@
 (require '[dali.io :as io])
 
 (def document
- [:page
+ [:dali/page
   [:circle
    {:stroke :indigo :stroke-width 4 :fill :darkorange}
    [30 30] 20]])
@@ -27,7 +27,7 @@ Same as above, but the last line would be:
 ["Prefabs"](prefab.md) are prefabricated elements that ship with dali:
 
 ```clojure
-[:page
+[:dali/page
  [:defs
   (s/css (str "polyline {stroke: black; stroke-width: 2;}"))
   (prefab/sharp-arrow-marker :sharp {:scale 2})]
@@ -38,7 +38,7 @@ You can also pass attributes that will be merged into the attribute
 map of the shape:
 
 ```clojure
-[:page
+[:dali/page
  [:defs
   (s/css (str "polyline {stroke: black; stroke-width: 2;}"))
   (prefab/sharp-arrow-marker :sharp {:scale 2})]
@@ -57,7 +57,7 @@ Although dali is a generic graphics library, it's really easy to create
 bar charts with it, so here are some examples:
 
 ```clojure
-[:page {:width 260 :height 140}
+[:dali/page {:width 260 :height 140}
  [:dali/stack
   {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
   (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
@@ -68,7 +68,7 @@ bar charts with it, so here are some examples:
 Nested layouts make adding text easy:
 
 ```clojure
-[:page {:width 260 :height 160}
+[:dali/page {:width 260 :height 160}
  [:dali/stack
   {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
   (map (fn [h]
@@ -83,7 +83,7 @@ Nested layouts make adding text easy:
 Stacked bar charts are a piece of cake:
 
 ```clojure
-[:page {:width 270 :height 150}
+[:dali/page {:width 270 :height 150}
  [:dali/stack
   {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
   (map (fn [[a b c]]
@@ -108,7 +108,7 @@ Stacked bar charts are a piece of cake:
 ## Flowchart
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:defs
   (s/css (str ".marker {fill: black; stroke: none;}"
               ".grey {fill: lightgrey;}\n"

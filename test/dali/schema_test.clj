@@ -4,24 +4,24 @@
 
 (deftest test-validate
   (is (validate
-       [:page {:width 60 :height 60}
+       [:dali/page {:width 60 :height 60}
         [:circle
          {:stroke :indigo :stroke-width 4 :fill :darkorange}
          [30 30] 20]]))
   (is (validate
-       [:page {:width 220 :height 130 :stroke-width 2 :stroke :black :fill :none}
+       [:dali/page {:width 220 :height 130 :stroke-width 2 :stroke :black :fill :none}
         [:polyline (map #(vector %1 %2) (range 10 210 20) (cycle [10 30]))]
         [:polyline (map #(vector %1 %2) (range 10 210 5) (cycle [60 80]))]
         [:polyline (map #(vector %1 %2) (range 10 210 10) (cycle [100 100 120 120]))]]))
   (is (validate
-       [:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
+       [:dali/page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
         [:rect {:transform [:rotate [30 30 20]]}
          [20 10] [20 20]]
         [:circle {:stroke :none :fill :red} [30 20] 2]
         [:rect {:transform [:rotate [10 60 20] :skew-x [30]]}
          [50 10] [20 20]]]))
   (is (validate
-       [:page
+       [:dali/page
         {:height 500 :width 500, :stroke {:paint :black :width 2} :fill :none}
 
         [:rect {:stroke :blue} [110.0 10.0] [170.0 140.0]] ;;geometry bounds
@@ -47,21 +47,21 @@
   (is (thrown?
        clojure.lang.ExceptionInfo
        (validate
-        [:page {:width 60 :height 60}
+        [:dali/page {:width 60 :height 60}
          [:circle
           {:stroke :indigo :stroke-width 4 :fill :darkorange}
           [30 30]]]))) ;;circle needs a radius
   (is (thrown?
        clojure.lang.ExceptionInfo
        (validate
-        [:page {:width 220 :height 130 :stroke-width 2 :stroke :black 1 :none} ;;keys can't be numeric
+        [:dali/page {:width 220 :height 130 :stroke-width 2 :stroke :black 1 :none} ;;keys can't be numeric
          [:polyline (map #(vector %1 %2) (range 10 210 20) (cycle [10 30]))]
          [:polyline (map #(vector %1 %2) (range 10 210 5) (cycle [60 80]))]
          [:polyline (map #(vector %1 %2) (range 10 210 10) (cycle [100 100 120 120]))]])))
   (is (thrown?
        clojure.lang.ExceptionInfo
        (validate
-        [:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
+        [:dali/page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
          [:rect {:transform [:rotate [30 30 20]]}
           [20 10] [20 20]]
          [:circle {:stroke :none :fill :red} [30 20] 2]
@@ -70,7 +70,7 @@
   (is (thrown?
        clojure.lang.ExceptionInfo
        (validate
-        [:page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
+        [:dali/page {:width 90 :height 50 :stroke :black :stroke-width 2 :fill :none}
          [:rect {:transform [:rotate [30 30]]} ;;3 params needed
           [20 10] [20 20]]
          [:circle {:stroke :none :fill :red} [30 20] 2]

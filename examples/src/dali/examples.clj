@@ -15,14 +15,14 @@
 (def examples
   [{:filename "hello-world"
     :document
-    [:page
+    [:dali/page
      [:circle
       {:stroke :indigo :stroke-width 4 :fill :darkorange}
       [30 30] 20]]}
 
    {:filename "zig-zag"
     :document
-    [:page {:stroke-width 2 :stroke :black :fill :none}
+    [:dali/page {:stroke-width 2 :stroke :black :fill :none}
      [:polyline (map #(vector %1 %2) (range 10 210 20) (cycle [10 30]))]
      [:polyline (map #(vector %1 %2) (range 10 210 5) (cycle [60 80]))]
      [:polyline (map #(vector %1 %2) (range 10 210 10) (cycle [100 100 120 120]))]]}
@@ -30,7 +30,7 @@
    ;;transform syntax demonstrated
    {:filename "transform"
     :document
-    [:page {:stroke :black :stroke-width 2 :fill :none}
+    [:dali/page {:stroke :black :stroke-width 2 :fill :none}
 
      [:rect {:transform [:rotate [30 30 20]]} ;;rotate around center marked by circle
       [20 10] [20 20]]
@@ -41,14 +41,14 @@
 
    {:filename "dasharray"
     :document
-    [:page {:width 120 :height 30 :stroke :black :stroke-width 2}
+    [:dali/page {:width 120 :height 30 :stroke :black :stroke-width 2}
      [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
      [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]}
 
    ;;basic stacking
    {:filename "stack1"
     :document
-    [:page {:width 200 :height 40 :stroke :none}
+    [:dali/page {:width 200 :height 40 :stroke :none}
      [:dali/stack
       {:position [10 10] :anchor :left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -59,7 +59,7 @@
    ;;stacking with anchors
    {:filename "stack2"
     :document
-    [:page {:width 200 :height 80 :stroke :none}
+    [:dali/page {:width 200 :height 80 :stroke :none}
      [:dali/stack
       {:position [10 10] :anchor :left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -71,7 +71,7 @@
    ;;stacking with other anchors
    {:filename "stack3"
     :document
-    [:page {:width 310 :height 80 :stroke :none}
+    [:dali/page {:width 310 :height 80 :stroke :none}
      [:dali/stack
       {:position [10 10] :anchor :bottom-left :direction :right}
       [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -98,7 +98,7 @@
                     [:rect :_ [20 20]]
                     [:circle :_ 15]
                     [:polyline [0 0] [20 0] [10 20] [20 20]]))]
-      [:page {:stroke {:paint :black :width 2} :fill :none}
+      [:dali/page {:stroke {:paint :black :width 2} :fill :none}
        [:dali/stack {:position [20 20] :direction :right} (shapes "right")]
        [:dali/stack {:position [20 90] :gap 5 :direction :left} (shapes "left")]
        [:dali/stack {:position [20 140] :gap 5 :direction :down} (shapes "down")]
@@ -106,7 +106,7 @@
 
    {:filename "stack5"
     :document
-    [:page {:stroke :none}
+    [:dali/page {:stroke :none}
      [:g {:transform [:translate [-10 -10]]}
       [:dali/stack
        {:direction :right}
@@ -117,7 +117,7 @@
 
    {:filename "stack5-5"
     :document
-    [:page {:stroke :none}
+    [:dali/page {:stroke :none}
      [:g
       [:dali/stack
        {:direction :right}
@@ -128,7 +128,7 @@
 
    {:filename "stack6"
     :document
-    [:page {:stroke :none}
+    [:dali/page {:stroke :none}
      [:g {:transform [:translate [100 0]]}
       [:dali/stack
        {:position [10 30] :anchor :left :direction :up}
@@ -139,7 +139,7 @@
 
    {:filename "stack7"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:dali/stack {:direction :up}
       [:circle [200 200] 50]
       [:rect :_ [20 20]]]
@@ -152,7 +152,7 @@
 
    {:filename "stack8"
     :document
-    [:page {:stroke :none}
+    [:dali/page {:stroke :none}
      [:rect {:class :stacked, :fill :mediumslateblue} [10 10] [50 20]]
      [:rect {:class :stacked, :fill :sandybrown} :_ [30 20]]
      [:rect {:class :stacked, :fill :green} :_ [40 20]]
@@ -163,7 +163,7 @@
 
    {:filename "distribute1"
     :document
-    [:page {:stroke :none}
+    [:dali/page {:stroke :none}
      [:rect {:fill :none :stroke :lightgrey} [10 10] [50 20]]
      [:dali/distribute
       {:direction :right}
@@ -181,7 +181,7 @@
    {:filename "distribute2"
     :document
     (let [gr {:fill :none :stroke :lightgrey}]
-     [:page
+     [:dali/page
       [:circle gr [60 60] 50]
       [:dali/distribute
        {:direction :right}
@@ -192,7 +192,7 @@
 
    {:filename "markers1"
     :document
-    [:page
+    [:dali/page
      [:defs
       (s/css (str "polyline {stroke: black; stroke-width: 2;}"))
       (prefab/sharp-arrow-marker :sharp {:scale 2})
@@ -248,7 +248,7 @@
              (make-both-arrows [x 260] marker marker)
              (make-end-arrows [x 390] marker :line)
              (make-start-arrows [x 520] marker :line)])]
-     [:page
+     [:dali/page
       [:defs
        (s/css (str "polyline {stroke: black; stroke-width: 2;}\n"
                    "line {stroke: black; stroke-width: 2;}"))
@@ -267,7 +267,7 @@
 
    {:filename "drop-shadow"
     :document
-    [:page {:width 200 :height 200}
+    [:dali/page {:width 200 :height 200}
      [:defs
       (prefab/drop-shadow-effect :ds {:opacity 0.8 :offset [10 10] :radius 10})
       (prefab/stripe-pattern :stripes {:angle -30 :fill :pink})]
@@ -276,7 +276,7 @@
 
    {:filename "graph1"
     :document
-    [:page {:width 260 :height 140}
+    [:dali/page {:width 260 :height 140}
      [:dali/stack
       {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [h] [:rect {:stroke :none, :fill :darkorchid} :_ [20 h]])
@@ -284,7 +284,7 @@
 
    {:filename "graph2"
     :document
-    [:page {:width 260 :height 160}
+    [:dali/page {:width 260 :height 160}
      [:dali/stack
       {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [h]
@@ -296,7 +296,7 @@
 
    {:filename "graph3"
     :document
-    [:page {:width 270 :height 150}
+    [:dali/page {:width 270 :height 150}
      [:dali/stack
       {:position [10 10], :direction :right, :anchor :bottom-left, :gap 2}
       (map (fn [[a b c]]
@@ -318,7 +318,7 @@
 
    {:filename "graph4"
     :document
-    [:page {:width 270 :height 150}
+    [:dali/page {:width 270 :height 150}
      [:g {:transform [:translate [10 130]]}
       (map (fn [[a b c]]
              [:dali/stack
@@ -343,7 +343,7 @@
 
    {:filename "align-test"
     :document
-    [:page {:width 350 :height 220}
+    [:dali/page {:width 350 :height 220}
      (map (fn [[guide axis]]
             [:g
              [:dali/align
@@ -376,7 +376,7 @@
 
    {:filename "align-test2"
     :document
-    [:page {:width 120 :height 120}
+    [:dali/page {:width 120 :height 120}
      [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
      [:circle {:class :label :fill :none :stroke :black} :_ 50]
@@ -385,7 +385,7 @@
 
    {:filename "align-test3"
     :document
-    [:page {:width 240 :height 140}
+    [:dali/page {:width 240 :height 140}
      [:dali/stack {:direction :down :anchor :top-left :gap 10}
       [:dali/align {:relative-to :first :axis :bottom}
        [:rect {:fill :mediumslateblue} [20 60] [50 20]]
@@ -397,7 +397,7 @@
 
    {:filename "align-test4"
     :document
-    [:page {:width 120 :height 120}
+    [:dali/page {:width 120 :height 120}
      [:dali/align {:relative-to :first :axis :center :select [:.label]}]
      [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
      [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
@@ -407,7 +407,7 @@
 
    {:filename "align-test5"
     :document
-    [:page
+    [:dali/page
      [:line {:stroke :lightgrey} [20 110] [240 110]]
      [:dali/align {:relative-to :first :axis :bottom}
       [:circle {:fill :mediumslateblue} [50 90] 20]
@@ -418,7 +418,7 @@
 
    {:filename "composite-layout"
     :document
-    [:page
+    [:dali/page
      [:dali/layout {:layouts [[:dali/stack {:direction :right}]
                               [:dali/align {:relative-to :first :axis :bottom}]]}
       [:rect {:fill :mediumslateblue :stroke-width 20} [10 80] [50 20]]
@@ -428,7 +428,7 @@
 
    {:filename "composite-layout2"
     :document
-    [:page
+    [:dali/page
      [:dali/layout
       {:layouts
        [[:dali/stack {:direction :right :gap 10}]
@@ -440,7 +440,7 @@
 
    {:filename "surround"
     :document
-    [:page
+    [:dali/page
      [:circle {:class :left} [50 50] 20]
      [:circle {:class :left} [50 100] 20]
      [:circle {:class :left} [50 150] 20]
@@ -454,7 +454,7 @@
 
    {:filename "surround2"
     :document
-    [:page
+    [:dali/page
      [:dali/stack {:direction :right :gap 10}
       [:rect {:fill :mediumslateblue :stroke-width 20} [30 50] [50 20]]
       [:rect {:fill :sandybrown} :_ [30 60]]
@@ -469,7 +469,7 @@
           x1 200
           x2 370
           outline 3]
-      [:page {:width 570 :height 400}
+      [:dali/page {:width 570 :height 400}
        [:defs
         (prefab/stripe-pattern :stripes {:angle 0 :width 2 :width2 12 :fill :lightgray :fill2 :blue})
         (prefab/stripe-pattern :stripes2 {:angle 90 :width 2 :width2 12 :fill :lightgray :fill2 :red})]
@@ -482,7 +482,7 @@
 
    {:filename "connect1"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:defs
       (s/css (str ".marker {fill: black; stroke: none;}"
                   ".grey {fill: lightgrey;}\n"
@@ -534,7 +534,7 @@
 
    {:filename "connect2-wrong"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:defs (prefab/sharp-arrow-marker :sharp)]
      [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
      [:dali/stack {:direction :right, :gap 50}
@@ -543,7 +543,7 @@
 
    {:filename "connect2-right"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:defs (prefab/sharp-arrow-marker :sharp)]
      [:dali/stack {:direction :right, :gap 50}
       [:rect {:id :a} [50 50] [50 50]]
@@ -552,7 +552,7 @@
 
    {:filename "matrix1"
     :document
-    [:page
+    [:dali/page
      [:defs
       (s/css (str "polyline {fill: none; stroke: black;}\n"
                   "rect {fill: none; stroke: black;}\n"))
@@ -583,7 +583,7 @@
 
    {:filename "matrix2"
     :document
-    [:page {:fill :none :stroke :black}
+    [:dali/page {:fill :none :stroke :black}
      [:dali/matrix {:columns 4}
       [:circle [20 20] 20]
       [:circle :_ 20]
@@ -602,7 +602,7 @@
 
    {:filename "matrix3"
     :document
-    [:page
+    [:dali/page
      [:defs
       (s/css (str "polyline {fill: none; stroke: black;}\n"
                   "rect {fill: none; stroke: black;}\n"))
@@ -630,7 +630,7 @@
 
    {:filename "send-to-bottom"
     :document
-    [:page
+    [:dali/page
      [:defs
       (s/css (str "polyline {fill: none; stroke: black;}\n"
                   "circle {fill: lightgreen; stroke: black;}\n"
@@ -643,7 +643,7 @@
 
    {:filename "place1"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:rect {:id :p1} [20 20] [100 100]]
      [:dali/place {:relative-to :p1}
       [:circle {:fill :lightblue} :_ 5]]
@@ -660,7 +660,7 @@
 
    {:filename "ghost1"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:rect {:fill :none :stroke :lightgrey} [110 10] [100 100]]
      [:rect {:fill :none :stroke :lightgrey} [310 10] [100 100]]
      [:dali/stack {:direction :right}
@@ -672,7 +672,7 @@
 
    {:filename "allow-nil"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:dali/stack {:direction :right}
       [:rect [10 10] [100 100]]
       nil
@@ -682,7 +682,7 @@
 
    {:filename "last-wins1"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:dali/stack {:direction :down :position [50 50] :gap 10}
       [:rect :_ [100 50]]
       [:rect :_ [150 50]]
@@ -690,7 +690,7 @@
 
    {:filename "last-wins2"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:dali/stack {:direction :down :position [50 50] :gap 10}
       [:rect :_ [100 50]]
       [:rect :_ [150 50]]
@@ -699,7 +699,7 @@
 
    {:filename "last-wins3"
     :document
-    [:page {:stroke :black :fill :none}
+    [:dali/page {:stroke :black :fill :none}
      [:dali/stack {:direction :down :position [50 50] :gap 10}
       [:rect :_ [100 50]]
       [:rect :_ [150 50]]
@@ -709,7 +709,7 @@
 
    {:filename "images1"
     :document
-    [:page {:stroke :black}
+    [:dali/page {:stroke :black}
      [:defs (prefab/curvy-arrow-marker :curvy {:scale 2})]
      [:dali/stack {:direction :right :position [50 50] :gap 200}
       [:image (merge {:id :cat1} (io/raster-image-attr "resources/cat1.png" :png))]
@@ -730,7 +730,7 @@
    {:filename "images2"
     :document
     (let [cat (ImageIO/read (java-io/file "resources/cat2.png"))]
-      [:page {:stroke :black}
+      [:dali/page {:stroke :black}
        [:image (merge {:x 50 :y 50} (io/buffered-image-attr cat))]])}
 
    {:filename "architecture"

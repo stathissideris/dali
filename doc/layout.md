@@ -74,7 +74,7 @@ This is how you stack elements:
             [dali.layout.stack])) ;;don't forget this
 
 (def document
-  [:page {:stroke :none}
+  [:dali/page {:stroke :none}
    [:dali/stack
     {:position [10 10] :anchor :left :direction :right}
     [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -99,7 +99,7 @@ of the shapes are aligned. This is better illustrated with shapes of
 different heights. Let's remix the previous example:
 
 ```clojure
-[:page {:width 200 :height 80 :stroke :none}
+[:dali/page {:width 200 :height 80 :stroke :none}
  [:dali/stack
   {:position [10 10] :anchor :left :direction :right}
   [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -114,7 +114,7 @@ The `:left` anchor of the first shape is indicated by the red dot. It
 is possible to perform stacking using different anchors:
 
 ```clojure
-[:page {:width 310 :height 80 :stroke :none}
+[:dali/page {:width 310 :height 80 :stroke :none}
  [:dali/stack
   {:position [10 10] :anchor :bottom-left :direction :right}
   [:rect {:fill :mediumslateblue} :_ [50 20]]
@@ -145,7 +145,7 @@ default):
    [:circle :_ 15]
    [:polyline [0 0] [20 0] [10 20] [20 20]]))
 
-[:page {:width 350 :height 500 :stroke {:paint :black :width 2} :fill :none}
+[:dali/page {:width 350 :height 500 :stroke {:paint :black :width 2} :fill :none}
  [:dali/stack {:position [20 20] :direction :right} (shapes "right")]
  [:dali/stack {:position [130 70] :gap 5 :direction :left} (shapes "left")]
  [:dali/stack {:position [40 150] :gap 5 :direction :down} (shapes "down")]
@@ -193,7 +193,7 @@ in the `:select` attribute. Selector layouts have no children.
 Stack supports the `:select` attribute, and this is how you can use it:
 
 ```clojure
-[:page {:stroke :none}
+[:dali/page {:stroke :none}
  [:rect {:class :stacked, :fill :mediumslateblue} [10 10] [50 20]]
  [:rect {:class :stacked, :fill :sandybrown} :_ [30 20]]
  [:rect {:class :stacked, :fill :green} :_ [40 20]]
@@ -265,7 +265,7 @@ This is how to distribute the centers of the elements in equal
 distances:
 
 ```clojure
-[:page {:stroke :none}
+[:dali/page {:stroke :none}
  [:dali/distribute
   {:direction :right}
   [:rect {:fill :mediumslateblue} [10 10] [50 20]]
@@ -326,7 +326,7 @@ Here's a simple case where the bottom edges of the last three circles
 are aligned to the bottom edge of the first circle:
 
 ```clojure
-[:page
+[:dali/page
  [:line {:stroke :lightgrey} [20 110] [240 110]]
  [:dali/align {:relative-to :first :axis :bottom}
   [:circle {:fill :mediumslateblue} [50 90] 20]
@@ -348,7 +348,7 @@ Here's a snippet that uses the `:center` axis alignment to align some
 text, a circle and a rectangle all at the center of a circle:
 
 ```clojure
-[:page {:width 120 :height 120}
+[:dali/page {:width 120 :height 120}
  [:dali/align {:relative-to :first :axis :center :select [:.label]}]
  [:circle {:class :label :fill :none :stroke :gray :stroke-dasharray [5 5]} [60 60] 40]
  [:text {:class :label :text-family "Verdana" :font-size 17} "aligned"]
@@ -395,7 +395,7 @@ example of using a larger rectangle as a reference element to place a
 number of smaller elements:
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:rect {:id :p1} [20 20] [100 100]]
 
  [:dali/place {:relative-to :p1}
@@ -450,7 +450,7 @@ tallest element in the row and the width of each column is determined
 by the widest element in the column.
 
 ```clojure
-[:page
+[:dali/page
  [:defs
   (s/css (str "polyline {fill: none; stroke: black;}\n"
               "rect {fill: none; stroke: black;}\n"))
@@ -510,7 +510,7 @@ connector that starts vertically and then moves horizontally
 Here is an example of `:connect` in action:
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:defs
   (s/css (str ".marker {fill: black; stroke: none;}"
               ".grey {fill: lightgrey;}\n"
@@ -613,7 +613,7 @@ completely surround the elements that are matched by the selector.
 Here is an example of it in action:
 
 ```clojure
-[:page
+[:dali/page
  [:circle {:class :left} [50 50] 20]
  [:circle {:class :left} [50 100] 20]
  [:circle {:class :left} [50 150] 20]
@@ -654,7 +654,7 @@ The syntax of ghosts is identical to `[:rect]`:
 Here is an example:
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:rect {:fill :none :stroke :lightgrey} [110 10] [100 100]]
  [:rect {:fill :none :stroke :lightgrey} [310 10] [100 100]]
  [:dali/stack {:direction :right}
@@ -695,7 +695,7 @@ the last one wins.
 Let's define a simple stack of rectangles:
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:dali/stack {:direction :down :position [50 50] :gap 10}
   [:rect :_ [100 50]]
   [:rect :_ [150 50]]
@@ -710,7 +710,7 @@ calculated when the `:dali/stack` layout is resolved. Let's add a
 them to the left.
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:dali/stack {:direction :down :position [50 50] :gap 10}
   [:rect :_ [100 50]]
   [:rect :_ [150 50]]
@@ -731,7 +731,7 @@ out the alignment to the left and making it into an alignment to the
 right.
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:dali/stack {:direction :down :position [50 50] :gap 10}
   [:rect :_ [100 50]]
   [:rect :_ [150 50]]
@@ -750,7 +750,7 @@ well. For example, say you want to connect 2 boxes, and somehow decide
 to put the `[:connect]` tags first:
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:defs (prefab/sharp-arrow-marker :sharp)]
  [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
  [:dali/stack {:direction :right, :gap 50}
@@ -768,7 +768,7 @@ boxes have been finalised by any layout operations that may affect
 them:
 
 ```clojure
-[:page {:stroke :black :fill :none}
+[:dali/page {:stroke :black :fill :none}
  [:defs (prefab/sharp-arrow-marker :sharp)]
  [:dali/stack {:direction :right, :gap 50}
   [:rect {:id :a} [50 50] [50 50]]
@@ -793,7 +793,7 @@ together and also surround them with a rounded box. This is how you
 could do it with selectors (in a non-composable way):
 
 ```clojure
-[:page
+[:dali/page
  [:dali/stack {:direction :right :gap 10}
   [:rect {:fill :mediumslateblue :stroke-width 20} [30 50] [50 20]]
   [:rect {:fill :sandybrown} :_ [30 60]]
@@ -810,7 +810,7 @@ To make your life easier, you can avoid selectors by composing the two
 layouts:
 
 ```clojure
-[:page
+[:dali/page
  [:dali/layout
   {:layouts
    [[:dali/stack {:direction :right :gap 10}]

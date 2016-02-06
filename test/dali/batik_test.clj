@@ -9,7 +9,7 @@
 (comment
  (deftest test-outline
    (testing "outline"
-     (let [path [:page {:height 500 :width 500}
+     (let [path [:dali/page {:height 500 :width 500}
                  [:path
                   {:id :path}
                   :M [110 80]
@@ -30,7 +30,7 @@
                (batik/context
                 (@#'layout/index-tree
                  (syntax/dali->ixml
-                  [:page
+                  [:dali/page
                    [:g {:transform [:translate [20 10]]}
                     [:g {:transform [:translate [13 13]]}
                      [:rect {:transform [:translate [11 11]]} [0 0] [10 10]]]]])))]
