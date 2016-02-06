@@ -48,8 +48,8 @@ the arrowhead, while the tip of the arrowhead ends up at the location
 of the original end of the line, thus ensuring that the line will not
 show through.
 
-Calling `(dali.prefab/sharp-arrow-marker :sharp)` will produce a such
-dali marker with the default dimensions. This is what the output looks
+Calling `(dali.prefab/sharp-arrow-marker :sharp)` will produce a *dali*
+marker with the default dimensions. This is what the output looks
 like:
 
 ```clojure
