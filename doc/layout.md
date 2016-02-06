@@ -691,16 +691,73 @@ This means that if some elements are aligned to the left by one layout
 operation, and then aligned to the right by a subsequent operation,
 the last one wins.
 
-??? example
+Let's define a simple stack of rectangles:
 
-Because you can use enlive selectors to refer to any part of the
-document, you may be tempted to put layouts anywhere, even at the
-beginning of the document. This would work in simple cases, but if you
-don't think about order you'll get unexpected results. For example,
-say you want to connect 2 boxes, and somehow decide to put the
-`[:connect]` tags first:
+```clojure
+[:page {:stroke :black :fill :none}
+ [:dali/stack {:direction :down :position [50 50] :gap 10}
+  [:rect :_ [100 50]]
+  [:rect :_ [150 50]]
+  [:rect :_ [50 50]]]]
+```
 
-??? wrong example
+![](https://rawgit.com/stathissideris/dali/master/examples/output/last-wins1.svg)
+
+The initial positions of the rectangles are not pre-defined, they are
+calculated when the `:dali/stack` layout is resolved. Let's add a
+`:dali/align` to reach into the children of `:dali/stack` and align
+them to the left.
+
+```clojure
+[:page {:stroke :black :fill :none}
+ [:dali/stack {:direction :down :position [50 50] :gap 10}
+  [:rect :_ [100 50]]
+  [:rect :_ [150 50]]
+  [:rect :_ [50 50]]]
+ [:dali/align {:select [:rect] :relative-to :first :axis :left}]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/last-wins2.svg)
+
+Because `:dali/align` appears further down in the document in relation
+to `:dali/stack`, it's applied after `:dali/stack`, and therefore it
+acts not on the original positions of the rectangles, but rather on
+the positions the rectangles had after they were arranged in a stack.
+
+If we then add another `:align` at the end of the document, it will be
+applied to the result of the first `:dali/align`, in effect cancelling
+out the alignment to the left and making it into an alignment to the
+right.
+
+```clojure
+[:page {:stroke :black :fill :none}
+ [:dali/stack {:direction :down :position [50 50] :gap 10}
+  [:rect :_ [100 50]]
+  [:rect :_ [150 50]]
+  [:rect :_ [50 50]]]
+ [:dali/align {:select [:rect] :relative-to :first :axis :left}]
+ [:dali/align {:select [:rect] :relative-to :first :axis :right}]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/last-wins3.svg)
+
+From this example, you can clearly see that "the last one wins" when
+it comes to layouts.
+
+The layout application order has implications for connectors as
+well. For example, say you want to connect 2 boxes, and somehow decide
+to put the `[:connect]` tags first:
+
+```clojure
+[:page {:stroke :black :fill :none}
+ [:defs (prefab/sharp-arrow-marker :sharp)]
+ [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
+ [:dali/stack {:direction :right, :gap 50}
+  [:rect {:id :a} [50 50] [50 50]]
+  [:rect {:id :b} [50 150] [50 50]]]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/connect2-wrong.svg)
 
 What happened? Because `[:connect]` was evaluated first, the arrow was
 placed according to the *original* positions of the boxes, and then
@@ -709,7 +766,16 @@ make sure that `[:connect]` is applied *after* the positions of the
 boxes have been finalised by any layout operations that may affect
 them:
 
-??? example
+```clojure
+[:page {:stroke :black :fill :none}
+ [:defs (prefab/sharp-arrow-marker :sharp)]
+ [:dali/stack {:direction :right, :gap 50}
+  [:rect {:id :a} [50 50] [50 50]]
+  [:rect {:id :b} [50 150] [50 50]]]
+ [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]]
+```
+
+![](https://rawgit.com/stathissideris/dali/master/examples/output/connect2-right.svg)
 
 ### Layouts and tranformations are composable
 

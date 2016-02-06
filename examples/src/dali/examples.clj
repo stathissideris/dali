@@ -532,6 +532,24 @@
      [:dali/connect {:from :e :to :g :type :|- :class :foo :dali/marker-end :triangle}]
      [:dali/connect {:from :e :to :g :type :-| :dali/marker-end :sharp}]]}
 
+   {:filename "connect2-wrong"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:defs (prefab/sharp-arrow-marker :sharp)]
+     [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
+     [:dali/stack {:direction :right, :gap 50}
+      [:rect {:id :a} [50 50] [50 50]]
+      [:rect {:id :b} [50 150] [50 50]]]]}
+
+   {:filename "connect2-right"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:defs (prefab/sharp-arrow-marker :sharp)]
+     [:dali/stack {:direction :right, :gap 50}
+      [:rect {:id :a} [50 50] [50 50]]
+      [:rect {:id :b} [50 150] [50 50]]]
+     [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]]}
+
    {:filename "matrix1"
     :document
     [:page
@@ -661,6 +679,33 @@
       [:rect [50 50] [100 100]]
       nil
       [:rect :_ [100 100]]]]}
+
+   {:filename "last-wins1"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:dali/stack {:direction :down :position [50 50] :gap 10}
+      [:rect :_ [100 50]]
+      [:rect :_ [150 50]]
+      [:rect :_ [50 50]]]]}
+
+   {:filename "last-wins2"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:dali/stack {:direction :down :position [50 50] :gap 10}
+      [:rect :_ [100 50]]
+      [:rect :_ [150 50]]
+      [:rect :_ [50 50]]]
+     [:dali/align {:select [:rect] :relative-to :first :axis :left}]]}
+
+   {:filename "last-wins3"
+    :document
+    [:page {:stroke :black :fill :none}
+     [:dali/stack {:direction :down :position [50 50] :gap 10}
+      [:rect :_ [100 50]]
+      [:rect :_ [150 50]]
+      [:rect :_ [50 50]]]
+     [:dali/align {:select [:rect] :relative-to :first :axis :left}]
+     [:dali/align {:select [:rect] :relative-to :first :axis :right}]]}
 
    {:filename "images1"
     :document
