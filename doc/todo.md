@@ -9,11 +9,13 @@
 
 ## Documentation
 
-* z-index
+Nothing.
 
 ## Bugs
 
 * Matrix layout does not support :_
+* change `:position` in layouts to mean position in relation to min
+  dimensions, NOT in relation to first element.
 * Possible bug: I suspect that selector layouts that don't match
   anything throw an exception. It should be a warning at most.
 * dali markers are not displayed in Safari.
@@ -29,8 +31,6 @@
 
 ## Features
 
-* change `:position` in layouts to mean position in relation to min
-  dimensions, NOT in relation to first element.
 * `:dali/place` support :distance attribute (or :gap?)
 * `:dali/place` on path
 * Align relative to biggest/smallest (which means widest/narrowest or
