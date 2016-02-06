@@ -35,9 +35,9 @@ The most important problem with SVG markers is that they only allow
 one reference point that acts as the location at which the end of the
 line is attached. The problem with that is that if for example you
 have an arrowhead marker and you attach the end of the line to the tip
-of the arrow, a thick line will be visible on either side of the arrow.
+of the arrow, a thick line will be visible on either side of the arrow:
 
-??? illustration?
+![](https://rawgit.com/stathissideris/dali/master/doc/marker-problem.svg)
 
 dali overcomes that problem by defining its own syntax for markers,
 which allows for two points: a base and a tip. The base is always at
