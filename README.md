@@ -14,7 +14,7 @@ Here's a hello world for dali:
 (require '[dali.io :as io])
 
 (def document
- [:page
+ [:dali/page
   [:circle
    {:stroke :indigo :stroke-width 4 :fill :darkorange}
    [30 30] 20]])
