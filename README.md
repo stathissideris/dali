@@ -41,22 +41,20 @@ change. Just add this to the dependencies of your `project.clj`:
 
 * [Basic syntax](doc/syntax.md) -- Start here
 * Compare the
-  [examples' source](https://github.com/stathissideris/dali/blob/master/examples/src/dali/examples.clj)
+  [examples source](https://github.com/stathissideris/dali/blob/master/examples/src/dali/examples.clj)
   to the
   [rendered SVGs](https://github.com/stathissideris/dali/tree/master/examples/output).
 * [Layout](doc/layout.md)
 * [Pre-fabricated elements](doc/prefab.md)
 * [How-to](doc/howto.md) --
   Task-driven documentation, recipes for common tasks.
-* [Tutorial](doc/diagram-tutorial.md) on how to make a diagram.
-* [The dali pipeline](doc/pipeline.md)
 
 ## Roadmap
 
 Planned for the future:
 
 * Porting basic functionality to ClojureScript.
-* More stock shapes.
+* More stock elements.
 
 ## License
 
