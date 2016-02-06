@@ -171,7 +171,7 @@ transformations to be applied:
   [:rect {:transform [:rotate [10 60 20] :skew-x [30]]}
    [50 10] [20 20]]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/transform.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/transform.svg)
 
 `:stroke-dasharray` can be passed as a sequence of numbers, for example:
 
@@ -180,7 +180,7 @@ transformations to be applied:
   [:line {:stroke-dasharray [10 5]} [10 10] [110 10]]
   [:line {:stroke-dasharray [5 10]} [10 20] [110 20]]]
 ```
-![](https://rawgit.com/stathissideris/dali/master/examples/output/dasharray.svg)
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/dasharray.svg)
 
 In the example `[10 5]` becomes `"10,5"`. A similar rule applies to
 any attribute which is a sequence that contains just numbers: the
