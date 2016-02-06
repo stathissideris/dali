@@ -40,6 +40,10 @@ change. Just add this to the dependencies of your `project.clj`:
 ## Documentation
 
 * [Basic syntax](doc/syntax.md) -- Start here
+* Compare the
+  [examples' source](https://github.com/stathissideris/dali/blob/master/examples/src/dali/examples.clj)
+  to the
+  [rendered SVGs](https://github.com/stathissideris/dali/tree/master/examples/output).
 * [Layout](doc/layout.md)
 * [Pre-fabricated elements](doc/prefab.md)
 * [How-to](doc/howto.md) --
@@ -56,6 +60,6 @@ Planned for the future:
 
 ## License
 
-Copyright © 2014-2015 Stathis Sideris
+Copyright © 2014-2016 Stathis Sideris
 
 Distributed under the Eclipse Public License, the same as Clojure.
