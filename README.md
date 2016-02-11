@@ -4,9 +4,14 @@
 > -- Salvador Dalí
 
 dali is a Clojure library for representing the SVG graphics format. It
-allows the creation and manipulation of SVG files. The syntax used to
-describe the graphical elements is based on
-[hiccup](https://github.com/weavejester/hiccup) with a few extensions.
+allows the creation and manipulation of SVG files. The
+[syntax](doc/syntax.md) used to describe the graphical elements is
+based on [hiccup](https://github.com/weavejester/hiccup) with a few
+extensions.
+
+The main advantage of dali is that it provides
+[facilities to perform complex layouts](doc/layout.md) without having
+to position elements explicitly.
 
 Here's a hello world for dali:
 
@@ -26,11 +31,13 @@ Here's a hello world for dali:
 ```
 ![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/hello-world.svg)
 
-Here's a more substantial example of what you can do with dali:
+Here's a more substantial example of the kind of SVG you can produce
+with dali without having to specify the exact coordinates to position
+the elements:
 
 ![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/architecture.svg)
 
-[source](blob/master/examples/src/dali/examples/architecture.clj)
+[example source](examples/src/dali/examples/architecture.clj)
 
 ## Using dali in your project
 
