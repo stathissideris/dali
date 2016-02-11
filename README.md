@@ -60,6 +60,7 @@ change. Just add this to the dependencies of your `project.clj`:
 * [Pre-fabricated elements](doc/prefab.md)
 * [How-to](doc/howto.md) --
   Task-driven documentation, recipes for common tasks.
+* [Limitations](doc/limitations.md)
 
 ## Roadmap
 
