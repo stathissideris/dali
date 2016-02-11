@@ -26,6 +26,12 @@ Here's a hello world for dali:
 ```
 ![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/hello-world.svg)
 
+Here's a more substantial example of what you can do with dali:
+
+![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/architecture.svg)
+
+[source](blob/master/examples/src/dali/examples/architecture.clj)
+
 ## Using dali in your project
 
 Before adding dali as a dependency, please consider that it's still
