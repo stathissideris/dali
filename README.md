@@ -37,7 +37,7 @@ the elements:
 
 ![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/architecture.svg)
 
-[example source](examples/src/dali/examples/architecture.clj)
+[source for diagram](examples/src/dali/examples/architecture.clj)
 
 ## Using dali in your project
 
