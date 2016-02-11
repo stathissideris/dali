@@ -19,4 +19,7 @@ limitations of the dali library that you should be aware of:
   pipeline that produces PNGs from SVGs, you may want to try using
   Inkscape instead
   [to rasterize your SVGs](http://tavmjong.free.fr/INKSCAPE/MANUAL/html/CommandLine-Export.html).
+* **dali markers for `line` and `multiline` only:** The dali markers
+  cannot currently be attached to a `path` -- this will be fixed in
+  the future. Of course, normal SVG markers can.
 * **No ClojureScript version:** But hopefully there will be one soon.
