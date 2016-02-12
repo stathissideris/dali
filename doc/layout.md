@@ -74,14 +74,13 @@ This is how you stack elements:
             [dali.layout.stack])) ;;don't forget this
 
 (def document
-  [:dali/page {:stroke :none}
-   [:dali/stack
-    {:position [10 10] :anchor :left :direction :right}
-    [:rect {:fill :mediumslateblue} :_ [50 20]]
-    [:rect {:fill :sandybrown} :_ [30 60]]
-    [:rect {:fill :green} :_ [40 10]]
-    [:rect {:fill :orange} :_ [20 40]]]
-   [:circle {:fill :red} [10 40] 4]])
+ [:dali/page {:width 200 :height 40 :stroke :none}
+  [:dali/stack
+   {:position [10 10] :anchor :left :direction :right}
+   [:rect {:fill :mediumslateblue} :_ [50 20]]
+   [:rect {:fill :sandybrown} :_ [30 20]]
+   [:rect {:fill :green} :_ [40 20]]
+   [:rect {:fill :orange} :_ [20 20]]]])
 
 (io/render-svg document "stack.svg")
 ```
