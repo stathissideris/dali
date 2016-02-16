@@ -84,15 +84,15 @@
       (when attrs
         (doseq [[k v] attrs]
           (when-not (dali-attr? k)
-              (when-not k (throw (ex-info "Cannot set attribute with nil key" {:element element})))
-              (when-not v (throw (ex-info "Cannot set attribute with nil value" {:element element})))
+            (when-not k (throw (ex-info "Cannot set attribute with nil key" {:element element})))
+            (when-not v (throw (ex-info "Cannot set attribute with nil value" {:element element})))
             (set-attr! e k v))))
       (when content
         (if (string? (first content))
           (let [c (first content)]
-           (if (cdata? c)
-             (append-child! e (create-cdata-section dom c))
-             (append-child! e (.createTextNode dom c)))) ;;TODO only first??
+            (if (cdata? c)
+              (append-child! e (create-cdata-section dom c))
+              (append-child! e (.createTextNode dom c)))) ;;TODO only first??
           (doseq [child content]
             (append-child! e (xml->dom-element dom child))))) ;;TODO mind the stack
       e)))
@@ -140,4 +140,3 @@
       (nth-child parent (first path))
       (recur (nth-child parent (first path))
              (rest path)))))
-
