@@ -76,7 +76,7 @@
 
 (defn xml->dom-element [dom element]
   (when-not element
-    (throw (ex-info "Cannot convert nil xml element to DOM")))
+    (throw (ex-info "Cannot convert nil xml element to DOM" {})))
   (let [{:keys [tag attrs content]} element
         _ (when-not tag (throw (ex-info "tag cannot be nil" {:element element})))
         e (create-element dom (utils/keyword-name tag))]
