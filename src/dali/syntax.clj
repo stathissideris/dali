@@ -432,9 +432,7 @@
   (when-not (= :dali/page (:tag document))
     (throw (ex-info "ixml->xml is not applicable to dali fragments, use on whole documents only"
                     {:fragment document})))
-  (utils/transform-zipper
-   (utils/ixml-zipper document)
-   (comp (partial ixml-node->xml-node document) zip/node)))
+  (ixml-fragment->xml-node document document))
 
 (defn dali->xml [document]
   (let [document (replace-empty-coords document)]
