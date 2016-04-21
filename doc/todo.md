@@ -31,6 +31,7 @@ Nothing.
 
 ## Features
 
+* render-to-buffered-image - http://www.mail-archive.com/batik-users@xml.apache.org/msg00775.html
 * `:dali/place` support :distance attribute (or :gap?)
 * `:dali/place` on path
 * Align relative to biggest/smallest (which means widest/narrowest or
