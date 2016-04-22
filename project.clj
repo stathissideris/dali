@@ -6,7 +6,7 @@
 
   ;;:pedantic? :abort
 
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.codec "0.1.0"]
                  [hiccup "1.0.5"]
                  [enlive "1.1.6"]
@@ -25,4 +25,4 @@
 
   :profiles {:dev {:source-paths ["dev" "examples/src"]
                    :dependencies [[org.clojure/tools.namespace "0.2.11"]
-                                  [garden "1.3.0-SNAPSHOT"]]}})
+                                  [garden "1.3.2"]]}})

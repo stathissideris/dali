@@ -4,7 +4,8 @@
             [dali.batik :refer :all]
             [dali.io :as io]
             [dali.layout :as layout]
-            [dali.syntax :as syntax]))
+            [dali.syntax :as syntax]
+            [dali.svg-context :as ctx]))
 
 (comment
  (deftest test-outline
@@ -26,12 +27,11 @@
 
 (deftest test-get-bounds
   (is (= [:rect [55.0 45.0] [10.0 10.0]]
-         (let [ctx
-               (batik/context
-                (@#'layout/index-tree
-                 (syntax/dali->ixml
-                  [:dali/page
-                   [:g {:transform [:translate [20 10]]}
-                    [:g {:transform [:translate [13 13]]}
-                     [:rect {:transform [:translate [11 11]]} [0 0] [10 10]]]]])))]
-           (get-bounds ctx {:attrs {:dali/path [0 0 0 0]}})))))
+         (let [ctx (batik/context)
+               doc (@#'layout/index-tree
+                    (syntax/dali->ixml
+                     [:dali/page
+                      [:g {:transform [:translate [20 10]]}
+                       [:g {:transform [:translate [13 13]]}
+                        [:rect {:transform [:translate [11 11]]} [0 0] [10 10]]]]]))]
+           (ctx/get-bounds ctx doc [0 0 0 0])))))

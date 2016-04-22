@@ -19,21 +19,14 @@
            [org.apache.batik.ext.awt.image.spi ImageTagRegistry]
            [org.apache.batik.ext.awt.image.codec.png PNGRegistryEntry]
            [org.apache.batik.ext.awt.image.codec.tiff TIFFRegistryEntry]
-           [org.apache.batik.transcoder.image PNGTranscoder]))
+           [org.apache.batik.transcoder.image PNGTranscoder]
+           [dali.svg_context SVGContext]))
 
 ;;Batik - calculating bounds of cubic spline
 ;;http://stackoverflow.com/questions/10610355/batik-calculating-bounds-of-cubic-spline?rq=1
 
 ;;Wrong values of bounding box for text element using Batik
 ;;http://stackoverflow.com/questions/12166280/wrong-values-of-bounding-box-for-text-element-using-batik
-
-(defprotocol BatikContext
-  (gvt-node [this dom-node])
-  (gvt-node-by-id [this id])
-  (replace-node! [this dali-path new-node document])
-  (append-node! [this new-node document])
-  (get-bounds [this element])
-  (get-relative-bounds [this element]))
 
 (def imageio-workaround-applied? (atom false))
 
@@ -84,33 +77,63 @@
                 (reduce (fn [a b] (.concatenate a b) a) transforms)))
       (to-rect (.getTransformedGeometryBounds gvt id-transform)))))
 
-(defn- get-bounds-impl [this dom element]
-  (let [dom-element (try (dom/get-node dom (-> element :attrs :dali/path))
+(defn- gvt-node [ctx dom-node]
+  (.getGraphicsNode (-> ctx :cache deref :bridge) dom-node))
+
+(defn- gvt-node-by-id [ctx doc id]
+  (gvt-node ctx (.getElementById (-> ctx :cache deref :dom) id)))
+
+(defn- set-doc! [ctx doc]
+  (when-not (= doc (:last-doc @(:cache ctx)))
+    (let [cache  (:cache ctx)
+          dom    (-> (SVGDOMImplementation/getDOMImplementation)
+                     (.createDocument SVGDOMImplementation/SVG_NAMESPACE_URI "svg" nil))
+          bridge (BridgeContext. (UserAgentAdapter.))]
+      (.setDynamic bridge true) ;;TODO correct?
+      (->> doc
+           s/ixml->xml
+           :content
+           (map #(dom/xml->dom-element dom %))
+           (map #(dom/add-to-svg! dom %))
+           doall)
+      (reset!
+       cache
+       {:bridge   bridge
+        :dom      dom
+        :last-doc doc
+        :gvt      (.build (GVTBuilder.) bridge dom)}))))
+
+(defn- get-bounds-impl [this doc path]
+  (set-doc! this doc)
+  (let [dom         (-> this :cache deref :dom)
+        dom-element (try (dom/get-node dom path)
                          (catch Exception e
-                           (throw (ex-info "Could not get DOM element for dali node" {:dali-node element
+                           (throw (ex-info "Could not get DOM element for dali node" {:path path
                                                                                       :dom (dom/->xml dom)}))))
         _           (when-not dom-element
-                      (throw (ex-info "DOM element for dali node is nil" {:dali-node element
+                      (throw (ex-info "DOM element for dali node is nil" {:path path
                                                                           :dom (dom/->xml dom)})))
         gvt         (gvt-node this dom-element)
         _           (when-not gvt
                       (throw (ex-info "Cannot find GVT node for dali node"
-                                      {:dali-node element
+                                      {:path path
                                        :dom-element (when dom-element (dom/->xml dom-element))})))]
     (transformed-bounds gvt)))
 
-(defn- get-relative-bounds-impl [this dom element]
-  (let [dom-element (try (dom/get-node dom (-> element :attrs :dali/path))
+(defn- get-relative-bounds-impl [this doc path]
+  (set-doc! this doc)
+  (let [dom         (-> this :cache deref :dom)
+        dom-element (try (dom/get-node dom path)
                          (catch Exception e
-                           (throw (ex-info "Could not get DOM element for dali node" {:dali-node element
-                                                                                      :dom (dom/->xml dom)}))))
+                           (throw (ex-info "Could not get DOM element for path" {:path path
+                                                                                 :dom (dom/->xml dom)}))))
         _           (when-not dom-element
-                      (throw (ex-info "DOM element for dali node is nil" {:dali-node element
+                      (throw (ex-info "DOM element for dali node is nil" {:path path
                                                                           :dom (dom/->xml dom)})))
         gvt         (gvt-node this dom-element)
         _           (when-not gvt
                       (throw (ex-info "Cannot find GVT node for dali node"
-                                      {:dali-node element
+                                      {:path path
                                        :dom-element (when dom-element (dom/->xml dom-element))})))]
     (to-rect (.getTransformedGeometryBounds gvt id-transform))))
 
@@ -119,41 +142,16 @@
        (s/ixml-fragment->xml-node document)
        (dom/xml->dom-element dom)))
 
-(defrecord BatikContextRecord [bridge gvt dom]
-  BatikContext
-  (gvt-node [this dom-node]
-    (.getGraphicsNode bridge dom-node))
-  (gvt-node-by-id [this id]
-    (gvt-node this (.getElementById dom id)))
-  (replace-node! [this dali-path new-node document]
-    (dom/replace-node! dom dali-path (dali->dom new-node document dom)))
-  (append-node! [this new-node document]
-    (dom/add-to-svg! dom (dali->dom new-node document dom)))
-  (get-bounds [this element]
-    (get-bounds-impl this dom element))
-  (get-relative-bounds [this element]
-    (get-relative-bounds-impl this dom element)))
+(defrecord BatikContextRecord [cache]
+  SVGContext
+  (get-bounds [this doc path]
+    (get-bounds-impl this doc path))
+  (get-relative-bounds [this doc path]
+    (get-relative-bounds-impl this doc path)))
 
-(defn context
-  ([doc]
-   (context doc nil))
-  ([doc dom & {:keys [dynamic?]}]
-   (apply-imageio-workaround!)
-   (let [dom (or dom
-                 (-> (SVGDOMImplementation/getDOMImplementation)
-                     (.createDocument SVGDOMImplementation/SVG_NAMESPACE_URI "svg" nil)))
-         bridge (BridgeContext. (UserAgentAdapter.))]
-     (.setDynamic bridge (or dynamic? true))
-     (->> doc
-          s/ixml->xml
-          :content
-          (map #(dom/xml->dom-element dom %))
-          (map #(dom/add-to-svg! dom %))
-          doall)
-     (map->BatikContextRecord
-      {:dom    dom
-       :bridge bridge
-       :gvt    (.build (GVTBuilder.) bridge dom)}))))
+(defn context []
+  (apply-imageio-workaround!)
+  (map->BatikContextRecord {:cache (atom nil)}))
 
 (defn parse-svg-uri [uri]
   (let [factory (SAXSVGDocumentFactory. "org.apache.xerces.parsers.SAXParser")]
@@ -176,8 +174,7 @@
       (let [add-hint (fn [hints k v] (.add hints (RenderingHints. k v)))
             renderer (proxy-super createRenderer)
             ;;hints    (.getRenderingHints renderer)
-            hints (RenderingHints. RenderingHints/KEY_ALPHA_INTERPOLATION RenderingHints/VALUE_ALPHA_INTERPOLATION_QUALITY)
-            ]
+            hints (RenderingHints. RenderingHints/KEY_ALPHA_INTERPOLATION RenderingHints/VALUE_ALPHA_INTERPOLATION_QUALITY)]
         (doto hints
           (add-hint RenderingHints/KEY_ALPHA_INTERPOLATION RenderingHints/VALUE_ALPHA_INTERPOLATION_QUALITY)
           (add-hint RenderingHints/KEY_INTERPOLATION       RenderingHints/VALUE_INTERPOLATION_BICUBIC)

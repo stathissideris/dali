@@ -7,7 +7,8 @@
              [batik :as batik]
              [geom :refer [v-]]
              [syntax :as syntax]
-             [utils :as utils]]
+             [utils :as utils]
+             [svg-context :as ctx]]
             [net.cgrand.enlive-html :as en]))
 
 (defn- zip-up
@@ -117,7 +118,7 @@
 
 ;;;;;;;;;;;;;;;; extensibility ;;;;;;;;;;;;;;;;
 
-(defmulti layout-nodes (fn [_ tag _ _] (:tag tag)))
+(defmulti layout-nodes (fn [doc tag nodes bounds-fn] (:tag tag)))
 
 ;;;;;;;;;;;;;;;; layout infrastructure ;;;;;;;;;;;;;;;;
 
@@ -180,11 +181,10 @@
 (defn- inc-path [path]
   (update path (dec (count path)) inc))
 
-(defn- patch-elements [zipper ctx new-elements]
+(defn- patch-elements [zipper new-elements]
   (let [original-path (-> zipper zip/node :attrs :dali/path)
         z
         (reduce (fn [z e]
-                  (batik/replace-node! ctx (-> e :attrs :dali/path) e (zip/root z))
                   (assoc-in-zipper z (-> e :attrs :dali/path) e))
                 zipper (map fix-id-and-class-for-enlive new-elements))]
     (zipper-point-to-path (zip-up z) original-path))) ;;fix them so enlive can find them
@@ -207,49 +207,50 @@
             (map #(assoc-type % :nested)
                  (:content layout-node)))))
 
-(defn- apply-position [zipper ctx group-node bounds-fn]
+(defn- apply-position [zipper ctx group-node]
   (if-not group-node
     zipper
     (if-let [p (some-> group-node :attrs :position)]
       (if (empty? (:content group-node))
         (throw (ex-info "Selector layouts cannot have a :position attribute"
                         {:node group-node}))
-        (let [[_ current-pos] (batik/get-relative-bounds ctx group-node)]
+        (let [doc (zip/root zipper)
+              [_ current-pos] (ctx/get-relative-bounds ctx doc (-> group-node :attrs :dali/path))]
           (patch-elements
            zipper
-           ctx
            [(-> group-node
                 (syntax/add-transform [:translate (v- p current-pos)])
                 (update :attrs dissoc :position))])))
       zipper)))
 
-(defn- apply-layout [layout-node zipper ctx bounds-fn]
+(defn- apply-layout [layout-node zipper ctx]
   (let [current-doc     (zip/root zipper)
         nodes-to-layout (get-nodes-to-layout layout-node current-doc)
-        output-nodes    (layout-nodes current-doc layout-node nodes-to-layout bounds-fn)
+        output-nodes    (layout-nodes current-doc layout-node nodes-to-layout
+                                      #(ctx/get-bounds ctx current-doc (-> % :attrs :dali/path)))
         new-nodes       (filter new-node? output-nodes)
         nested-nodes    (filter nested-node? output-nodes)
         selected-nodes  (filter selected-node? output-nodes)
         group-node      (layout-node->group-node layout-node (concat new-nodes nested-nodes))]
     (-> zipper
-        (patch-elements ctx (concat [group-node] selected-nodes))
-        (apply-position ctx group-node bounds-fn))))
+        (patch-elements (concat [group-node] selected-nodes))
+        (apply-position ctx group-node))))
 
-(defn- apply-layouts [document ctx bounds-fn]
+(defn- apply-layouts [document ctx]
   (let [layout?           (fn [node] (d/layout-tag? (-> node :tag)))]
     (utils/transform-zipper-eval-order
      (utils/ixml-zipper document)
      (fn walker [zipper]
        (let [node (zip/node zipper)]
-         (if (layout? node) (apply-layout node zipper ctx bounds-fn) zipper))))))
+         (if (layout? node) (apply-layout node zipper ctx) zipper))))))
 
 (defn- has-page-dimensions? [doc]
   (and (-> doc :attrs :width)
        (-> doc :attrs :height)))
 
 (defn- infer-page-dimensions
-  [doc bounds-fn]
-  (let [[_ [x y] [w h]] (bounds-fn doc)]
+  [doc ctx]
+  (let [[_ [x y] [w h]] (ctx/get-bounds ctx doc [0])]
     (-> doc
         (assoc-in [:attrs :width] (+ x w 10))
         (assoc-in [:attrs :height] (+ y h 10)))))
@@ -261,14 +262,13 @@
    (let [doc (-> doc
                  transform-composite-layouts
                  fix-id-and-class-for-enlive)]
-     (resolve-layout (batik/context doc) doc)))
+     (resolve-layout (batik/context) doc)))
   ([ctx doc]
-   (let [bounds-fn        #(batik/get-bounds ctx %)
-         doc              (-> doc
-                              index-tree
-                              (apply-layouts ctx bounds-fn))
-         doc              (apply-z-order doc)
-         doc              (if (has-page-dimensions? doc)
-                            doc
-                            (infer-page-dimensions doc bounds-fn))]
+   (let [doc (-> doc
+                 index-tree
+                 (apply-layouts ctx))
+         doc (apply-z-order doc)
+         doc (if (has-page-dimensions? doc)
+               doc
+               (infer-page-dimensions doc ctx))]
      (-> doc de-index-tree hoover-obsolete-nodes))))
