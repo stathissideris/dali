@@ -628,6 +628,29 @@
      [:dali/connect {:from :c :to :d :dali/marker-end :sharp}]
      [:dali/connect {:from :d :to :e :dali/marker-end :sharp}]]}
 
+   {:filename "matrix4"
+    :document
+    [:dali/page
+     [:defs
+      (s/css (str "polyline {fill: none; stroke: black;}\n"
+                  "rect {fill: none; stroke: black;}\n"))
+      (prefab/sharp-arrow-marker :sharp)]
+     [:dali/matrix {:position [50 50] :columns 4 :row-gap 5 :column-gap 20}
+      :_
+      [:rect {:id :c} :_ [50 70]]
+      [:rect {:id :b} :_ [70 50]]
+      :_
+
+      [:rect {:id :e} :_ [30 90]]
+      [:rect {:id :d} :_ [30 30]]
+      [:rect {:id :a} :_ [50 50]]
+      [:rect :_ [70 50]]]
+
+     [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]
+     [:dali/connect {:from :b :to :c :dali/marker-end :sharp}]
+     [:dali/connect {:from :c :to :d :dali/marker-end :sharp}]
+     [:dali/connect {:from :d :to :e :dali/marker-end :sharp}]]}
+
    {:filename "send-to-bottom"
     :document
     [:dali/page

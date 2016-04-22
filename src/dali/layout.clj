@@ -104,6 +104,19 @@
   ([document]
    (utils/transform-zipper (utils/ixml-zipper document) composite->normal-layout)))
 
+(defn- generate-implicit-ghosts
+  "Generate implicit ghosts for remaining :_ elements (some of :_ are
+  replaced first in syntax.clj for dali-content-coords-tags, the tags
+  that can contain coords in the content part of the hiccup syntax)."
+  [document]
+  (utils/transform-zipper
+   (utils/ixml-zipper document)
+   (fn [zipper]
+     (let [node (zip/node zipper)]
+       (if (= :_ node)
+         {:tag :rect :attrs {:class :dali-ghost :dali/content [[0 0] [0 0]]}}
+         node)))))
+
 (defn- hoover-obsolete-nodes
   ([document]
    (loop [zipper (utils/ixml-zipper document)]
@@ -260,6 +273,7 @@
    (when (nil? doc) (throw (utils/exception "Cannot resolve layout of nil document")))
    ;;do this early because batik/context uses ixml->xml which needs enlive-friendly IDs
    (let [doc (-> doc
+                 generate-implicit-ghosts
                  transform-composite-layouts
                  fix-id-and-class-for-enlive)]
      (resolve-layout (batik/context) doc)))

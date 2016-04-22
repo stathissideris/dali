@@ -60,7 +60,7 @@
 ;; #?(:clj
 ;;    (defn exception [& msg]
 ;;      (Exception. (apply str msg)))
-;;    
+;;
 ;;    :cljs
 ;;    (defn exception [& msg]
 ;;      (js/Error. (apply str msg))))
@@ -92,6 +92,12 @@
       (recur (zip/next (zip/replace
                         zipper
                         (replace-fn zipper)))))))
+
+(defn walk-zipper [zipper replace-fn]
+  (loop [zipper zipper]
+    (if (zip/end? zipper)
+      (zip/root zipper)
+      (recur (zip/next (replace-fn zipper))))))
 
 (defn zipper-last [zipper]
   (loop [zipper zipper]

@@ -361,6 +361,7 @@
    (utils/generic-zipper document)
    #(let [node (zip/node %)] (if (= :_ node) [0 0] node))))
 
+;;the tags that can contain coords in the content part of the hiccup syntax
 (def dali-content-coords-tags
   #{:use :line :circle :ellipse :rect :polyline :polygon :path})
 
@@ -424,9 +425,11 @@
   "Convert an IXML fragment to an clojure.xml, using the context of
   the passed document to resolve references for markers etc."
   [document fragment]
-  (utils/transform-zipper
+  (utils/walk-zipper
    (utils/ixml-zipper fragment)
-   (comp (partial ixml-node->xml-node document) zip/node)))
+   (fn [zipper]
+     (let [node (zip/node zipper)]
+       (zip/replace zipper (ixml-node->xml-node document node))))))
 
 (defn ixml->xml [document]
   (when-not (= :dali/page (:tag document))
