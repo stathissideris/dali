@@ -13,9 +13,6 @@ Nothing.
 
 ## Bugs
 
-* Matrix layout does not support :_
-* change `:position` in layouts to mean position in relation to min
-  dimensions, NOT in relation to first element.
 * Possible bug: I suspect that selector layouts that don't match
   anything throw an exception. It should be a warning at most.
 * dali markers are not displayed in Safari.
@@ -62,6 +59,9 @@ Nothing.
 
 # Done
 
+* change `:position` in layouts to mean position in relation to min
+  dimensions, NOT in relation to first element.
+* Matrix layout does not support :_
 * Nested layouts are not affected by the transforms of parent elements
   and this is surprising.
 * `[:place]` layout that places something in relation to something

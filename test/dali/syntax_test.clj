@@ -3,6 +3,23 @@
             [clojure.test :refer :all]))
 
 (def process-attr-map @#'dali.syntax/process-attr-map)
+(def clean-tag @#'dali.syntax/clean-tag)
+(def extract-id-and-class-from-tag @#'dali.syntax/extract-id-and-class-from-tag)
+
+(deftest test-clean-tag
+  (is (= :foo (clean-tag :foo)))
+  (is (= :foo (clean-tag :foo.bar)))
+  (is (= :foo (clean-tag :foo.bar.baz)))
+  (is (= :foo (clean-tag :foo.bar.baz#lol)))
+  (is (= :foo (clean-tag :foo#bar.baz.lol))))
+
+(deftest test-extract-id-and-class-from-tag
+  (is (nil? (extract-id-and-class-from-tag :foo)))
+  (is (= {:id "bar"} (extract-id-and-class-from-tag :foo#bar)))
+  (is (= {:id "bar" :class ["baz"]} (extract-id-and-class-from-tag :foo#bar.baz)))
+  (is (= {:id "bar" :class ["baz" "zoop"]} (extract-id-and-class-from-tag :foo#bar.baz.zoop)))
+  (is (= {:id "bar" :class ["baz" "zoop-2"]} (extract-id-and-class-from-tag :foo#bar.baz.zoop-2)))
+  (is (= {:id "bar" :class ["baz" "zoop-2"]} (extract-id-and-class-from-tag :foo.baz.zoop-2#bar))))
 
 (deftest test-process-attr-map
   (is (= {:cx 30, :cy 30, :r 20, :stroke "indigo", :stroke-width 4, :fill "darkorange"}
@@ -30,6 +47,10 @@
           :attrs {:foo :bar}
           :content [[:foo] [:bar]]}
          (dali-node->ixml-node [:test {:foo :bar} [:foo] [:bar]])))
+  (is (= {:tag :test
+          :attrs {:class ["bar" "baz"]
+                  :id "this"}}
+         (dali-node->ixml-node [:test.bar.baz#this])))
   (is (= {:tag :rect
           :attrs {:transform [[:rotate [10 60 20]] [:skew-x [30]]]
                   :dali/content [[50 10] [20 20]]}}
@@ -240,6 +261,20 @@
            [{:tag :text
               :attrs
               {:class [:a :b]}
+              :content ["up"]}]})))
+  (is (= {:tag :svg
+          :attrs
+          {:xmlns "http://www.w3.org/2000/svg"
+           :version "1.2"
+           :xmlns:xlink "http://www.w3.org/1999/xlink"}
+          :content
+          [{:tag :text, :attrs {:class "a b"}, :content ["up"]}]}
+         (ixml->xml
+          {:tag :dali/page
+           :content
+           [{:tag :text
+              :attrs
+              {:class ["a" "b"]}
               :content ["up"]}]}))))
 
 (deftest test-point-handling

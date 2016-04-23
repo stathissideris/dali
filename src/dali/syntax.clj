@@ -377,7 +377,27 @@
 
 (defmethod process-dali-tag :default [x] x)
 
+(def tag-name-regex #"^(.+?)(\..+?|#.+?)$")
 
+(defn- clean-tag
+  "Removes any name and class shorthand from the tag keyword."
+  [tag]
+  (or (some-> (re-matches tag-name-regex (name tag)) second keyword) tag))
+
+(defn- extract-id-and-class-from-tag
+  [tag]
+  (if-let [classes (nth (re-matches tag-name-regex (name tag)) 2)]
+    (let [parts (->> classes
+                     (partition-by #(or (= % \.) (= % \#)))
+                     (partition 2)
+                     (map (fn [[prefix s]] [(first prefix)
+                                            (apply str s)]))
+                     (group-by first))]
+      (merge
+       (when (get parts \.)
+         {:class (mapv second (get parts \.))})
+       (when (get parts \#)
+         {:id (-> (get parts \#) first second)})))))
 
 (defn dali-node->ixml-node ;;TODO find out why this gets called with nodes that are already XML
   [node]
@@ -394,10 +414,11 @@
           attrs         (if content-attr?
                           (assoc attrs :dali/content (vec content))
                           attrs)
+          attrs         (merge attrs (extract-id-and-class-from-tag tag))
           content       (if content-attr? nil content)
 
           xml-node      (merge
-                         {:tag tag}
+                         {:tag (clean-tag tag)}
                          (when attrs {:attrs attrs})
                          (when content {:content (vec content)}))]
       (cond-> xml-node

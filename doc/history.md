@@ -1,8 +1,14 @@
 # Version history
 
-## Not released
+## Snapshot
 
 ### Features
+
+* Support hiccup shorthand for classes and element ID: `[:foo.bar.baz#id]`
+* `:_` elements are implicitly expanded to ghost elements when they
+  appear in the content part of elements that are not `:use`, `:line`,
+  `:circle`, `:ellipse`, `:rect`, `:polyline`, `:polygon` or `:path`.
+  See example matrix4.
 
 ## 0.7.0
 
