@@ -12,15 +12,15 @@
   (s/def ::transform
     (s/+
      (s/alt
-      :transform-op (op :matrix (s/tuple number? number? number? number? number? number?))
-      :transform-op (op :translate ::point)
-      :transform-op (op :scale (s/or :factor ::point, :factor number?))
-      :transform-op (op :rotate (s/or :angle number?, :center (s/cat
+      :matrix-op (op :matrix (s/tuple number? number? number? number? number? number?))
+      :translate-op (op :translate ::point)
+      :scale-op (op :scale (s/or :factor ::point, :factor number?))
+      :rotate-op (op :rotate (s/or :angle number?, :center (s/cat
                                                                :angle number?
                                                                :x number?
                                                                :y number?)))
-      :transform-op (op :skew-x number?)
-      :transform-op (op :skew-y number?)))))
+      :skew-x-op (op :skew-x number?)
+      :skew-y-op (op :skew-y number?)))))
 
 (s/def ::attr-map
   (s/and (s/keys :opt-un [::transform])
@@ -31,36 +31,38 @@
 (s/def ::dimensions (s/spec (s/cat :w number? :h number?)))
 
 (defn- boolean? [x] (instance? Boolean x))
+(s/def ::boolean (s/with-gen boolean? #(gen/boolean)))
 
 (s/def ::path-arc-spec
   (s/cat :pos1 ::point
          :x-axis-rotation number?
-         :large-arc-flag boolean?
-         :sweep-flag boolean?
+         :large-arc-flag ::boolean
+         :sweep-flag ::boolean
          :pos2 ::point))
 
 (let [op (fn [long short params-spec]
-           (s/cat :op #{long short}
+           (s/cat :op (s/and #{long short}
+                             (s/conformer (constantly long))) ;;coerce to long form
                   :params params-spec))]
   (s/def ::path-operation
     (s/alt
-     :path-op (op :move-to :M ::point)
-     :path-op (op :move-by :m ::point)
-     :path-op (op :line-to :L ::point)
-     :path-op (op :line-by :l ::point)
-     :path-op (op :horizontal-to :H number?)
-     :path-op (op :horizontal-by :h number?)
-     :path-op (op :vertical-to :V number?)
-     :path-op (op :vertical-by :v number?)
-     :path-op (op :cubic-to :C (s/cat :p1 ::point :p2 ::point :p3 ::point))
-     :path-op (op :cubic-by :c (s/cat :p1 ::point :p2 ::point :p3 ::point))
-     :path-op (op :symmetrical-to :S (s/cat :p1 ::point :p2 ::point))
-     :path-op (op :symmetrical-by :s (s/cat :p1 ::point :p2 ::point))
-     :path-op (op :quad-to :Q (s/cat :p1 ::point :p2 ::point))
-     :path-op (op :quad-by :q (s/cat :p1 ::point :p2 ::point))
-     :path-op (op :arc-to :A ::path-arc-spec)
-     :path-op (op :arc-by :a ::path-arc-spec)
-     :path-op (s/cat :op #{:close :Z :z}))))
+     :move-to-op (op :move-to :M ::point)
+     :move-by-op (op :move-by :m ::point)
+     :line-to-op (op :line-to :L ::point)
+     :line-by-op (op :line-by :l ::point)
+     :horizontal-to-op (op :horizontal-to :H number?)
+     :horizontal-by-op (op :horizontal-by :h number?)
+     :vertical-to-op (op :vertical-to :V number?)
+     :vertical-by-op (op :vertical-by :v number?)
+     :cubic-to-op (op :cubic-to :C (s/cat :p1 ::point :p2 ::point :p3 ::point))
+     :cubic-by-op (op :cubic-by :c (s/cat :p1 ::point :p2 ::point :p3 ::point))
+     :symmetrical-to-op (op :symmetrical-to :S (s/cat :p1 ::point :p2 ::point))
+     :symmerical-by-op (op :symmetrical-by :s (s/cat :p1 ::point :p2 ::point))
+     :quad-to-op (op :quad-to :Q (s/cat :p1 ::point :p2 ::point))
+     :quad-by-op (op :quad-by :q (s/cat :p1 ::point :p2 ::point))
+     :arc-to-op (op :arc-to :A ::path-arc-spec)
+     :arc-by-op (op :arc-by :a ::path-arc-spec)
+     :close-op (s/cat :op #{:close :Z :z}))))
 
 (s/def ::path-tag
   (s/cat :tag #{:path}
@@ -109,14 +111,17 @@
          :content (s/* (s/or :tag ::tag, :text string?))))
 
 (s/def ::tag (s/or
-              :tag ::path-tag
-              :tag ::rect-tag
-              :tag ::line-tag
-              :tag ::polyline-tag
-              :tag ::circle-tag
-              :tag ::generic-tag))
+              :path-tag ::path-tag
+              :rect-tag ::rect-tag
+              :line-tag ::line-tag
+              :polyline-tag ::polyline-tag
+              :circle-tag ::circle-tag
+              :generic-tag ::generic-tag))
 
-(s/def ::document ::tag)
+(s/def ::document
+  (s/cat :tag #{:dali/page}
+         :attrs (s/? ::attr-map)
+         :content (s/* (s/or :tag ::tag, :text string?))))
 
 (defn conform [document]
   (s/conform ::document document))
