@@ -22,14 +22,9 @@
       :transform-op (op :skew-x number?)
       :transform-op (op :skew-y number?)))))
 
-(s/def ::simple-attr-map
-  (s/map-of (s/or :k keyword? :k string?) ::s/any))
-
 (s/def ::attr-map
-  (fn [{:keys [transform] :as m}]
-    (and (s/valid? ::simple-attr-map (dissoc m :transform))
-         (or (not transform)
-             (s/valid? ::transform transform)))))
+  (s/and (s/keys :opt-un [::transform])
+         (s/map-of (s/or :k keyword? :k string?) ::s/any)))
 
 (s/def ::point (s/spec (s/cat :x number? :y number?)))
 
