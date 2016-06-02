@@ -65,13 +65,13 @@
      :quad-to-op (op :quad-to :Q (s/cat :p1 ::point :p2 ::point))
      :quad-by-op (op :quad-by :q (s/cat :p1 ::point :p2 ::point))
      :arc-to-op (op :arc-to :A ::path-arc-spec)
-     :arc-by-op (op :arc-by :a ::path-arc-spec)
-     :close-op (s/cat :op #{:close :Z :z}))))
+     :arc-by-op (op :arc-by :a ::path-arc-spec))))
 
 (s/def ::path-tag
   (s/cat :tag #{:path}
          :attrs (s/? ::attr-map)
-         :operations (s/* ::path-operation)))
+         :operations (s/* ::path-operation)
+         :close-op (s/? (s/cat :op #{:close :Z :z}))))
 
 (s/def ::line-tag
   (s/cat :tag #{:line}
