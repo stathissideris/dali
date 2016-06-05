@@ -50,13 +50,26 @@ conciseness. This is equivalent to the previous snippet:
 [:circle {:stroke {:paint :green :width 4} :fill :yellow} [50 50] 40]
 ```
 
+The CSS-style sugar of hiccup for classes and IDs is also supported by
+dali:
+
+```
+[:circle#mycircle.selected.pretty]
+```
+
+Is the equivalent of:
+
+```
+[:circle {:id "mycircle" :class "selected pretty"}]
+```
+
 Because it is not constrained by the limitations of XML, dali can use
 the flexibility of the [EDN format](https://github.com/edn-format/edn)
 to re-organise the hiccup SVG representation so that it, hopefully,
 makes more sense. Because the dali syntax is a superset of hiccup, you
 can choose to ignore the shortcuts provided and stick with the normal
 hiccup representation of SVG and everything will still work as normal
-for most things. More advanced features like layouts, markers etc,
+for most things. For more advanced features like layouts, markers etc,
 dali assumes that you are using dali's syntax, so it's preferrable to
 stick to that to get the most out of dali.
 
