@@ -1,4 +1,4 @@
-(defproject dali "0.7.0"
+(defproject dali "0.7.1"
   :description "A Clojure library for 2D graphics."
   :url "https://github.com/stathissideris/dali"
   :license {:name "Eclipse Public License"

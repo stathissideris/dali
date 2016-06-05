@@ -46,7 +46,7 @@ alpha quality and the API and syntax can (and very likely will)
 change. Just add this to the dependencies of your `project.clj`:
 
 ```
-[dali "0.7.0"]
+[dali "0.7.1"]
 ```
 
 ## Documentation
@@ -61,6 +61,7 @@ change. Just add this to the dependencies of your `project.clj`:
 * [How-to](doc/howto.md) --
   Task-driven documentation, recipes for common tasks.
 * [Limitations](doc/limitations.md)
+* [Version history](doc/history.md)
 
 ## Roadmap
 

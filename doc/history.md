@@ -1,6 +1,6 @@
 # Version history
 
-## Snapshot
+## 0.7.1
 
 ### Features
 
@@ -9,6 +9,11 @@
   appear in the content part of elements that are not `:use`, `:line`,
   `:circle`, `:ellipse`, `:rect`, `:polyline`, `:polygon` or `:path`.
   See example matrix4.
+
+### Internals
+
+* Make the use of batik less stateful and abstract it better to open
+  the way for ClojureScript support.
 
 ## 0.7.0
 
