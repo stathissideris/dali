@@ -2,7 +2,13 @@
   (:require [net.cgrand.enlive-html :as html]
             [clojure.string :as string]
             [clojure.test :as t]
-            [dali.examples :as examples]))
+            [dali.examples :as examples]
+            dali.geom-test
+            dali.syntax-test
+            dali.layout-test
+            dali.utils-test
+            dali.regression-test
+            dali.schema-test))
 
 (defn load-print []
   (require '[print :refer [pprint-analyze]]))

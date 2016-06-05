@@ -4,7 +4,8 @@
             [dali
              [dom :as dom]
              [syntax :as s]]
-            [dali.utils :as utils])
+            [dali.utils :as utils]
+            [dali.svg-context])
   (:import [java.awt RenderingHints Rectangle]
            [java.awt.geom AffineTransform PathIterator]
            [javax.imageio ImageIO]

@@ -3,7 +3,14 @@
             [clojure.test :refer :all]
             [dali.examples :as examples]
             [dali.io :as io]
-            [dev]))
+            [dali.layout
+             [stack
+              distribute
+              align
+              surround
+              connect
+              matrix
+              place]]))
 
 (def out-dir "examples/output/")
 (def fixtures-dir "examples/fixtures/")
@@ -18,7 +25,7 @@
             rendered-fixtures)))))
 
 (deftest compare-examples
-  (dev/render-examples)
+  (examples/render-examples "examples/output/" examples/examples)
   (doseq [f (->> examples/examples (map example-name->svg-filename))]
     (let [example-filename (str out-dir f)
           fixture-filename (str fixtures-dir f)]
