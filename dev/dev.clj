@@ -80,3 +80,13 @@
               (into #{})
               (map (fn [k] [(keyword (de-camelcase k)) (keyword k)]))
               (into (sorted-map)))))))))
+
+(defn start-cljs-figwheel
+  "Works in a REPL with Figwheel already running and connected to a
+  browser. Will piggieback and turn nREPL into a ClojureScript REPL.
+
+  You can connect to Figwheel's nREPL at localhost:7888 via
+  for example cider-connect."
+  []
+  (require 'figwheel-sidecar.repl-api)
+  (eval '(figwheel-sidecar.repl-api/cljs-repl)))
