@@ -757,7 +757,31 @@
        [:image (merge {:x 50 :y 50} (io/buffered-image-attr cat))]])}
 
    {:filename "architecture"
-    :document architecture/document}])
+    :document architecture/document}
+
+   {:filename "issue5"
+    :url "https://github.com/stathissideris/dali/issues/5"
+    :document
+    [:dali/page
+     [:dali/stack
+      {:direction :down, :anchor :center, :gap 25, :position [100 100]}
+      [:dali/stack
+       {:direction :right, :anchor :left, :gap 25}
+       [:dali/align
+        {:axis :center}
+        [:rect {:id :a, :class [:box-text :tree-node]} [20 20] [50 50] 10]
+        [:dali/stack
+         {:direction :down, :gap 6}
+         [:text {:font-family "Verdana", :font-size 14} "root"]]]]
+      [:dali/stack
+       {:direction :right, :anchor :left, :gap 25}
+       [:dali/align
+        {:axis :center}
+        [:rect {:id :b, :class [:box-text :tree-node]} [20 20] [50 50] 10]
+        [:dali/stack
+         {:direction :down, :gap 6}
+         [:text {:font-family "Verdana", :font-size 14} "l11"]]]]]
+     [:dali/connect {:from :a, :to :b}]]}])
 
 (defn render-example [dir filename document]
   (with-redefs [dali.layout/group-for-composite-layout (constantly :node-group-38348)]
