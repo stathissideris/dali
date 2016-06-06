@@ -238,7 +238,13 @@
   (let [current-doc     (zip/root zipper)
         nodes-to-layout (get-nodes-to-layout layout-node current-doc)
         output-nodes    (layout-nodes current-doc layout-node nodes-to-layout
-                                      #(ctx/get-bounds ctx current-doc (-> % :attrs :dali/path)))
+                                      #(try
+                                         (ctx/get-bounds ctx current-doc (-> % :attrs :dali/path))
+                                         (catch Exception e
+                                           (throw
+                                            (ex-info (.getMessage e)
+                                                     (assoc (ex-data e)
+                                                            :dali-doc current-doc))))))
         new-nodes       (filter new-node? output-nodes)
         nested-nodes    (filter nested-node? output-nodes)
         selected-nodes  (filter selected-node? output-nodes)
