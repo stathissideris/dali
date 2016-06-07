@@ -37,10 +37,6 @@
                  (or (zip/down z) z))) zipper (butlast path))
      (last path))))
 
-(defn- assoc-in-zipper [zipper path value]
-  (let [z (zipper-point-to-path (zip-up zipper) path)]
-    (zip/replace z value)))
-
 (defn- update-in-tree [tree path fun & params]
   (apply update-in tree (tree-path path) fun params))
 
@@ -158,11 +154,13 @@
   (en/select document (selector-layout-selector)))
 
 (defn- layout-node->group-node [node elements]
-  (-> node
-      (assoc :tag :g)
-      (update :attrs select-keys [:id :class :dali/path :position])
-      (assoc-in [:attrs :data-dali-tag] (name (:tag node)))
-      (assoc :content elements)))
+  (if (= 1 (count elements))
+    (-> (first elements)
+        (assoc-in [:attrs :dali/path] (-> node :attrs :dali/path)))
+    (-> node
+        (assoc :tag :g)
+        (update :attrs select-keys [:id :class :dali/path :position])
+        (assoc :content elements))))
 
 (defn- remove-selector-layouts [document]
   (-> [document]
@@ -192,13 +190,10 @@
 (defn- inc-path [path]
   (update path (dec (count path)) inc))
 
-(defn- patch-elements [zipper new-elements]
-  (let [original-path (-> zipper zip/node :attrs :dali/path)
-        z
-        (reduce (fn [z e]
-                  (assoc-in-zipper z (-> e :attrs :dali/path) e))
-                zipper (map fix-id-and-class-for-enlive new-elements))]
-    (zipper-point-to-path (zip-up z) original-path))) ;;fix them so enlive can find them
+(defn- patch-elements [doc new-elements]
+  (reduce (fn [doc e]
+            (assoc-in-tree doc (-> e :attrs :dali/path) e))
+          doc (map fix-id-and-class-for-enlive new-elements)))
 
 (defn- layout-selector [node]
   (let [s (get-in node [:attrs :select])]
@@ -218,24 +213,24 @@
             (map #(assoc-type % :nested)
                  (:content layout-node)))))
 
-(defn- apply-position [zipper ctx group-node]
+(defn- apply-position [doc ctx group-node]
   (if-not group-node
-    zipper
+    doc
     (if-let [p (some-> group-node :attrs :position)]
       (if (empty? (:content group-node))
         (throw (ex-info "Selector layouts cannot have a :position attribute"
                         {:node group-node}))
-        (let [doc (zip/root zipper)
-              [_ current-pos] (ctx/get-relative-bounds ctx doc (-> group-node :attrs :dali/path))]
+        (let [[_ current-pos] (ctx/get-relative-bounds ctx doc (-> group-node :attrs :dali/path))]
           (patch-elements
-           zipper
+           doc
            [(-> group-node
                 (syntax/add-transform [:translate (v- p current-pos)])
                 (update :attrs dissoc :position))])))
-      zipper)))
+      doc)))
 
 (defn- apply-layout [layout-node zipper ctx]
   (let [current-doc     (zip/root zipper)
+        path            (-> layout-node :attrs :dali/path)
         nodes-to-layout (get-nodes-to-layout layout-node current-doc)
         output-nodes    (layout-nodes current-doc layout-node nodes-to-layout
                                       #(try
@@ -249,9 +244,12 @@
         nested-nodes    (filter nested-node? output-nodes)
         selected-nodes  (filter selected-node? output-nodes)
         group-node      (layout-node->group-node layout-node (concat new-nodes nested-nodes))]
-    (-> zipper
+    (-> current-doc
         (patch-elements (concat [group-node] selected-nodes))
-        (apply-position ctx group-node))))
+        (apply-position ctx group-node)
+        index-tree
+        utils/ixml-zipper
+        (zipper-point-to-path path))))
 
 (defn- apply-layouts [document ctx]
   (let [layout?           (fn [node] (d/layout-tag? (-> node :tag)))]

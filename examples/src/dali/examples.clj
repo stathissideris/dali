@@ -762,7 +762,13 @@
    {:filename "issue5"
     :url "https://github.com/stathissideris/dali/issues/5"
     :document
-    [:dali/page
+    [:dali/page {:stroke :black :fill :none}
+     [:defs
+      (s/css (str "rect {fill: white;}\n"
+                  "text {fill: black; stroke: none;}"))
+      (prefab/sharp-arrow-marker :sharp)
+      (prefab/sharp-arrow-marker :big-sharp {:scale 2})
+      (prefab/triangle-arrow-marker :triangle)]
      [:dali/stack
       {:direction :down, :anchor :center, :gap 25, :position [100 100]}
       [:dali/stack
