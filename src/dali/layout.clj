@@ -160,6 +160,7 @@
     (-> node
         (assoc :tag :g)
         (update :attrs select-keys [:id :class :dali/path :position])
+        (assoc-in [:attrs :data-dali-layout-tag] (name (:tag node)))
         (assoc :content elements))))
 
 (defn- remove-selector-layouts [document]
