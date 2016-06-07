@@ -1,5 +1,13 @@
 # Version history
 
+## 0.7.2
+
+### Bug fix
+
+* Layout was
+  [failing for particular valid documents](https://github.com/stathissideris/dali/issues/5)
+  and it's now fixed.
+
 ## 0.7.1
 
 ### Features
