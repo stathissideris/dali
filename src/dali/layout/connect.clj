@@ -72,17 +72,16 @@
         start-element   (first (en/select document start-selector))
         end-element     (first (en/select document end-selector))
 
-        check-element   (fn [x name]
+        check-element   (fn [x selector]
                           (when-not x
                             (throw (utils/exception
                                     (format
-                                     "Cannot find %s element using selector '%s' referred to by connector '%s'"
-                                     name
-                                     (pr-str x)
+                                     "Cannot find element '%s' referred to by connector '%s'"
+                                     selector
                                      (pr-str tag))))))
         attrs           (dissoc (:attrs tag) :from :to :type :dali/path)]
-    (check-element start-element "start")
-    (check-element end-element "end")
+    (check-element start-element (-> tag :attrs :from))
+    (check-element end-element (-> tag :attrs :to))
     (if (= :-- connection-type)
       [(straight-connector start-element end-element attrs bounds-fn)]
       [(corner-connector start-element end-element attrs connection-type bounds-fn)])))
