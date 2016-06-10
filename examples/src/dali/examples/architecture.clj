@@ -46,7 +46,8 @@
      [:dali/surround {:select selector
                       :padding 25
                       :rounded 10
-                      :attrs {:class :file :id box-id :dali/z-index -2}}]
+                      :dali/z-index -2
+                      :attrs {:class :file :id box-id}}]
      [:text {:id text-id :font-family "Verdana" :font-size 18} label]
      [:dali/place {:select text-id :relative-to [box-id :bottom] :anchor :top :offset [0 15]}])))
 

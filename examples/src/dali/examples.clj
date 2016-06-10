@@ -449,8 +449,8 @@
      [:circle {:class :right} [150 100] 20]
      [:circle {:class :right} [150 150] 20]
 
-     [:dali/surround {:select [:.left] :rounded 5 :attrs {:stroke :none :fill :grey, :dali/z-index -1}}]
-     [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]}
+     [:dali/surround {:select [:.left] :rounded 5 :dali/z-index -1 :attrs {:stroke :none :fill :grey}}]
+     [:dali/surround {:select [:.right] :rounded 5 :dali/z-index -1 :attrs {:stroke :none :fill :green}}]]}
 
    {:filename "surround2"
     :document
@@ -787,7 +787,21 @@
         [:dali/stack
          {:direction :down, :gap 6}
          [:text {:font-family "Verdana", :font-size 14} "l11"]]]]]
-     [:dali/connect {:from :a, :to :b}]]}])
+     [:dali/connect {:from :a, :to :b}]]}
+
+   {:filename "issue6"
+    :url "https://github.com/stathissideris/dali/issues/5"
+    :document
+    [:dali/page {:stroke :black :fill :black}
+     [:dali/stack
+      {:id :a :position [10 10]}
+      [:text {} "A"]]
+     [:dali/stack
+      {:id :b :position [50 10]}
+      [:text {} "B"]]
+     [:dali/connect
+      {:from :a
+       :to :b}]]}])
 
 (defn render-example [dir filename document]
   (with-redefs [dali.layout/group-for-composite-layout (constantly :node-group-38348)]

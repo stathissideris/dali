@@ -154,14 +154,11 @@
   (en/select document (selector-layout-selector)))
 
 (defn- layout-node->group-node [node elements]
-  (if (= 1 (count elements))
-    (-> (first elements)
-        (assoc-in [:attrs :dali/path] (-> node :attrs :dali/path)))
-    (-> node
-        (assoc :tag :g)
-        (update :attrs select-keys [:id :class :dali/path :position])
-        (assoc-in [:attrs :data-dali-layout-tag] (name (:tag node)))
-        (assoc :content elements))))
+  (-> node
+      (assoc :tag :g)
+      (update :attrs select-keys [:id :class :dali/path :position :dali/z-index])
+      (assoc-in [:attrs :data-dali-layout-tag] (name (:tag node)))
+      (assoc :content elements)))
 
 (defn- remove-selector-layouts [document]
   (-> [document]

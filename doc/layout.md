@@ -509,6 +509,15 @@ skipped:
 
 ![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/matrix4.svg)
 
+## Layout tags become groups
+
+The original structure of the document is mostly retained after the
+layout transformation has taken place. Dali layout tags that have
+children are converted to `[:g]` tags that retain their original
+`:id`, `:class`, `:dali/path`, `:position` and `:dali/z-index`
+attributes (all other attributes are dropped). Selector layouts are
+removed entirely.
+
 ## Document transformations
 
 ### Connect
@@ -652,8 +661,8 @@ Here is an example of it in action:
  [:circle {:class :right} [150 100] 20]
  [:circle {:class :right} [150 150] 20]
 
- [:dali/surround {:select [:.left] :rounded 5 :attrs {:stroke :none :fill :grey, :dali/z-index -1}}]
- [:dali/surround {:select [:.right] :rounded 5 :attrs {:stroke :none :fill :green, :dali/z-index -1}}]]
+ [:dali/surround {:select [:.left] :rounded 5 :dali/z-index -1 :attrs {:stroke :none :fill :grey}}]
+ [:dali/surround {:select [:.right] :rounded 5 :dali/z-index -1 :attrs {:stroke :none :fill :green}}]]
 ```
 
 ![](https://cdn.rawgit.com/stathissideris/dali/master/examples/output/surround.svg)
@@ -663,10 +672,13 @@ use a simple keyword as a value, in which case just a single element
 with that `:id` will be surrounded.
 
 The map under `:attrs` will be merged with the attributes of the
-generated `[:rect]` and you can use it to define things like
-`:dali/z-index` to make sure that the rectangle appears below all
-other elements (as in the example above), to give it an `:id` to refer
+generated `[:rect]` and you can use it to give it an `:id` to refer
 to from other layouts, or even a `:class` to control its appearance.
+
+Note that the `:dali/z-index` attribute is used here to make sure that
+the rectangle appears below all other elements. In the resulting SVG,
+the `:dali/surround` tag becomes a group tag which will retain
+`:dali/z-index`.
 
 ## Ghosts
 
