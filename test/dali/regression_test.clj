@@ -3,6 +3,7 @@
             [clojure.test :refer :all]
             [dali.examples :as examples]
             [dali.io :as io]
+            [hiccup.core :refer [html]]
             [dali.layout
              [stack
               distribute
@@ -24,8 +25,34 @@
      (is (= (->> examples/examples (map example-name->svg-filename) set)
             rendered-fixtures)))))
 
+(defn- render-example-comparison-chart []
+  (spit "examples/output/comparison-chart.html"
+        (html
+         [:html
+          [:head
+           [:style
+            (str "table {"
+                 "  border-collapse: collapse;"
+                 "}"
+                 "table, th, td {"
+                 "  border: 1px solid lightgrey;"
+                 "}")]]
+          [:body
+           [:h1 "dali regression testing comparsion chart"]
+           [:table
+            [:tr
+             [:td [:h2 "Name"]]
+             [:td [:h2 "Actual"]]
+             [:td [:h2 "Expected"]]]
+            (for [{:keys [filename]} examples/examples]
+              [:tr
+               [:td filename]
+               [:td [:img {:src (str filename ".svg")}]]
+               [:td [:img {:src (str "../fixtures/" filename ".svg")}]]])]]])))
+
 (deftest compare-examples
   (examples/render-examples "examples/output/" examples/examples)
+  (render-example-comparison-chart)
   (doseq [f (->> examples/examples (map example-name->svg-filename))]
     (let [example-filename (str out-dir f)
           fixture-filename (str fixtures-dir f)]
