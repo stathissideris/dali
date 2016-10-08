@@ -1,5 +1,7 @@
 # dali
 
+![](https://circleci.com/gh/stathissideris/dali.svg?&style=shield&circle-token=6b583590fdcd5458f739f8edb930ed39eb7aaf36)
+
 > I do not understand why, when I ask for grilled lobster in a restaurant, I'm never served a cooked telephone.
 > -- Salvador Dalí
 
