@@ -48,7 +48,7 @@ alpha quality and the API and syntax can (and very likely will)
 change. Just add this to the dependencies of your `project.clj`:
 
 ```
-[dali "0.7.3"]
+[dali "0.7.4"]
 ```
 
 ## Documentation
