@@ -4,6 +4,7 @@
             [dali.examples :as examples]
             [dali.io :as io]
             [hiccup.core :refer [html]]
+            [dali.layout]
             [dali.layout
              [stack
               distribute

@@ -1,5 +1,10 @@
 # Version history
 
+## 0.7.4
+
+* Fix destructuring in prefab namespace
+  [(issue 8)](https://github.com/stathissideris/dali/issues/8).
+
 ## 0.7.2
 
 ### Bug fix
