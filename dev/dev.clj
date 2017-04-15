@@ -21,7 +21,7 @@
    'dali.utils-test
    'dali.regression-test
    'dali.schema-test
-;;   'dali.batik-test
+   'dali.batik-test
    ))
 
 (defn render-examples []

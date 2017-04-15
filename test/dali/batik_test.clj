@@ -26,7 +26,7 @@
                   (outline))))))))
 
 (deftest test-get-bounds
-  (is (= [:rect [55.0 45.0] [10.0 10.0]]
+  (is (= [:rect [44.0 34.0] [10.0 10.0]]
          (let [ctx (batik/context)
                doc (@#'layout/index-tree
                     (syntax/dali->ixml

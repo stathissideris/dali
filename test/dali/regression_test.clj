@@ -5,14 +5,14 @@
             [dali.io :as io]
             [hiccup.core :refer [html]]
             [dali.layout]
-            [dali.layout
-             [stack
-              distribute
-              align
-              surround
-              connect
-              matrix
-              place]]))
+            [dali.layout.align]
+            [dali.layout.stack]
+            [dali.layout.stack]
+            [dali.layout.distribute]
+            [dali.layout.surround]
+            [dali.layout.connect]
+            [dali.layout.matrix]
+            [dali.layout.place]))
 
 (def out-dir "examples/output/")
 (def fixtures-dir "examples/fixtures/")
