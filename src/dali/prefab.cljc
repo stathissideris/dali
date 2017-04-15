@@ -1,6 +1,6 @@
 (ns dali.prefab)
 
-(defn stripe-pattern [id & [{:keys (angle width fill width2 fill2)}]]
+(defn stripe-pattern [id & [{:keys [angle width fill width2 fill2]}]]
   (let [width (or width 10)
         width2 (or width2 width)
         fill (or fill :black)
