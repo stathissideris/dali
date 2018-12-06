@@ -146,6 +146,13 @@
       syntax/ixml->xml
       (spit-svg filename)))
 
+(defn render-svg-string [doc]
+  (-> doc
+      syntax/dali->ixml
+      layout/resolve-layout
+      syntax/ixml->xml
+      xml->svg-document-string))
+
 (defn render-png
   ([doc filename]
    (render-png doc filename {}))
