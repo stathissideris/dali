@@ -48,7 +48,7 @@ alpha quality and the API and syntax can (and very likely will)
 change. Just add this to the dependencies of your `project.clj`:
 
 ```
-[dali "0.7.4"]
+[dali "0.7.5"]
 ```
 
 ## Documentation
@@ -72,8 +72,13 @@ Planned for the future:
 * Porting basic functionality to ClojureScript.
 * More pre-fabricated elements.
 
+## Contributors
+
+* [Stathis Sideris](https://github.com/stathissideris) - original author
+* [Paulo Rafael Feodrippe](https://github.com/pfeodrippe)
+
 ## License
 
-Copyright © 2014-2016 Stathis Sideris
+Copyright © 2014-2019 Stathis Sideris
 
 Distributed under the Eclipse Public License, the same as Clojure.

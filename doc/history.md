@@ -1,5 +1,9 @@
 # Version history
 
+## 0.7.5
+
+* Added dali.io/render-svg-string
+
 ## 0.7.4
 
 * Fix destructuring in prefab namespace
