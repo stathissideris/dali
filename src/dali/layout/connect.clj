@@ -41,24 +41,33 @@
 
 ;;TODO refactor so that you pass bounds, not elements?
 (defn- straight-connector [start-element end-element attrs bounds-fn]
-  (let [[a1 a2] (straight-anchors start-element end-element bounds-fn)
-        p1      (bounds->anchor-point a1 (bounds-fn start-element))
-        p2      (bounds->anchor-point a2 (bounds-fn end-element))]
+  (let [manual-anchor1 (:from-anchor attrs)
+        manual-anchor2 (:to-anchor attrs)
+        [a1 a2]        (straight-anchors start-element end-element bounds-fn)
+        p1             (-> (or manual-anchor1 a1)
+                           (bounds->anchor-point (bounds-fn start-element)))
+        p2             (-> (or manual-anchor2 a2)
+                           (bounds->anchor-point (bounds-fn end-element)))]
     (connector attrs [p1 p2])))
 
 ;;TODO refactor so that you pass bounds, not elements?
 (defn- corner-connector [start-element end-element attrs connection-type bounds-fn]
-  (let [bounds1      (bounds-fn start-element)
-        bounds2      (bounds-fn end-element)
-        [cx1 cy1]    (bounds->anchor-point :center bounds1)
-        [cx2 cy2]    (bounds->anchor-point :center bounds2)
-        intersection (if (= :|- connection-type)
-                       [cx1 cy2]
-                       [cx2 cy1])
-        p1           (-> (corner-anchor bounds1 intersection)
-                         (bounds->anchor-point bounds1))
-        p2           (-> (corner-anchor bounds2 intersection)
-                         (bounds->anchor-point bounds2))]
+  (let [manual-anchor1 (:from-anchor attrs)
+        manual-anchor2 (:to-anchor attrs)
+
+        bounds1        (bounds-fn start-element)
+        bounds2        (bounds-fn end-element)
+        [cx1 cy1]      (bounds->anchor-point :center bounds1)
+        [cx2 cy2]      (bounds->anchor-point :center bounds2)
+        intersection   (if (= :|- connection-type)
+                         [cx1 cy2]
+                         [cx2 cy1])
+        p1             (-> manual-anchor1
+                           (or (corner-anchor bounds1 intersection))
+                           (bounds->anchor-point bounds1))
+        p2             (-> manual-anchor2
+                           (corner-anchor bounds2 intersection)
+                           (bounds->anchor-point bounds2))]
     (connector attrs [p1 intersection p2])))
 
 (defmethod layout/layout-nodes :dali/connect
