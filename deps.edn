@@ -1,0 +1,14 @@
+{:deps    {org.clojure/clojure                        {:mvn/version "1.9.0-alpha15"}
+           enlive/enlive                              {:mvn/version "1.1.6"}
+           org.clojure/data.codec                     {:mvn/version "0.1.0"}
+           prismatic/schema                           {:mvn/version "1.0.3"}
+           xerces/xerces                              {:mvn/version "2.4.0"}
+           org.apache.xmlgraphics/batik-transcoder    {:mvn/version "1.8"
+                                                       :exclusions [xerces/xercesImpl batik/batik-script]}
+           org.apache.xmlgraphics/batik-codec         {:mvn/version "1.8"}
+           org.apache.xmlgraphics/batik-anim          {:mvn/version "1.8"}
+           org.apache.xmlgraphics/xmlgraphics-commons {:mvn/version "2.0.1"}
+           retrograde/retrograde                      {:mvn/version "0.10"}}
+ :aliases {:dev {:extra-deps {org.clojure/tools.namespace {:mvn/version "0.2.11"}
+                              garden                      {:mvn/version "1.3.2"}
+                              hiccup                      {:mvn/version "1.0.5"}}}}}
