@@ -1,4 +1,4 @@
-{:deps    {org.clojure/clojure                        {:mvn/version "1.9.0-alpha15"}
+{:paths ["resources" "src"]
  :deps    {org.clojure/clojure                        {:mvn/version "1.10.1"}
            enlive/enlive                              {:mvn/version "1.1.6"}
            org.clojure/data.codec                     {:mvn/version "0.1.0"}
