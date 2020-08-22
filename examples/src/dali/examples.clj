@@ -190,6 +190,16 @@
        [:circle {:fill :green}           [60 100] 70]
        [:circle {:fill :orange}          [300 80] 80]]])}
 
+   {:filename "distribute3-manual-step"
+    :document
+    [:dali/page {:stroke :none}
+     [:dali/distribute
+      {:direction :right :step 100}
+      [:rect {:fill :mediumslateblue} [10 10] [25 50]]
+      [:rect {:fill :sandybrown}       [0 10] [20 30]]
+      [:rect {:fill :green}            [0 10] [15 40]]
+      [:rect {:fill :orange}           [0 10] [20 20]]]]}
+
    {:filename "markers1"
     :document
     [:dali/page
