@@ -528,8 +528,14 @@ removed entirely.
 [:dali/connect {:from :c, :to :e, :type :-|, :dali/marker-end :sharp}]
 ```
 
-* `:from` - the id of the element frorm which the connection starts
+* `:from` - the id of the element from which the connection starts
 * `:to` - the id of the element to which the connection ends
+* `:from-anchor` - the point on the starting element where the connector will start
+  * one of: `:top-left`, `:top`, `:top-right`, `:left`, `:right`, `:bottom-left`, `:bottom`, `:bottom-right`, `:center`
+  * optional, automatically determined if not passed
+* `:to-anchor` - the point on the destination element where the connector will end
+  * one of: `:top-left`, `:top`, `:top-right`, `:left`, `:right`, `:bottom-left`, `:bottom`, `:bottom-right`, `:center`
+  * optional, automatically determined if not passed
 * `:type` - the type of line
   * one of: `:--` `:|-` `:-|`
     * `:--` straight line
@@ -538,13 +544,13 @@ removed entirely.
   * default: `:--`
   * optional
 
-`:dali/connect` adds a line that will connect the closest anchors of
-two elements in the document. The anchors that can be connected are
-`:top`, `:bottom`, `:left` or `:right`, and the pair is selected
-automatically based on their distance. The connector is a straight
-line by default, but you can instruct dali to create a corner
-connector that starts vertically and then moves horizontally
-(`:type :|-`) or the inverse (`:type :-|`).
+`:dali/connect` adds a line that will connect the closest anchors of two
+elements in the document. The anchors that can be connected are `:top`,
+`:bottom`, `:left` or `:right`, and the pair is selected automatically based on
+their distance (you can bypass this by defining an explicit `:from-anchor`
+and/or an explicit `:to-anchor`). The connector is a straight line by default,
+but you can instruct dali to create a corner connector that starts vertically
+and then moves horizontally (`:type :|-`) or the inverse (`:type :-|`).
 
 Here is an example of `:connect` in action:
 

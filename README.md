@@ -76,6 +76,7 @@ Planned for the future:
 
 * [Stathis Sideris](https://github.com/stathissideris) - original author
 * [Paulo Rafael Feodrippe](https://github.com/pfeodrippe)
+* [Bruce Durling](https://github.com/otfrom)
 
 ## License
 
