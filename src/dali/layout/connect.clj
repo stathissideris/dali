@@ -66,7 +66,7 @@
                            (or (corner-anchor bounds1 intersection))
                            (bounds->anchor-point bounds1))
         p2             (-> manual-anchor2
-                           (corner-anchor bounds2 intersection)
+                           (or (corner-anchor bounds2 intersection))
                            (bounds->anchor-point bounds2))]
     (connector attrs [p1 intersection p2])))
 
