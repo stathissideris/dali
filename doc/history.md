@@ -1,9 +1,10 @@
 # Version history
 
-## 0.7.6
+## 1.0.0
 
 * Added :from-anchor and :to-anchor in order to manually control the start and
   end of connectors
+* Upgrade to latest Clojure (1.10.1)
 
 ## 0.7.5
 

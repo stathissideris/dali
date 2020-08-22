@@ -47,8 +47,14 @@ Before adding dali as a dependency, please consider that it's still
 alpha quality and the API and syntax can (and very likely will)
 change. Just add this to the dependencies of your `project.clj`:
 
+``` clojure
+[dali "1.0.0"]
 ```
-[dali "0.7.5"]
+
+Or this, to your `deps.edn`:
+
+``` clojure
+{dali/dali {:mvn/version "1.0.0"}}
 ```
 
 ## Documentation
@@ -80,6 +86,6 @@ Planned for the future:
 
 ## License
 
-Copyright © 2014-2019 Stathis Sideris
+Copyright © 2014-2020 Stathis Sideris
 
 Distributed under the Eclipse Public License, the same as Clojure.
