@@ -572,6 +572,17 @@
                      :type :-|
                      :dali/marker-end :sharp}]]}
 
+   {:filename "connect4-manual-automatic-anchors-corner"
+    :document
+    [:dali/page {:stroke :black :fill :none}
+     [:defs (prefab/sharp-arrow-marker :sharp)]
+     [:rect {:id :a} [50 50] [50 50]]
+     [:rect {:id :b} [150 150] [50 50]]
+     [:dali/connect {:from :a, :to :b
+                     :from-anchor :bottom-right
+                     :type :-|
+                     :dali/marker-end :sharp}]]}
+
    {:filename "matrix1"
     :document
     [:dali/page
