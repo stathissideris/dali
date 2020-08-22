@@ -248,6 +248,10 @@ details.
   * double
   * default: `0`
   * optional
+* `:step` - the distance between the anchors of elements
+  * default: Calculated based on the widest/tallest element (depending on
+    direction) plus the `:gap`
+  * optional
 * `:select` - an enlive selector that will transform elements from
   elsewhere in the document instead of tranforming the direct children
   of the layout tag
@@ -283,9 +287,10 @@ distances:
 In this example, no `:position` parameter was defined, so the whole
 layout happened in relation to the position of the first element.
 
-The exact distance between the centers is determined by the *widest*
-or the *tallest* element (depending on the direction) and also by the
-`:gap` parameter. The `dali/distribute` layout also supports the 4
+The exact distance (step) between the centers is determined by the *widest* or
+the *tallest* element (depending on the direction) and also by the `:gap`
+parameter. You can override this distance calculation by passing `:step`, in
+which case `:gap` is ignored. The `dali/distribute` layout also supports the 4
 directions supported by stack.
 
 ### Align
