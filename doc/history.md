@@ -1,5 +1,10 @@
 # Version history
 
+## 0.7.6
+
+* Added :from-anchor and :to-anchor in order to manually control the start and
+  end of connectors
+
 ## 0.7.5
 
 * Added dali.io/render-svg-string

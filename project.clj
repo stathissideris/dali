@@ -1,4 +1,4 @@
-(defproject dali "0.7.5"
+(defproject dali "0.7.6"
   :description "A Clojure library for 2D graphics."
   :url "https://github.com/stathissideris/dali"
   :license {:name "Eclipse Public License"
@@ -6,7 +6,7 @@
 
   ;;:pedantic? :abort
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/data.codec "0.1.0"]
                  [enlive "1.1.6"]
                  [prismatic/schema "1.0.3"]
