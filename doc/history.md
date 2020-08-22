@@ -1,5 +1,9 @@
 # Version history
 
+## 1.0.1
+
+* Add :step parameter to distribute to override calculated step
+
 ## 1.0.0
 
 * Added :from-anchor and :to-anchor in order to manually control the start and
