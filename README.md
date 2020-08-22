@@ -54,7 +54,7 @@ change. Just add this to the dependencies of your `project.clj`:
 Or this, to your `deps.edn`:
 
 ``` clojure
-{dali/dali {:mvn/version "1.0.0"}}
+dali/dali {:mvn/version "1.0.0"}
 ```
 
 ## Documentation
