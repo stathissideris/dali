@@ -805,6 +805,7 @@
 
 (defn render-example [dir filename document]
   (with-redefs [dali.layout/group-for-composite-layout (constantly :node-group-38348)]
+    (.delete (java-io/file (str dir filename ".svg")))
     (io/render-svg document (str dir filename ".svg"))))
 
 (defn render-examples [dir documents]

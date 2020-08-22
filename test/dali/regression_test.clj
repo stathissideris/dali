@@ -60,3 +60,7 @@
       (testing (str "example " f " is identical to fixture")
         (is (= (io/load-enlive-svg fixture-filename)
                (io/load-enlive-svg example-filename)))))))
+
+;; To refresh fixtures:
+
+;;(examples/render-examples "examples/fixtures/" examples/examples)
