@@ -550,6 +550,17 @@
       [:rect {:id :b} [50 150] [50 50]]]
      [:dali/connect {:from :a :to :b :dali/marker-end :sharp}]]}
 
+   {:filename "connect3-manual-anchors"
+    :document
+    [:dali/page {:stroke :black :fill :none}
+     [:defs (prefab/sharp-arrow-marker :sharp)]
+     [:dali/stack {:direction :right, :gap 50}
+      [:rect {:id :a} [50 50] [50 50]]
+      [:rect {:id :b} [50 150] [50 50]]]
+     [:dali/connect {:from :a, :to :b
+                     :from-anchor :top-right, :to-anchor :bottom-left
+                     :dali/marker-end :sharp}]]}
+
    {:filename "matrix1"
     :document
     [:dali/page
