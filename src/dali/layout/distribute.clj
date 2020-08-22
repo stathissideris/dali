@@ -8,10 +8,10 @@
         anchor (or anchor :center)
         vertical? (or (= direction :down) (= direction :up))]
     (if vertical?
-      (when (not (#{:center :left :right} anchor))
-        (throw (Exception. (str "distribute layout supports only :center :left :right anchors for direction " direction "\n elements: " elements))))
       (when (not (#{:center :top :bottom} anchor))
-        (throw (Exception. (str "distribute layout supports only :center :top :bottom anchors for direction " direction "\n elements: " elements)))))
+        (throw (Exception. (str "distribute layout supports only :center :top :bottom anchors for direction " direction "\n elements: " elements))))
+      (when (not (#{:center :left :right} anchor))
+        (throw (Exception. (str "distribute layout supports only :center :left :right anchors for direction " direction "\n elements: " elements)))))
     (let [gap (or gap 0)
           elements (if (seq? (first elements)) (first elements) elements) ;;so that you map over elements etc
           bounds (map bounds-fn elements)
