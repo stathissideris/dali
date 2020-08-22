@@ -22,16 +22,6 @@
      first    ;;get the shortest distance
      first))) ;;return the anchor pair
 
-(defn- corner-anchor [bounds intersection]
-  (->>
-   (for [a [:top :bottom :left :right]]
-     [a (geom/distance-squared
-         intersection
-         (bounds->anchor-point a bounds))])
-   (sort-by second)
-   first   ;;get the shortest distance
-   first)) ;;return the anchor
-
 (defn- connector [attrs points]
   {:tag   :polyline
    :attrs (merge
@@ -50,25 +40,41 @@
                            (bounds->anchor-point (bounds-fn end-element)))]
     (connector attrs [p1 p2])))
 
+(defn- corner-anchors [element1 element2 type bounds-fn]
+  (let [bounds1 (bounds-fn element1)
+        bounds2 (bounds-fn element2)
+        anchor-pairs (if (= type :-|)
+                       [[:left :top]
+                        [:left :bottom]
+                        [:right :top]
+                        [:right :bottom]]
+                       [[:top :right]
+                        [:top :left]
+                        [:bottom :right]
+                        [:bottom :left]])]
+    (->>
+     (for [[anchor1 anchor2] anchor-pairs]
+       [[anchor1 anchor2]
+        (geom/distance-squared
+         (bounds->anchor-point anchor1 bounds1)
+         (bounds->anchor-point anchor2 bounds2))])
+     (sort-by second)
+     first    ;;get the shortest distance
+     first)))
+
 ;;TODO refactor so that you pass bounds, not elements?
 (defn- corner-connector [start-element end-element attrs connection-type bounds-fn]
-  (let [manual-anchor1 (:from-anchor attrs)
-        manual-anchor2 (:to-anchor attrs)
+  (let [[auto-a1 auto-a2] (corner-anchors start-element end-element connection-type bounds-fn)
+        a1                (or (:from-anchor attrs) auto-a1)
+        a2                (or (:to-anchor attrs) auto-a2)
 
-        bounds1        (bounds-fn start-element)
-        bounds2        (bounds-fn end-element)
-        [cx1 cy1]      (bounds->anchor-point :center bounds1)
-        [cx2 cy2]      (bounds->anchor-point :center bounds2)
-        intersection   (if (= :|- connection-type)
-                         [cx1 cy2]
-                         [cx2 cy1])
-        p1             (-> manual-anchor1
-                           (or (corner-anchor bounds1 intersection))
-                           (bounds->anchor-point bounds1))
-        p2             (-> manual-anchor2
-                           (or (corner-anchor bounds2 intersection))
-                           (bounds->anchor-point bounds2))]
-    (connector attrs [p1 intersection p2])))
+        [cx1 cy1 :as p1]  (bounds->anchor-point a1 (bounds-fn start-element))
+        [cx2 cy2 :as p2]  (bounds->anchor-point a2 (bounds-fn end-element))
+
+        intersection-p    (if (= :|- connection-type)
+                            [cx1 cy2]
+                            [cx2 cy1])]
+    (connector attrs [p1 intersection-p p2])))
 
 (defmethod layout/layout-nodes :dali/connect
   [document tag elements bounds-fn]
