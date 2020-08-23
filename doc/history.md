@@ -1,5 +1,9 @@
 # Version history
 
+## 1.0.2
+
+* Fix validation of anchors in distribute layout
+
 ## 1.0.1
 
 * Add :step parameter to distribute to override calculated step

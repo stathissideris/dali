@@ -46,13 +46,13 @@ alpha quality and the API and syntax can (and very likely will)
 change. Just add this to the dependencies of your `project.clj`:
 
 ``` clojure
-[dali "1.0.1"]
+[dali "1.0.2"]
 ```
 
 Or this, to your `deps.edn`:
 
 ``` clojure
-dali/dali {:mvn/version "1.0.1"}
+dali/dali {:mvn/version "1.0.2"}
 ```
 
 ## Documentation
@@ -81,6 +81,7 @@ Planned for the future:
 * [Stathis Sideris](https://github.com/stathissideris) - original author
 * [Paulo Rafael Feodrippe](https://github.com/pfeodrippe)
 * [Bruce Durling](https://github.com/otfrom)
+* [Alex Harms](https://github.com/onealexharms)
 
 ## License
 
