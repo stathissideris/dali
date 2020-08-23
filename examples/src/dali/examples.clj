@@ -200,6 +200,31 @@
       [:rect {:fill :green}            [0 10] [15 40]]
       [:rect {:fill :orange}           [0 10] [20 20]]]]}
 
+
+   {:filename "distribute4-anchor-check"
+    :document
+    [:dali/page {:stroke :none}
+     [:dali/stack
+      {:direction :right :gap 20}
+      [:dali/distribute
+       {:direction :down :anchor :top}
+       [:rect {:fill :mediumslateblue}  [10 10] [25 50]]
+       [:rect {:fill :sandybrown}       [10 10] [25 30]]
+       [:rect {:fill :green}            [10 10] [25 40]]
+       [:rect {:fill :orange}           [10 10] [25 50]]]
+      [:dali/distribute
+       {:direction :down :anchor :bottom}
+       [:rect {:fill :mediumslateblue}  [10 10] [25 50]]
+       [:rect {:fill :sandybrown}       [10 10] [25 30]]
+       [:rect {:fill :green}            [10 10] [25 40]]
+       [:rect {:fill :orange}           [10 10] [25 50]]]
+      [:dali/distribute
+       {:direction :down :anchor :center}
+       [:rect {:fill :mediumslateblue}  [10 10] [25 50]]
+       [:rect {:fill :sandybrown}       [10 10] [25 30]]
+       [:rect {:fill :green}            [10 10] [25 40]]
+       [:rect {:fill :orange}           [10 10] [25 50]]]]]}
+
    {:filename "markers1"
     :document
     [:dali/page
