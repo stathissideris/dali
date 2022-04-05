@@ -8,10 +8,10 @@ the differect layouts and operations, but make sure to read the
 using them.
 
 In most cases, the children of the layout tag will be moved around to
-conform to the layout. For some layouts this not the case, instead the
+conform to the layout. For some layouts this not the case, instead they
 introduce new elements into the document.
 
-Layouts tags can be nested within other layout tags.
+Layout tags can be nested within other layout tags.
 
 Instead of acting on their children elements, layouts can also
 "select" elements from other parts of the document and transform
