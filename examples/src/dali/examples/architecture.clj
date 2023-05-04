@@ -4,6 +4,12 @@
              [prefab :as prefab]
              [syntax :as d]
              [utils :as utils]]
+            [dali.layout.align]
+            [dali.layout.connect]
+            [dali.layout.distribute]
+            [dali.layout.place]
+            [dali.layout.stack]
+            [dali.layout.surround]
             [garden.core :refer [css]]))
 
 (def circle-radius 50)
@@ -141,3 +147,8 @@
        "  if(s.display == 'block') { s.display = 'none' } else {s.display = 'block'}"
        "}"
        "document.getElementById('deps-toggle').addEventListener('click', toggleDeps);"]))]))
+
+
+(comment
+  (require '[dali.io :as io])
+  (io/render-svg document "examples/output/architecture.svg"))
